@@ -27,8 +27,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'widget_tweaks',
+    'solo',
 
     'guru',
+    'sekolah',
 ]
 
 MIDDLEWARE = [
