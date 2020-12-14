@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.fields.related import ForeignKey
 from solo.models import SingletonModel
 from django.dispatch import receiver
 
@@ -73,3 +74,26 @@ class MataPelajaran(models.Model):
     def save(self, *args, **kwargs):
         self.singkat = str(self.singkat).upper()
         super(MataPelajaran, self).save(*args, **kwargs)
+
+class KKM(models.Model):
+    matapelajaran = models.ForeignKey(MataPelajaran, on_delete=models.CASCADE)
+    tgl_pendidikan = models.ForeignKey(TanggalPendidikan, on_delete=models.CASCADE)
+    pengetahuan = models.SmallIntegerField(verbose_name='KKM Pengetahuan')
+    keterampilan = models.SmallIntegerField(verbose_name='KKM Keterampilan')
+
+    def __str__(self):
+        return f'{self.matapelajaran}({self.tgl_pendidikan})'
+
+    def save(self, *args, **kwargs):
+        if self.pengetahuan < 0: self.pengetahuan = 0
+        if self.pengetahuan > 100: self.pengetahuan = 100
+        if self.keterampilan < 0: self.keterampilan = 0
+        if self.keterampilan > 100: self.keterampilan = 100
+        super(KKM, self).save(*args, **kwargs)
+
+@receiver(models.signals.pre_save, sender=KKM)
+def only_one_instance_with_same_tp_and_mapel(sender, instance, **kwargs):
+    kkm = KKM.objects.filter(matapelajaran=instance.matapelajaran, tgl_pendidikan=instance.tgl_pendidikan)
+    if kkm:
+        for kkm in kkm:                                        
+            kkm.delete()            
