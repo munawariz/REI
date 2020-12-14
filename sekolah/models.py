@@ -50,5 +50,26 @@ def only_one_is_active_instance(sender, instance, **kwargs):
             tp.save()
 
 class Jurusan(models.Model):
-    lengkap = models.CharField(verbose_name='Nama Lengkap', max_length=255)
+    nama = models.CharField(verbose_name='Nama Lengkap', max_length=255)
     singkat = models.CharField(verbose_name='Nama Singkat', max_length=10)
+
+    def __str__(self):
+        return self.singkat
+
+class MataPelajaran(models.Model):
+    MATAPELAJARAN_CHOICE = [
+        ('NA', 'Normatif Adaptif'),
+        ('WS', 'Kejuruan'),
+        ('MULOK', 'Muatan Lokal')
+    ]
+
+    nama = models.CharField(verbose_name='Nama Mata Pelajaran', max_length=255)
+    singkat = models.CharField(verbose_name='Nama Singkat Mata Pelajaran', max_length=20)
+    kelompok = models.CharField(verbose_name='Kelompok Mata Pelajaran', max_length=5, choices=MATAPELAJARAN_CHOICE)
+
+    def __str__(self):
+        return f'{self.singkat}/{self.kelompok}'
+
+    def save(self, *args, **kwargs):
+        self.singkat = str(self.singkat).upper()
+        super(MataPelajaran, self).save(*args, **kwargs)

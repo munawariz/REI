@@ -1,6 +1,6 @@
 from django.contrib import admin
 from solo.admin import SingletonModelAdmin
-from .models import Sekolah, TanggalPendidikan, Jurusan
+from .models import Sekolah, TanggalPendidikan, Jurusan, MataPelajaran
 
 admin.site.register(Sekolah, SingletonModelAdmin)
 
@@ -12,6 +12,12 @@ class TPAdmin(admin.ModelAdmin):
 
 @admin.register(Jurusan)
 class JurusanAdmin(admin.ModelAdmin):
-    list_display = ('lengkap', 'singkat')
-    search_fields = ('lengkap', 'singkat')
-    ordering=('lengkap',)
+    list_display = ('nama', 'singkat')
+    search_fields = ('nama', 'singkat')
+    ordering=('nama',)
+
+@admin.register(MataPelajaran)
+class MataPelajaranAdmin(admin.ModelAdmin):
+    list_display = ('nama', 'singkat', 'kelompok')
+    search_fields = ('nama', 'singkat', 'kelompok')
+    ordering=('nama', 'kelompok')
