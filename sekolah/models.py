@@ -1,15 +1,11 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.fields.related import ForeignKey
 from solo.models import SingletonModel
 from django.dispatch import receiver
+from helpers.choice import TINGKAT_SEKOLAH, SEMESTER_CHOICE, MATAPELAJARAN_CHOICE, KELAS_CHOICE
 
-class Sekolah(SingletonModel):
-    TINGKAT_SEKOLAH = [
-        ('SD', 'Sekolah Dasar'),
-        ('SMP', 'Sekolah Menengah Pertama'),
-        ('SMA', 'Sekolah Menengah Atas'),
-        ('SMK', 'Sekolah Menengah Kejuruan'),
-    ]
+class Sekolah(SingletonModel):    
     nama = models.CharField(max_length=255)
     tingkat = models.CharField(verbose_name='Tingkat Sekolah', max_length=3, choices=TINGKAT_SEKOLAH)
     npsn = models.CharField(max_length=8)
@@ -30,10 +26,6 @@ class Sekolah(SingletonModel):
         verbose_name = "Informasi Sekolah"
 
 class TanggalPendidikan(models.Model):
-    SEMESTER_CHOICE = [
-        ('1', 'Ganjil'),
-        ('2', 'Genap')
-    ]
     tahun_mulai = models.CharField(verbose_name='Tahun Mulai', max_length=4)
     tahun_akhir = models.CharField(verbose_name='Tahun Berakhir', max_length=4)
     semester = models.CharField(max_length=1, choices=SEMESTER_CHOICE)
@@ -58,12 +50,6 @@ class Jurusan(models.Model):
         return self.singkat
 
 class MataPelajaran(models.Model):
-    MATAPELAJARAN_CHOICE = [
-        ('NA', 'Normatif Adaptif'),
-        ('WS', 'Kejuruan'),
-        ('MULOK', 'Muatan Lokal')
-    ]
-
     nama = models.CharField(verbose_name='Nama Mata Pelajaran', max_length=255)
     singkat = models.CharField(verbose_name='Nama Singkat Mata Pelajaran', max_length=20)
     kelompok = models.CharField(verbose_name='Kelompok Mata Pelajaran', max_length=5, choices=MATAPELAJARAN_CHOICE)
@@ -92,8 +78,47 @@ class KKM(models.Model):
         super(KKM, self).save(*args, **kwargs)
 
 @receiver(models.signals.pre_save, sender=KKM)
-def only_one_instance_with_same_tp_and_mapel(sender, instance, **kwargs):
+def unique_together_tp_mapel(sender, instance, **kwargs):
     kkm = KKM.objects.filter(matapelajaran=instance.matapelajaran, tgl_pendidikan=instance.tgl_pendidikan)
     if kkm:
-        for kkm in kkm:                                        
-            kkm.delete()            
+        raise ValidationError('Nilai for that Mata Pelajaran in that Tanggal Pendidikan already exists')
+
+class Tingkat(models.Model):
+    tingkat = models.SmallIntegerField(unique=True)
+
+    def __str__(self):
+        return str(self.tingkat)
+
+    def save(self, *args, **kwargs):
+        if self.tingkat < 1: self.tingkat = 1
+        if self.tingkat > 13: self.tingkat = 13
+        super(Tingkat, self).save(*args, **kwargs)
+
+class Kelas(models.Model):
+    sekolah = Sekolah.objects.get()
+    tingkat = models.ForeignKey(Tingkat, on_delete=models.PROTECT)
+    jurusan = models.ForeignKey(Jurusan, on_delete=models.PROTECT, null=True)
+    kelas = models.CharField(max_length=1, choices=KELAS_CHOICE)
+    angkatan = models.CharField(max_length=3)
+
+    def __str__(self):
+        if self.jurusan:
+            return f'{self.tingkat}-{self.jurusan}-{self.kelas}-{self.angkatan}'
+        else:
+            return f'{self.tingkat}-{self.kelas}-{self.angkatan}'
+
+    def save(self, *args, **kwargs):
+         if not self.jurusan:
+              self.jurusan = None
+         super(Kelas, self).save(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+         if not self.jurusan:
+              self.jurusan = None
+         super(Kelas, self).save(*args, **kwargs)
+
+@receiver(models.signals.pre_save, sender=Kelas)
+def unique_together_all(sender, instance, **kwargs):
+    kelas = Kelas.objects.filter(tingkat=instance.tingkat, jurusan=instance.jurusan, kelas=instance.kelas, angkatan=instance.angkatan)
+    if kelas:
+        raise ValidationError('Kelas with all of that exact value already exists')
