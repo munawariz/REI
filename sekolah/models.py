@@ -1,5 +1,6 @@
 from django.db import models
 from solo.models import SingletonModel
+from django.dispatch import receiver
 
 class Sekolah(SingletonModel):
     TINGKAT_SEKOLAH = [
@@ -26,3 +27,24 @@ class Sekolah(SingletonModel):
 
     class Meta:
         verbose_name = "Informasi Sekolah"
+
+class TanggalPendidikan(models.Model):
+    SEMESTER_CHOICE = [
+        ('1', 'Ganjil'),
+        ('2', 'Genap')
+    ]
+    tahun_mulai = models.CharField(verbose_name='Tahun Mulai', max_length=4)
+    tahun_akhir = models.CharField(verbose_name='Tahun Berakhir', max_length=4)
+    semester = models.CharField(max_length=1, choices=SEMESTER_CHOICE)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'{self.tahun_mulai}/{self.tahun_akhir} {self.semester}'
+
+@receiver(models.signals.pre_save, sender=TanggalPendidikan)
+def only_one_is_active_instance(sender, instance, **kwargs):
+    tp = TanggalPendidikan.objects.filter(is_active=True)
+    if tp and instance.is_active:
+        for tp in tp:                                        
+            tp.is_active = False
+            tp.save()
