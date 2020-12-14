@@ -1,3 +1,9 @@
+#VS Code stuff
+.vscode/
+
+#Non Code Stuff
+media/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
