@@ -7,7 +7,7 @@ class Sekolah(SingletonModel):
         ('SD', 'Sekolah Dasar'),
         ('SMP', 'Sekolah Menengah Pertama'),
         ('SMA', 'Sekolah Menengah Atas'),
-        ('SMK', 'Sekolah Kejuruan'),
+        ('SMK', 'Sekolah Menengah Kejuruan'),
     ]
     nama = models.CharField(max_length=255)
     tingkat = models.CharField(verbose_name='Tingkat Sekolah', max_length=3, choices=TINGKAT_SEKOLAH)
@@ -48,3 +48,7 @@ def only_one_is_active_instance(sender, instance, **kwargs):
         for tp in tp:                                        
             tp.is_active = False
             tp.save()
+
+class Jurusan(models.Model):
+    lengkap = models.CharField(verbose_name='Nama Lengkap', max_length=255)
+    singkat = models.CharField(verbose_name='Nama Singkat', max_length=10)
