@@ -7,10 +7,9 @@ class UserManager(BaseUserManager):
             raise ValueError("Data is not complete")        
 
         user = self.model(nip = nip, nama = nama)
-        if user.level == 'A':
+        if user.is_superuser:
             user.is_admin = True
-            user.is_staff = True
-            user.is_superuser = True
+            user.is_staff = True            
             user.is_walikelas = True
             user.is_staftu = True
         user.set_password(password)
