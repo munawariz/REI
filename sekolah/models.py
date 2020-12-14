@@ -4,6 +4,7 @@ from django.db.models.fields.related import ForeignKey
 from solo.models import SingletonModel
 from django.dispatch import receiver
 from helpers.choice import TINGKAT_SEKOLAH, SEMESTER_CHOICE, MATAPELAJARAN_CHOICE, KELAS_CHOICE
+from guru.models import Guru
 
 class Sekolah(SingletonModel):    
     nama = models.CharField(max_length=255)
@@ -25,6 +26,7 @@ class Sekolah(SingletonModel):
     class Meta:
         verbose_name = "Informasi Sekolah"
 
+
 class TanggalPendidikan(models.Model):
     tahun_mulai = models.CharField(verbose_name='Tahun Mulai', max_length=4)
     tahun_akhir = models.CharField(verbose_name='Tahun Berakhir', max_length=4)
@@ -42,12 +44,14 @@ def only_one_is_active_instance(sender, instance, **kwargs):
             tp.is_active = False
             tp.save()
 
+
 class Jurusan(models.Model):
     nama = models.CharField(verbose_name='Nama Lengkap', max_length=255)
     singkat = models.CharField(verbose_name='Nama Singkat', max_length=10)
 
     def __str__(self):
         return self.singkat
+
 
 class MataPelajaran(models.Model):
     nama = models.CharField(verbose_name='Nama Mata Pelajaran', max_length=255)
@@ -61,9 +65,10 @@ class MataPelajaran(models.Model):
         self.singkat = str(self.singkat).upper()
         super(MataPelajaran, self).save(*args, **kwargs)
 
+
 class KKM(models.Model):
-    matapelajaran = models.ForeignKey(MataPelajaran, on_delete=models.CASCADE)
-    tgl_pendidikan = models.ForeignKey(TanggalPendidikan, on_delete=models.CASCADE)
+    matapelajaran = models.ForeignKey(MataPelajaran, on_delete=models.CASCADE, related_name='kkm')
+    tgl_pendidikan = models.ForeignKey(TanggalPendidikan, on_delete=models.CASCADE, related_name='kkm')
     pengetahuan = models.SmallIntegerField(verbose_name='KKM Pengetahuan')
     keterampilan = models.SmallIntegerField(verbose_name='KKM Keterampilan')
 
@@ -83,6 +88,7 @@ def unique_together_tp_mapel(sender, instance, **kwargs):
     if kkm:
         raise ValidationError('Nilai for that Mata Pelajaran in that Tanggal Pendidikan already exists')
 
+
 class Tingkat(models.Model):
     tingkat = models.SmallIntegerField(unique=True)
 
@@ -96,10 +102,12 @@ class Tingkat(models.Model):
 
 class Kelas(models.Model):
     sekolah = Sekolah.objects.get()
-    tingkat = models.ForeignKey(Tingkat, on_delete=models.PROTECT)
-    jurusan = models.ForeignKey(Jurusan, on_delete=models.PROTECT, null=True)
+    tingkat = models.ForeignKey(Tingkat, on_delete=models.PROTECT, related_name='kelas')
+    jurusan = models.ForeignKey(Jurusan, on_delete=models.PROTECT, null=True, related_name='kelas')
     kelas = models.CharField(max_length=1, choices=KELAS_CHOICE)
     angkatan = models.CharField(max_length=3)
+    matapelajaran = models.ManyToManyField(MataPelajaran, related_name='kelas')
+    walikelas = models.OneToOneField(Guru, on_delete=models.SET_NULL, related_name='kelas', null=True)
 
     def __str__(self):
         if self.jurusan:

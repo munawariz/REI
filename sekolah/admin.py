@@ -35,6 +35,6 @@ class TingkatAdmin(admin.ModelAdmin):
 
 @admin.register(Kelas)
 class KelasAdmin(admin.ModelAdmin):
-    list_display = ('tingkat', 'jurusan', 'kelas', 'angkatan')
-    search_fields = ('tingkat', 'jurusan', 'kelas', 'angkatan')
+    list_display = ('tingkat', 'jurusan', 'kelas', 'angkatan', 'walikelas')
+    search_fields = ('tingkat', 'jurusan', 'kelas', 'angkatan', 'walikelas')
     ordering = ('tingkat', 'jurusan', 'kelas', 'angkatan')
