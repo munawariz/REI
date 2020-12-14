@@ -1,0 +1,42 @@
+{% block navbar %}
+    <nav class="navbar" id="navbar">
+        <ul class="navbar-nav">
+            <li class="logo">
+                <a href="{% url 'dashboard' %}" class="nav-link">
+                    <ion-icon name="newspaper" class="icon-nav"></ion-icon>
+                    <span class="link-text" id="logo-text">Rapor Asoy</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'dg-edit-profil' %}" class="nav-link">
+                    <ion-icon name="settings-outline" class="icon-nav"></ion-icon>
+                    <span class="link-text">Edit Profil</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'dg-list-siswa' %}" class="nav-link">
+                    <ion-icon name="list-outline" class="icon-nav"></ion-icon>
+                    <span class="link-text">List Siswa</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'dg-status-kelas' %}" class="nav-link">
+                    <ion-icon name="people-outline" class="icon-nav"></ion-icon>
+                    <span class="link-text">Status Kelas</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'list-siswa' %}?search={{kelas}}" class="nav-link">
+                    <ion-icon name="code-slash-outline" class="icon-nav"></ion-icon>
+                    <span class="link-text">About Dev</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'logout' %}" class="nav-link">
+                    <ion-icon name="log-out-outline" class="icon-nav"></ion-icon>
+                    <span class="link-text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endblock navbar %}
