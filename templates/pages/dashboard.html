@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    <main id="main">
+        <div class="row">
+            <div class="col-6">
+
+            </div>
+            <div class="col-6 float-end">            
+                {% include 'components/searchbar.html' %}
+            </div>
+        </div>        
+    </main>
+{% endblock content %}

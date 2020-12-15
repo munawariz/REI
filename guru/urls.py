@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns = [
     # URL for both Walikelas and Staf TU
-    path('dashboard/', views.placeholder, name='dashboard'),
+    path('dashboard/', views.dashboard.as_view(), name='dashboard'),
     path('edit-profil/', views.placeholder, name='edit-profil'),
     path('list-siswa/', include([
         path('', views.placeholder, name='list-siswa'),
