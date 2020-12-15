@@ -1,10 +1,10 @@
 from django.contrib import admin
 from solo.admin import SingletonModelAdmin
-from .models import Sekolah, TanggalPendidikan, Jurusan, MataPelajaran, KKM, Tingkat, Kelas
+from .models import Sekolah, Semester, Jurusan, MataPelajaran, KKM, Tingkat, Kelas
 
 admin.site.register(Sekolah, SingletonModelAdmin)
 
-@admin.register(TanggalPendidikan)
+@admin.register(Semester)
 class TPAdmin(admin.ModelAdmin):
     list_display = ('tahun_mulai', 'tahun_akhir', 'semester', 'is_active')
     search_fields = ('tahun_mulai', 'tahun_akhir')
@@ -24,9 +24,9 @@ class MataPelajaranAdmin(admin.ModelAdmin):
 
 @admin.register(KKM)
 class KKMAdmin(admin.ModelAdmin):
-    list_display = ('matapelajaran', 'tgl_pendidikan', 'pengetahuan', 'keterampilan')
-    search_fields = ('matapelajaran', 'tgl_pendidikan', 'pengetahuan', 'keterampilan')
-    ordering = ('matapelajaran', 'tgl_pendidikan')
+    list_display = ('matapelajaran', 'semester', 'pengetahuan', 'keterampilan')
+    search_fields = ('matapelajaran', 'semester', 'pengetahuan', 'keterampilan')
+    ordering = ('matapelajaran', 'semester')
 
 @admin.register(Tingkat)
 class TingkatAdmin(admin.ModelAdmin):
@@ -35,6 +35,6 @@ class TingkatAdmin(admin.ModelAdmin):
 
 @admin.register(Kelas)
 class KelasAdmin(admin.ModelAdmin):
-    list_display = ('tingkat', 'jurusan', 'kelas', 'angkatan', 'walikelas')
-    search_fields = ('tingkat', 'jurusan', 'kelas', 'angkatan', 'walikelas')
-    ordering = ('tingkat', 'jurusan', 'kelas', 'angkatan')
+    list_display = ('tingkat', 'jurusan', 'kelas', 'walikelas', 'semester')
+    search_fields = ('tingkat', 'jurusan', 'kelas', 'walikelas', 'semester')
+    ordering = ('tingkat', 'jurusan', 'kelas')
