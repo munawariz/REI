@@ -1,3 +1,8 @@
+GENDER_CHOICE = [
+    ('P', 'Pria'),
+    ('W', 'Wanita')
+]
+
 TINGKAT_SEKOLAH = [
     ('SD', 'Sekolah Dasar'),
     ('SMP', 'Sekolah Menengah Pertama'),

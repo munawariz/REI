@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from helpers.choice import GENDER_CHOICE
 
 class UserManager(BaseUserManager):
     def create_user(self, nip, nama, password=None):
@@ -29,6 +30,7 @@ class UserManager(BaseUserManager):
 class Guru(AbstractBaseUser):
     nip = models.CharField(verbose_name='Nomor Induk', unique=True, max_length=18)    
     nama = models.CharField(max_length=10)
+    gender = models.CharField(verbose_name='Jenis Kelamin', max_length=1, choices=GENDER_CHOICE, default=GENDER_CHOICE[0][0])
     date_joined = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
     last_login = models.DateTimeField(verbose_name='last login', auto_now=True)
     is_admin = models.BooleanField(default=False)    
