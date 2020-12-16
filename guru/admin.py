@@ -7,19 +7,19 @@ class UserAdmin(BaseUserAdmin):
         # form = EditUserForm
         # add_form = RegistrationForm
     
-    list_display = ('nip', 'nama', 'is_walikelas', 'is_staftu', 'gender')
+    list_display = ('nip', 'nama', 'email', 'is_walikelas', 'is_staftu', 'gender')
     list_filter = ('is_walikelas', 'is_staftu', 'gender')
     fieldsets = (
-        ('Account Profile', {'fields': ('nip', 'nama', 'gender', 'password', 'is_walikelas', 'is_staftu')}),
+        ('Account Profile', {'fields': ('nip', 'nama', 'email', 'gender', 'password', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat', 'is_walikelas', 'is_staftu')}),
         ('Account Status', {'fields': ('is_active',)})
     )
 
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('nip', 'nama', 'gender', 'password1', 'password2', 'is_walikelas', 'is_staftu'),
+            'fields': ('nip', 'nama', 'email', 'gender', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat', 'password1', 'password2', 'is_walikelas', 'is_staftu'),
         }),
     )
-    search_fields = ('nip', 'nama')
+    search_fields = ('nip', 'nama', 'email')
     ordering = ('is_walikelas', 'is_staftu', 'gender')
     filter_horizontal = ()

@@ -1,15 +1,15 @@
-<nav class="navbar" id="navbar">
+<nav class="navbar" id="navbar" style="z-index: 99;">
     <ul class="navbar-nav">
         <li class="logo">
-            <a href="#" class="nav-link link-logo">
+            <a href="{% url 'dashboard' %}" class="nav-link link-logo">
                 <ion-icon name="newspaper" class="icon-nav"></ion-icon>
                 <span class="link-text" id="logo-text">Rapor Elektronik</span>
             </a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link">
-                <ion-icon name="settings-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">Edit Profil</span>
+            <a href="{% url 'profil' %}" class="nav-link">                
+                <ion-icon name="person-outline" class="icon-nav"></ion-icon>
+                <span class="link-text">Profil Anda</span>
             </a>
         </li>
         <li class="nav-item">

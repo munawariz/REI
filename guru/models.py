@@ -30,7 +30,12 @@ class UserManager(BaseUserManager):
 class Guru(AbstractBaseUser):
     nip = models.CharField(verbose_name='Nomor Induk', unique=True, max_length=18)    
     nama = models.CharField(max_length=10)
+    email = models.EmailField(null=True)
     gender = models.CharField(verbose_name='Jenis Kelamin', max_length=1, choices=GENDER_CHOICE, default=GENDER_CHOICE[0][0])
+    tempat_lahir = models.CharField(max_length=255, null=True)
+    tanggal_lahir = models.DateField(null=True)
+    agama = models.CharField(max_length=255, null=True)
+    alamat = models.CharField(max_length=255, null=True)
     date_joined = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
     last_login = models.DateTimeField(verbose_name='last login', auto_now=True)
     is_admin = models.BooleanField(default=False)    

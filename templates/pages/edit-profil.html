@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    <main id="main">
+        <!-- Header -->
+        <div class="row">
+          <div class="col-6">
+            <h4>Profil Anda</h4>
+          </div>
+          <div class="col-6 float-end">
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-md-8 pb-4 m-3 mb-5 section-wrapper">
+            <center>
+              <div class="section-header">
+                Edit Profil
+              </div>
+              <div class="section-body">
+                <form method="post">
+                  {% csrf_token %}
+                  {% for field in profile_form %}
+                      <div class="field mb-4">
+                          {% if field.initial == None %}
+                              {% render_field field|add_class:"input" placeholder=" "%}
+                          {% else %}
+                              {% render_field field|add_class:"input" placeholder="field.initial"%}
+                          {% endif %}
+                          <label class="label">{{field.label}}</label><br>                        
+                      </div>                
+                  {% endfor %}
+                  <input class="btn main-btn float-end mt-4" type="submit" value="Update">
+                </form>
+              </div>
+            </center>            
+          </div>
+          <div class="col-md-3 pb-4 m-3 mb-5 section-wrapper">
+            <center>
+              <div class="section-header">
+                Ganti Password
+              </div>
+              <div class="section-body">
+                <div class="section-body">
+                  <form method="post">
+                    {% csrf_token %}
+                    {% for field in password_form %}
+                        <div class="field mb-4">
+                            {% render_field field|add_class:"input" placeholder=" "%}
+                            <label class="label">{{field.label}}</label><br>                        
+                        </div>                
+                    {% endfor %}
+                    <input class="btn main-btn float-end mt-4" type="submit" value="Ganti">
+                  </form>
+                </div>
+              </div>
+            </center>
+          </div>
+        </div>
+    </main>
+{% endblock content %}

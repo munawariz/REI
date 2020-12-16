@@ -37,7 +37,8 @@ body::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb{
 }
 
 form{
-    max-width: 200px;
+    width: 95%;    
+    position: relative;
 }
 
 .field{
@@ -45,11 +46,6 @@ form{
     position: relative;
     border-bottom: 1px solid var(--text-primary);
     margin: 1rem auto 0.25rem;
-}
-
-.label{
-    color: var(--text-primary);
-    font-size: 1rem;
 }
 
 .input{
@@ -60,7 +56,18 @@ form{
     width: 100%;
     padding: 0.25rem 0;
     background: none;
-    color: var(--text-secondary);
+    color: var(--text-secondary);    
+    position: relative;
+    z-index: 2;
+}
+
+.label{    
+    position: absolute;
+    transform: translateY(-1.7rem);
+    transform-origin: 0%;
+    transition: transform 400ms;
+    color: var(--text-primary);
+    z-index: 1;
 }
 
 .field::after{
@@ -84,15 +91,64 @@ form{
     transform: scaleX(1);
 }
 
-.label{
-    z-index: -1;
-    position: absolute;
-    transform: translateY(-1.7rem);
-    transform-origin: 0%;
-    transition: transform 400ms;
-}
-
 .field:focus-within .label,
 .input:not(:placeholder-shown) + .label{
     transform: scale(0.7) translateY(-4.5rem);
+}
+
+.card-header{
+    background-color: var(--theme-color);
+    width: 80%;
+    margin-top: -20px;
+    font-size: 1.3rem;
+}
+
+.bg-primary{
+    background-color: var(--bg-primary)!important;
+}
+
+.bg-secondary{
+    background-color: var(--bg-secondary)!important; 
+}
+
+.bg-theme{
+    background-color: var(--theme-color);
+}
+
+.section-wrapper{
+    border-radius: 0.25rem;    
+    background-color: var(--bg-secondary);    
+    box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
+}
+
+.section-header{
+    background-color: var(--theme-color);
+    width: 80%;
+    margin-top: -1.3rem;
+    font-size: 1.3rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    border-radius: 0.25rem;
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.5);
+}
+
+.section-body{
+    width: 100%;    
+    padding-top: 0.5rem;
+    background: transparent;
+}
+
+.main-btn{
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    color: var(--text-secondary);
+    border-radius: 0.25rem;
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.3);
+}
+
+.main-btn:hover{
+    background: linear-gradient(60deg, #913db4, #a350af);
+    color: var(--text-secondary);
+    border-radius: 0.25rem;
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
 }

@@ -12,6 +12,7 @@ main{
     margin: 0;
     padding: 0;
     align-items: unset;;
+    box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
 }
 
 .navbar-nav{
@@ -105,9 +106,10 @@ main{
         justify-content: center;
     }
 
-    main{
-        margin: 0;
-        padding-top: 1rem;
+    main{        
+        padding-top: 1rem;        
+        margin: 1.4rem;
+        margin-left: -0.6rem;
     }
 
     .nav-item:last-child{
