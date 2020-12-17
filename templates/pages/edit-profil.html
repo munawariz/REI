@@ -24,11 +24,7 @@
                   {% csrf_token %}
                   {% for field in profile_form %}
                       <div class="field mb-4">
-                          {% if field.initial == None %}
-                              {% render_field field|add_class:"input" placeholder=" "%}
-                          {% else %}
-                              {% render_field field|add_class:"input" placeholder="field.initial"%}
-                          {% endif %}
+                          {% render_field field|add_class:"input" placeholder=" "%}
                           <label class="label">{{field.label}}</label><br>                        
                       </div>                
                   {% endfor %}

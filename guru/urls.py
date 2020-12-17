@@ -7,11 +7,12 @@ urlpatterns = [
     # URL for both Walikelas and Staf TU
     path('dashboard/', views.dashboard.as_view(), name='dashboard'),
     path('profil/', views.edit_profil.as_view(), name='profil'),
-    path('list-siswa/', include([
+    path('siswa/', include([
         path('', views.placeholder, name='list-siswa'),
         path('<kelas>/', views.placeholder, name='list-siswa-kelas'),
+        path('<nis>/', views.placeholder, name='detail-siswa'),
     ])),
-    path('detail-siswa/<nis>/', views.placeholder, name='detail-siswa'),
+    
 
     #URL for Walikelas    
     path('insert-nilai/', views.placeholder, name='insert-nilai'),

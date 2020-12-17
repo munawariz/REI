@@ -4,14 +4,18 @@ from django.views.generic import View
 from .models import Guru
 from .forms import GuruEditForm, PasswordChangeForm
 from django.contrib.auth import authenticate
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 def placeholder(request):
     return render(request, 'index.html')
 
+@method_decorator(login_required, name='dispatch')
 class dashboard(View):
     def get(self, request):
         return render(request, 'pages/dashboard.html')
 
+@method_decorator(login_required, name='dispatch')
 class edit_profil(View):
     def get(self, request):
         active_guru = Guru.objects.get(pk=request.user.pk)        
