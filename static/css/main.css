@@ -115,6 +115,14 @@ form{
     background-color: var(--theme-color);
 }
 
+.text-primary{
+    color: var(--text-primary) !important;
+}
+
+.text-secondary{
+    color: var(--text-secondary) !important;
+}
+
 .section-wrapper{
     border-radius: 0.25rem;    
     background-color: var(--bg-secondary);    
@@ -136,7 +144,7 @@ form{
 .section-body{
     width: 100%;    
     padding-top: 0.5rem;
-    background: transparent;
+    background: transparent;    
 }
 
 .main-btn{
@@ -156,4 +164,21 @@ form{
 select > option{
     color: var(--text-secondary);
     background-color: var(--theme-color);
+}
+
+tr:hover td{
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.column-name:hover td{
+    cursor: default;
+}
+
+tbody{
+    border-color: var(--text-primary);
+}
+
+.table{
+    max-height: 100vw !important;
 }

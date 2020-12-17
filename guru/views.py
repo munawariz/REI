@@ -1,11 +1,16 @@
+from django.core.exceptions import ValidationError
+from django.db.models.query_utils import Q
 from django.http import request
 from django.shortcuts import redirect, render
 from django.views.generic import View
 from .models import Guru
+from siswa.models import Siswa
+from sekolah.models import Semester
 from .forms import GuruEditForm, PasswordChangeForm
 from django.contrib.auth import authenticate
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 def placeholder(request):
     return render(request, 'index.html')
@@ -16,7 +21,7 @@ class dashboard(View):
         return render(request, 'pages/dashboard.html')
 
 @method_decorator(login_required, name='dispatch')
-class edit_profil(View):
+class profil(View):
     def get(self, request):
         active_guru = Guru.objects.get(pk=request.user.pk)        
         initial = {
@@ -33,7 +38,7 @@ class edit_profil(View):
             'profile_form': GuruEditForm(initial=initial),
             'password_form': PasswordChangeForm()
         }
-        return render(request, 'pages/edit-profil.html', context)
+        return render(request, 'pages/profil.html', context)
 
     def post(self, request):
         active_guru = Guru.objects.get(pk=request.user.pk) 
@@ -78,8 +83,31 @@ class edit_profil(View):
                     user.save()
                     return redirect('dashboard')
 
-                else:
-                    return render(request, 'pages/edit-profil.html', context)
+                else:                    
+                    return render(request, 'pages/profil.html', context)
         else:            
-            return render(request, 'pages/edit-profil.html', context)
+            return render(request, 'pages/profil.html', context)
             
+@method_decorator(login_required, name='dispatch')
+class list_siswa(View):
+    def get(self, request):
+        active_semester = Semester.objects.get(is_active=True)
+        if 'search' in request.GET and request.GET['search'] != '':
+            list_siswa = Siswa.objects.filter(
+                Q(kelas__semester=active_semester) &
+                (Q(nama__icontains=request.GET['search']) | Q(nis__istartswith=request.GET['search']) |
+                Q(nisn__istartswith=request.GET['search']) | Q(email__icontains=request.GET['search']) |
+                Q(tempat_lahir__icontains=request.GET['search']) | Q(tanggal_lahir__icontains=request.GET['search']) |
+                Q(agama__icontains=request.GET['search']))
+                ).order_by('nis')
+        else:
+            list_siswa = Siswa.objects.filter(kelas__semester=active_semester).order_by('nis')
+
+        paginator = Paginator(list_siswa, 1)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        context = {
+            'list_siswa': page_obj,
+            'page_obj': page_obj,
+        }
+        return render(request,  'pages/siswa.html', context)

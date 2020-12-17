@@ -24,5 +24,5 @@ class PasswordChangeForm(forms.Form):
     def clean(self):
         if 'new_password1' in self.cleaned_data and 'new_password2' in self.cleaned_data:
             if self.cleaned_data['new_password1'] != self.cleaned_data['new_password2']:
-                raise forms.ValidationError("The two password fields did not match.")
+                raise forms.ValidationError("Pastikan Password baru dan Konfirmasi Password baru sama")
         return self.cleaned_data

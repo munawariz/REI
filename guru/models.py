@@ -29,7 +29,7 @@ class UserManager(BaseUserManager):
 
 class Guru(AbstractBaseUser):
     nip = models.CharField(verbose_name='Nomor Induk', unique=True, max_length=18)    
-    nama = models.CharField(max_length=10)
+    nama = models.CharField(max_length=255)
     email = models.EmailField(null=True)
     gender = models.CharField(verbose_name='Jenis Kelamin', max_length=1, choices=GENDER_CHOICE, default=GENDER_CHOICE[0][0])
     tempat_lahir = models.CharField(max_length=255, null=True)

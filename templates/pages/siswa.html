@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+
+    <main>
+        <div class="row">
+            <div class="col-6">
+                <h4>List Siswa</h4>
+            </div>
+            <div class="col-3">
+
+            </div>
+            <div class="col-3 float-end">            
+                {% include 'components/searchbar.html' %}
+            </div>
+        </div>        
+        <div class="row mt-3">
+            <div class="section-wrapper pb-4 m-3 mb-5 col-md">
+                <center>
+                    <div class="section-header">
+                        List Siswa
+                    </div>
+                    <div class="section-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover bg-transparent">
+                                <thead class="text-secondary">
+                                    <tr class='column-name'>
+                                        <td>NIS</td>
+                                        <td>NISN</td>
+                                        <td>Nama</td>
+                                        <td>Email</td>
+                                        <td>Tempat/Tanggal Lahir</td>
+                                        <td>Jenis Kelamin</td>
+                                        <td>Agama</td>
+                                        <td>Kelas</td>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-primary">
+                                    {% for siswa in list_siswa %}
+                                        <tr data-href="{% url 'detail-siswa' siswa.nis %}">
+                                            <td>{{siswa.nis}}</td>
+                                            <td>{{siswa.nisn}}</td>
+                                            <td>{{siswa.nama}}</td>
+                                            <td>{{siswa.email}}</td>
+                                            <td>{{siswa.tempat_lahir}}/{{siswa.tanggal_lahir|date:'d-m-Y'}}</td>
+                                            {% if siswa.gender == 'P' %}
+                                                <td><ion-icon name="male-outline"></ion-icon></td>
+                                            {% else %}
+                                                <td><ion-icon name="female-outline"></ion-icon></td>
+                                            {% endif %}                                            
+                                            <td>{{siswa.agama}}</td>
+                                            <td>{{siswa.kelas.tingkat}} {{siswa.kelas.jurusan}} {{siswa.kelas.kelas}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                {% include "components/pagination.html" with extra_param='search' extra_value=request.GET.search %}
+                            </table>
+                        </div>                        
+                    </div>
+                </center>                
+            </div>
+        </div>
+    </main>
+
+{% endblock content %}
+
+{% block script %}
+    <script>
+        $(document).ready(function() {
+            $(document.body).on("click", "tr[data-href]", function () {
+                window.location.href = this.dataset.href;
+            });
+        });
+    </script>
+{% endblock script %}

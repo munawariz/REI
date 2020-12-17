@@ -3,17 +3,20 @@
 
 {% block content %}
     {% include 'components/navbar.html' %}
-    <main id="main">
+    <main>
         <!-- Header -->
         <div class="row">
           <div class="col-6">
             <h4>Profil Anda</h4>
           </div>
-          <div class="col-6 float-end">
+          <div class="col-3">
+          </div>
+          <div class="col-3 float-end">
           </div>
         </div>
 
         <div class="row mt-3">
+          <!-- Edit Profile Form -->
           <div class="col-md-8 pb-4 m-3 mb-5 section-wrapper">
             <center>
               <div class="section-header">
@@ -26,31 +29,41 @@
                       <div class="field mb-4">
                           {% render_field field|add_class:"input" placeholder=" "%}
                           <label class="label">{{field.label}}</label><br>                        
-                      </div>                
+                      </div>   
                   {% endfor %}
+                    {% if profile_form.non_field_errors %}
+                      <small>{{profile_form.non_field_errors.as_text}}</small>  
+                    {% endif %}                  
                   <input class="btn main-btn float-end mt-4" type="submit" value="Update">
                 </form>
               </div>
             </center>            
           </div>
+
+          <!-- Change Password Form -->
           <div class="col-md-3 pb-4 m-3 mb-5 section-wrapper">
             <center>
               <div class="section-header">
                 Ganti Password
               </div>
               <div class="section-body">
-                <div class="section-body">
-                  <form method="post">
-                    {% csrf_token %}
-                    {% for field in password_form %}
-                        <div class="field mb-4">
-                            {% render_field field|add_class:"input" placeholder=" "%}
-                            <label class="label">{{field.label}}</label><br>                        
-                        </div>                
-                    {% endfor %}
-                    <input class="btn main-btn float-end mt-4" type="submit" value="Ganti">
-                  </form>
-                </div>
+                <form method="post">
+                  {% csrf_token %}
+                  {% for field in password_form %}
+                      <div class="field mb-4">
+                          {% render_field field|add_class:"input" placeholder=" "%}
+                          <label class="label">{{field.label}}</label><br>
+                          {% if field.errors %}
+                            {{field.errors}}
+                          {% endif %}
+                      </div>                      
+                  {% endfor %}
+                  {% if password_form.non_field_errors %}
+                    <small>{{password_form.non_field_errors.as_text}}</small>
+                  {% endif %}
+                  
+                  <input class="btn main-btn float-end mt-4" type="submit" value="Ganti">
+                </form>
               </div>
             </center>
           </div>

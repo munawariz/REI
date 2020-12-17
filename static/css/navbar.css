@@ -142,7 +142,7 @@ main{
         font-size: 2rem;
     }
 
-    #navbar:hover + #main{
+    .navbar:hover + main{
         margin-left: 16rem;
     }
 

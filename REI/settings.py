@@ -125,3 +125,6 @@ AUTH_USER_MODEL = 'guru.Guru'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
+
+# Stuff
+DATE_FORMAT = '%d-%m-%y'
