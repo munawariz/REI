@@ -31,14 +31,30 @@ body::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb{
     background: var(--theme-color);
 }
 
-.search-bar{
-    margin-top: -1.2rem;
-    margin-right: 1rem;
-}
-
 form{
     width: 95%;    
     position: relative;
+}
+
+.search-bar{
+    margin-top: -1.2rem;
+    margin-right: 1rem;    
+    width: 100%;
+}
+
+.search-icon{
+    font-size: 1.3rem;
+    margin-top: 0.7rem;
+    margin-left: -1rem;
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    border-radius: 100%;
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.5);
+}
+
+.search-icon:hover{
+    background: linear-gradient(60deg, #913db4, #a350af);
+    color: var(--text-secondary);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
 }
 
 .field{
@@ -150,7 +166,7 @@ form{
 .main-btn{
     background: linear-gradient(60deg, #7b1fa2, #913f9e);
     color: var(--text-secondary);
-    border-radius: 0.25rem;
+    border-radius: 0.25rem !important;
     box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.3);
 }
 
@@ -181,4 +197,29 @@ tbody{
 
 .table{
     max-height: 100vw !important;
+}
+
+.page-link{
+    background-color: var(--theme-color) !important;
+    border: none;
+    color: var(--text-secondary);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.5);
+}
+
+.page-link:hover{
+    background-color: rgb(163, 52, 211) !important;
+    color: var(--text-primary);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
+}
+
+@media only screen and (max-width: 600px){
+    .search-bar{
+        max-width: 100% !important;
+    }
+}
+
+@media only screen and (min-width: 600px){
+    .search-bar{
+        max-width: 60% !important;
+    }
 }

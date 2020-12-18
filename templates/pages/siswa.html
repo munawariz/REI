@@ -45,19 +45,19 @@
                                             <td>{{siswa.email}}</td>
                                             <td>{{siswa.tempat_lahir}}/{{siswa.tanggal_lahir|date:'d-m-Y'}}</td>
                                             {% if siswa.gender == 'P' %}
-                                                <td><ion-icon name="male-outline"></ion-icon></td>
+                                                <td>Pria</td>
                                             {% else %}
-                                                <td><ion-icon name="female-outline"></ion-icon></td>
+                                                <td>Wanita</td>
                                             {% endif %}                                            
                                             <td>{{siswa.agama}}</td>
                                             <td>{{siswa.kelas.tingkat}} {{siswa.kelas.jurusan}} {{siswa.kelas.kelas}}</td>
                                         </tr>
                                     {% endfor %}
-                                </tbody>
-                                {% include "components/pagination.html" with extra_param='search' extra_value=request.GET.search %}
+                                </tbody>                                
                             </table>
                         </div>                        
                     </div>
+                    {% include "components/pagination.html" with extra_param='search' extra_value=request.GET.search %}
                 </center>                
             </div>
         </div>

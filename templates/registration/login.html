@@ -2,10 +2,6 @@
 {% load static %}
 {% load widget_tweaks %}
 
-{% block stylesheet %}
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
-{% endblock stylesheet %}
-
 {% block content %}
     <div class="container mt-5">
         <div class="mx-auto p-5" style="width: 400px;">
@@ -15,22 +11,19 @@
             <form method="post">
                 {% csrf_token %}
                 <center>
-                    <div class="field">
+                    <div class="field mb-5">
                         {% render_field form.username|add_class:"input" placeholder=" "%}
                         <label class="label" for="username">Nomor Induk</label><br>                        
                     </div>
 
-                    <div class="field">
+                    <div class="field mb-4">
                         {% render_field form.password|add_class:"input" placeholder=" "%}
                         <label class="label" for="password">Password</label><br>                        
                     </div>
                     
                     <small>{{form.non_field_errors.as_text}}</small><br>
-                    <div class="outer">
-                        <input class="btn button" type="submit" value="Login">
-                    </div>
-                </center>
-                
+                    <input class="btn main-btn" type="submit" value="Login" style="font-size: 1.2rem;">
+                </center>                
             </form>
         </div>
     </div>

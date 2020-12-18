@@ -103,11 +103,13 @@ class list_siswa(View):
         else:
             list_siswa = Siswa.objects.filter(kelas__semester=active_semester).order_by('nis')
 
-        paginator = Paginator(list_siswa, 1)
+        paginator = Paginator(list_siswa, 10)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
+        number_of_pages = [(number+1) for number in range(page_obj.paginator.num_pages)]
         context = {
             'list_siswa': page_obj,
             'page_obj': page_obj,
+            'number_of_pages': number_of_pages,
         }
         return render(request,  'pages/siswa.html', context)
