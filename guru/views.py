@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.query_utils import Q
 from django.http import request
 from django.shortcuts import redirect, render
@@ -91,7 +91,10 @@ class profil(View):
 @method_decorator(login_required, name='dispatch')
 class list_siswa(View):
     def get(self, request):
-        active_semester = Semester.objects.get(is_active=True)
+        try:
+            active_semester = Semester.objects.get(is_active=True)
+        except ObjectDoesNotExist:
+            active_semester = None
         if 'search' in request.GET and request.GET['search'] != '':
             list_siswa = Siswa.objects.filter(
                 Q(kelas__semester=active_semester) &

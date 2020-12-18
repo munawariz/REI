@@ -20,6 +20,8 @@ class Sekolah(SingletonModel):
     provinsi = models.CharField(max_length=50)
     website = models.CharField(max_length=50)
     email = models.EmailField()
+    kepsek = models.CharField(max_length=255, null=True)
+    nip_kepsek = models.CharField(max_length=18, verbose_name='Nomor Induk', null=True)
 
     def __str__(self):
         return "Informasi Sekolah"
