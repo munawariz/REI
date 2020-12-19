@@ -41,3 +41,8 @@ class detail_siswa(UpdateView):
     slug_field = 'nis'
     slug_url_kwarg = 'nis'
     success_url = '/dashboard'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['usia'] = calculate_age(context['object'].tanggal_lahir)
+        return context

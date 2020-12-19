@@ -147,7 +147,7 @@ form{
     border-radius: 0.25rem;    
     background-color: var(--bg-secondary);    
     box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
-    max-height: fit-content;
+    height: fit-content;
 }
 
 .section-header{
@@ -252,6 +252,23 @@ tbody{
     background-color: rgb(163, 52, 211) !important;
     color: var(--text-primary);
     box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
+}
+
+.info{
+    padding-left: 1rem;
+    padding-top: 0.2rem
+}
+
+.info-label{
+    font-weight: normal;
+    color: var(--text-primary);
+    margin-bottom: -0.1rem;
+    font-size: 1rem;
+}
+
+.info-value{
+    font-weight: 400;
+    font-size: 1rem;
 }
 
 @media only screen and (max-width: 600px){
