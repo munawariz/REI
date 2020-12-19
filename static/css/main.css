@@ -139,10 +139,15 @@ form{
     color: var(--text-secondary) !important;
 }
 
+.text-theme{
+    color: var(--theme-color) !important;
+}
+
 .section-wrapper{
     border-radius: 0.25rem;    
     background-color: var(--bg-secondary);    
     box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
+    max-height: fit-content;
 }
 
 .section-header{
@@ -161,6 +166,43 @@ form{
     width: 100%;    
     padding-top: 0.5rem;
     background: transparent;    
+}
+
+.modal-header{
+    background-color: var(--theme-color)!important;
+    font-size: 1.3rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.5);
+    border-radius: 0.25rem;
+    border: none!important;
+}
+
+.modal-body{
+    background-color: var(--bg-secondary);    
+    box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
+    border-radius: 0.25rem;
+}
+
+.modal-dialog{
+    width: 70%;    
+}
+
+.modal-content{
+    background-color: var(--bg-secondary);
+}
+
+.small-section{
+    font-size: 1rem !important;
+}
+
+.left{
+    float: left !important;
+}
+
+.right{
+    float: right !important;
 }
 
 .main-btn{

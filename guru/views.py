@@ -5,7 +5,7 @@ from django.shortcuts import redirect, render
 from django.views.generic import View
 from .models import Guru
 from siswa.models import Siswa
-from sekolah.models import Semester
+from sekolah.models import Sekolah, Semester
 from .forms import GuruEditForm, PasswordChangeForm
 from django.contrib.auth import authenticate
 from django.utils.decorators import method_decorator
@@ -18,7 +18,15 @@ def placeholder(request):
 @method_decorator(login_required, name='dispatch')
 class dashboard(View):
     def get(self, request):
-        return render(request, 'pages/dashboard.html')
+        try:
+            semester = Semester.objects.get(is_active=True)
+        except ObjectDoesNotExist:
+            semester = None
+        context = {
+            'sekolah': Sekolah.objects.get(),
+            'semester': semester,
+        }
+        return render(request, 'pages/dashboard.html', context)
 
 @method_decorator(login_required, name='dispatch')
 class profil(View):
