@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    <main>
+        <!-- Header -->
+        <div class="row">
+          <div class="col-6">
+            <h4>Detail Siswa</h4>
+          </div>
+          <div class="col-3">
+          </div>
+          <div class="col-3 float-end">
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <!-- Edit Profile Form -->
+          <div class="col-md-8 pb-4 m-3 mb-5 section-wrapper">
+            <center>
+                <div class="section-header">
+                  Data Siswa
+                </div>
+                <div class="section-body">
+                  {% if user.is_staftu %}                    
+                    {% include 'components/form.html' with form=form submit_button='Update' %}
+                  {% elif user.is_walikelas %}
+                    {% include 'components/form.html' with form=form submit_button='Update' disabled=True %}
+                  {% endif %}
+                </div>
+            </center>            
+          </div>
+        </div>
+    </main>
+{% endblock content %}

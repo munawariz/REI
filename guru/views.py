@@ -3,9 +3,10 @@ from django.db.models.query_utils import Q
 from django.http import request
 from django.shortcuts import redirect, render
 from django.views.generic import View
+from helpers.configuration import active_semester
 from .models import Guru
 from siswa.models import Siswa
-from sekolah.models import Sekolah, Semester
+from sekolah.models import Sekolah
 from .forms import GuruEditForm, PasswordChangeForm
 from django.contrib.auth import authenticate
 from django.utils.decorators import method_decorator
@@ -18,13 +19,9 @@ def placeholder(request):
 @method_decorator(login_required, name='dispatch')
 class dashboard(View):
     def get(self, request):
-        try:
-            semester = Semester.objects.get(is_active=True)
-        except ObjectDoesNotExist:
-            semester = None
         context = {
             'sekolah': Sekolah.objects.get(),
-            'semester': semester,
+            'semester': active_semester,
         }
         return render(request, 'pages/dashboard.html', context)
 
@@ -95,32 +92,3 @@ class profil(View):
                     return render(request, 'pages/profil.html', context)
         else:            
             return render(request, 'pages/profil.html', context)
-            
-@method_decorator(login_required, name='dispatch')
-class list_siswa(View):
-    def get(self, request):
-        try:
-            active_semester = Semester.objects.get(is_active=True)
-        except ObjectDoesNotExist:
-            active_semester = None
-        if 'search' in request.GET and request.GET['search'] != '':
-            list_siswa = Siswa.objects.filter(
-                Q(kelas__semester=active_semester) &
-                (Q(nama__icontains=request.GET['search']) | Q(nis__istartswith=request.GET['search']) |
-                Q(nisn__istartswith=request.GET['search']) | Q(email__icontains=request.GET['search']) |
-                Q(tempat_lahir__icontains=request.GET['search']) | Q(tanggal_lahir__icontains=request.GET['search']) |
-                Q(agama__icontains=request.GET['search']))
-                ).order_by('nis')
-        else:
-            list_siswa = Siswa.objects.filter(kelas__semester=active_semester).order_by('nis')
-
-        paginator = Paginator(list_siswa, 10)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-        number_of_pages = [(number+1) for number in range(page_obj.paginator.num_pages)]
-        context = {
-            'list_siswa': page_obj,
-            'page_obj': page_obj,
-            'number_of_pages': number_of_pages,
-        }
-        return render(request,  'pages/siswa.html', context)

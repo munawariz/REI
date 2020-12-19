@@ -1,7 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
-from django.db.models.deletion import SET_NULL
-from django.db.models.fields.related import ForeignKey
 from solo.models import SingletonModel
 from django.dispatch import receiver
 from helpers.choice import TINGKAT_SEKOLAH, SEMESTER_CHOICE, MATAPELAJARAN_CHOICE, KELAS_CHOICE

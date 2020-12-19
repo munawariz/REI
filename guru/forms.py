@@ -1,7 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from .models import Guru
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from helpers import input_type as type
 
 class GuruEditForm(forms.ModelForm):    

@@ -1,0 +1,47 @@
+{% load widget_tweaks %}
+
+<form method="post">
+    {% csrf_token %}
+    {% if disabled %}
+        <fieldset disabled>
+    {% endif %}
+    {% for field in form %}
+        {% if not forloop.counter|divisibleby:'2' and forloop.last %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="field mb-4">
+                    {% render_field field|add_class:"input" placeholder=" "%}
+                    <label class="label">{{field.label}}</label>
+                </div>
+            </div>
+        </div>
+        {% elif not forloop.counter|divisibleby:'2' %}
+        <div class="row">
+            <div class="col-md">
+                <div class="field mb-4">
+                    {% render_field field|add_class:"input" placeholder=" "%}
+                    <label class="label">{{field.label}}</label>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-md">
+                <div class="field mb-4">
+                    {% render_field field|add_class:"input" placeholder=" "%}
+                    <label class="label">{{field.label}}</label>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+
+    
+    {% if disabled %}
+        </fieldset>
+    {% else %}
+        {% if form.non_field_errors %}
+            <small>{{form.non_field_errors.as_text}}</small>  
+        {% endif %}
+        <input class="btn main-btn float-end mt-4 " type="submit" value="{{submit_button}}">
+    {% endif %}    
+    
+</form>

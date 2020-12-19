@@ -25,6 +25,18 @@ class Siswa(models.Model):
     def __str__(self):
         return f'{self.nisn}/{self.nis}-{self.nama}'
 
+@receiver(models.signals.post_save, sender=Siswa)
+def siswa_post_save(sender, instance, created, **kwargs):
+    if created:
+        list_matapelajaran = MataPelajaran.objects.filter(kelas=instance.kelas)
+        for matapelajaran in list_matapelajaran:            
+            obj, created = Nilai.objects.update_or_create(
+                siswa=instance, matapelajaran=matapelajaran, semester=instance.kelas.semester,
+                defaults={'pengetahuan': 0, 'keterampilan':0}
+            )
+
+
+
 class Nilai(models.Model):
     siswa = models.ForeignKey(Siswa, on_delete=models.CASCADE, related_name='nilai')
     matapelajaran = models.ForeignKey(MataPelajaran, on_delete=models.CASCADE, related_name='nilai')
