@@ -25,17 +25,6 @@ class Siswa(models.Model):
     def __str__(self):
         return f'{self.nisn}/{self.nis}-{self.nama}'
 
-@receiver(models.signals.post_save, sender=Siswa)
-def siswa_post_save(sender, instance, created, **kwargs):
-    if created:
-        list_matapelajaran = MataPelajaran.objects.filter(kelas=instance.kelas)
-        for matapelajaran in list_matapelajaran:            
-            obj, created = Nilai.objects.update_or_create(
-                siswa=instance, matapelajaran=matapelajaran, semester=instance.kelas.semester,
-                defaults={'pengetahuan': 0, 'keterampilan':0}
-            )
-
-
 
 class Nilai(models.Model):
     siswa = models.ForeignKey(Siswa, on_delete=models.CASCADE, related_name='nilai')
@@ -53,7 +42,6 @@ class Nilai(models.Model):
         if self.keterampilan < 0: self.keterampilan = 0
         if self.keterampilan > 100: self.keterampilan = 100
 
-        self.semester = self.siswa.kelas.semester
         super(Nilai, self).save(*args, **kwargs)
 
 @receiver(models.signals.pre_save, sender=Nilai)
@@ -61,5 +49,11 @@ def unique_together_tp_mapel(sender, instance, **kwargs):
     nilai = Nilai.objects.filter(siswa=instance.siswa, matapelajaran=instance.matapelajaran, semester=instance.semester)
     if nilai and instance not in nilai:
         raise ValidationError('Nilai for that Siswa with that Mata Pelajaran in that Semester already exists')
+
+@receiver(models.signals.post_save, sender=Nilai)
+def nilai_post_save(sender, instance, created, **kwargs):
+    if created:
+        instance.semester = instance.siswa.kelas.semester
+        instance.save()
 
     

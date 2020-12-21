@@ -262,11 +262,19 @@ tbody{
 .info-label{
     font-weight: normal;
     color: var(--text-primary);
-    margin-bottom: -0.1rem;
-    font-size: 1rem;
+    margin-bottom: 0;
+    font-size: 0.8rem;
 }
 
 .info-value{
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+.label-pelajaran{
+    float: left;
+    position: relative;
+    margin-top: -1.7rem;
     font-weight: 400;
     font-size: 1rem;
 }

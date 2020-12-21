@@ -13,11 +13,10 @@ urlpatterns = [
     path('siswa/', include([
         path('', siswa_view.list_siswa.as_view(), name='list-siswa'),
         path('<nis>/', siswa_view.detail_siswa.as_view(), name='detail-siswa'),
+        path('<nis>/nilai', siswa_view.nilai_siswa.as_view(), name='nilai-siswa'),
     ])),
     
 
-    #URL for Walikelas    
-    path('insert-nilai/', guru_view.placeholder, name='insert-nilai'),
     path('insert-absensi/', guru_view.placeholder, name='insert-absensi'),
     path('insert-ekskul/', guru_view.placeholder, name='insert-ekskul'),    
     path('export-rapor/', guru_view.placeholder, name='export-rapor'),
