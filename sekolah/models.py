@@ -39,15 +39,21 @@ class Semester(models.Model):
 
 @receiver(models.signals.pre_save, sender=Semester)
 def only_one_is_active_instance(sender, instance, **kwargs):
-    tp = Semester.objects.filter(is_active=True)
-    if tp and instance.is_active:
-        for tp in tp:                                        
-            tp.is_active = False
-            tp.save()
+    try:
+        tp = Semester.objects.filter(is_active=True)
+        if tp and instance.is_active:
+            for tp in tp:                                        
+                tp.is_active = False
+                tp.save()
+    except ObjectDoesNotExist:
+        pass
     
-    tp = Semester.objects.filter(tahun_mulai=instance.tahun_mulai, tahun_akhir=instance.tahun_akhir, semester=instance.semester)
-    if tp and instance not in tp:
-        raise ValidationError('Nilai for that Mata Pelajaran in that Tanggal Pendidikan already exists')
+    try:
+        tp = Semester.objects.filter(tahun_mulai=instance.tahun_mulai, tahun_akhir=instance.tahun_akhir, semester=instance.semester)
+        if tp and instance not in tp:
+            raise ValidationError('Nilai for that Mata Pelajaran in that Tanggal Pendidikan already exists')
+    except ObjectDoesNotExist:
+        pass
 
 
 class Jurusan(models.Model):
@@ -89,9 +95,12 @@ class KKM(models.Model):
 
 @receiver(models.signals.pre_save, sender=KKM)
 def unique_together_tp_mapel(sender, instance, **kwargs):
-    kkm = KKM.objects.filter(matapelajaran=instance.matapelajaran, semester=instance.semester)
-    if kkm and instance not in kkm:
-        raise ValidationError('Nilai for that Mata Pelajaran in that Tanggal Pendidikan already exists')
+    try:
+        kkm = KKM.objects.filter(matapelajaran=instance.matapelajaran, semester=instance.semester)
+        if kkm and instance not in kkm:
+            raise ValidationError('Nilai for that Mata Pelajaran in that Tanggal Pendidikan already exists')
+    except ObjectDoesNotExist:
+        pass
 
 
 class Tingkat(models.Model):
@@ -131,6 +140,9 @@ class Kelas(models.Model):
 
 @receiver(models.signals.pre_save, sender=Kelas)
 def unique_together_all(sender, instance, **kwargs):
-    kelas = Kelas.objects.filter(tingkat=instance.tingkat, jurusan=instance.jurusan, kelas=instance.kelas, semester=instance.semester)
-    if kelas and instance not in kelas:
-        raise ValidationError('Kelas with all of that exact value already exists')
+    try:
+        kelas = Kelas.objects.filter(tingkat=instance.tingkat, jurusan=instance.jurusan, kelas=instance.kelas, semester=instance.semester)
+        if kelas and instance not in kelas:
+            raise ValidationError('Kelas with all of that exact value already exists')
+    except ObjectDoesNotExist:
+        pass

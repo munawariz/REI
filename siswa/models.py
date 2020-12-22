@@ -1,7 +1,8 @@
 from django.db import models
+from django.db.models import signals
 from sekolah.models import Kelas, Tingkat, MataPelajaran, Semester
 from helpers.choice import GENDER_CHOICE
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.dispatch import receiver
 
 class Siswa(models.Model):
@@ -13,7 +14,7 @@ class Siswa(models.Model):
     tanggal_lahir = models.DateField()
     gender = models.CharField(verbose_name='Jenis Kelamin', max_length=1, choices=GENDER_CHOICE, default=GENDER_CHOICE[0][0])
     agama = models.CharField(max_length=255)
-    anak_ke = models.SmallIntegerField()
+    anak_ke = models.PositiveSmallIntegerField()
     alamat = models.CharField(max_length=255)
     sekolah_asal = models.CharField(max_length=255)
     diterima_di_tingkat = models.ForeignKey(Tingkat, on_delete=models.SET_NULL, null=True, related_name='siswa')
@@ -29,9 +30,9 @@ class Siswa(models.Model):
 class Nilai(models.Model):
     siswa = models.ForeignKey(Siswa, on_delete=models.CASCADE, related_name='nilai')
     matapelajaran = models.ForeignKey(MataPelajaran, on_delete=models.CASCADE, related_name='nilai')
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, related_name='nilai', editable=False)
-    pengetahuan = models.SmallIntegerField()
-    keterampilan = models.SmallIntegerField()
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, related_name='nilai')
+    pengetahuan = models.PositiveSmallIntegerField()
+    keterampilan = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return f'{self.siswa}/{self.matapelajaran}/{self.semester}'
@@ -46,9 +47,12 @@ class Nilai(models.Model):
 
 @receiver(models.signals.pre_save, sender=Nilai)
 def unique_together_tp_mapel(sender, instance, **kwargs):
-    nilai = Nilai.objects.filter(siswa=instance.siswa, matapelajaran=instance.matapelajaran, semester=instance.semester)
-    if nilai and instance not in nilai:
-        raise ValidationError('Nilai for that Siswa with that Mata Pelajaran in that Semester already exists')
+    try:
+        nilai = Nilai.objects.filter(siswa=instance.siswa, matapelajaran=instance.matapelajaran, semester=instance.semester)
+        if nilai and instance not in nilai:
+            raise ValidationError('Nilai for that Siswa with that Mata Pelajaran in that Semester already exists')
+    except ObjectDoesNotExist:
+        pass
 
 @receiver(models.signals.post_save, sender=Nilai)
 def nilai_post_save(sender, instance, created, **kwargs):
@@ -56,4 +60,23 @@ def nilai_post_save(sender, instance, created, **kwargs):
         instance.semester = instance.siswa.kelas.semester
         instance.save()
 
-    
+
+class Absensi(models.Model):
+    siswa = models.ForeignKey(Siswa, on_delete=models.CASCADE, related_name='absensi')
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, related_name='absensi')
+    izin = models.PositiveSmallIntegerField()
+    sakit = models.PositiveSmallIntegerField()
+    bolos = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return f'{self.siswa}/{self.semester}'
+
+@receiver(models.signals.pre_save, sender=Absensi)
+def unique_together_siswa_semester(sender, instance, **kwargs):
+    try:
+        absen = Absensi.objects.filter(siswa=instance.siswa, semester=instance.semester)
+        if absen and instance not in absen:
+            raise ValidationError('Absen for that siswa in that semester already exists')
+    except ObjectDoesNotExist:
+        pass
+

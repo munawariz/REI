@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% include 'components/navbar.html' %}
+    <main>
+        {% include 'components/header.html' with title='Absen Siswa' %}
+        <div class="row">
+        <!-- Edit Absen Form -->
+            <div class="col-md-8 pb-4 m-3 mb-5 section-wrapper">
+              <center>
+                  <div class="section-header">
+                    Absen Siswa
+                  </div>
+                  <div class="section-body">
+                    {% include 'components/form.html' with form=absen_form submit_button='Update' %}
+                  </div>
+              </center>
+            </div>
+            <!-- Siswa Profil -->
+            <div class="col-md-3 pb-4 m-3 mb-5 section-wrapper">
+                <center>
+                    <div class="section-header">
+                      Profil
+                    </div>
+                </center>
+                <div class="section-body">
+                    <div class="info mt-3">
+                        <h6 class="info-label">Nama</h6>
+                        <h5 class="info-value">{{siswa.nama}}</h5>
+                    </div>
+                    <div class="info">
+                        <h6 class="info-label">NIS/NISN</h6>
+                        <h5 class="info-value">{{siswa.nis}}/{{siswa.nisn}}</h5>
+                    </div>
+                    <div class="info">
+                        <h6 class="info-label">Usia</h6>
+                        <h5 class="info-value">{{usia}} Tahun</h5>
+                    </div>
+                    <div class="info">
+                        <h6 class="info-label">Kelas</h6>
+                        <h5 class="info-value">{{siswa.kelas.tingkat}} {{siswa.kelas.jurusan}} {{siswa.kelas.kelas}}</h5>
+                    </div>
+                    <div class="info">
+                        <h6 class="info-label">Walikelas</h6>
+                        <h5 class="info-value">{{siswa.kelas.walikelas}}</h5>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col">
+                            <a href="{% url 'detail-siswa' siswa.nis %}" class="btn main-btn float-end w-100">Edit Data</a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'nilai-siswa' siswa.nis %}" class="btn main-btn w-100">Edit Nilai</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock content %}

@@ -3,17 +3,7 @@
 {% block content %}
     {% include 'components/navbar.html' %}
     <main>
-        <!-- Header -->
-        <div class="row">
-            <div class="col-6">
-                <h4>Nilai Siswa</h4>
-            </div>
-            <div class="col-3">
-            </div>
-            <div class="col-3 float-end">
-            </div>
-        </div>
-
+        {% include 'components/header.html' with title='Nilai Siswa' %}
         <div class="row mt-3">
             <!-- Edit Siswa Form -->
             <div class="col-md-8 pb-4 m-3 mb-5 section-wrapper">
@@ -80,7 +70,7 @@
                       <a href="{% url 'detail-siswa' siswa.nis %}" class="btn main-btn float-end w-100">Edit Data</a>
                     </div>
                     <div class="col">
-                      <a href="#" class="btn main-btn w-100">Edit Absensi</a>
+                      <a href="{% url 'absen-siswa' siswa.nis %}" class="btn main-btn w-100">Edit Absensi</a>
                     </div>
                   </div>
                 </div>

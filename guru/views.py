@@ -16,6 +16,9 @@ from django.core.paginator import Paginator
 def placeholder(request):
     return render(request, 'index.html')
 
+def index(request):
+    return redirect('dashboard')
+
 @method_decorator(login_required, name='dispatch')
 class dashboard(View):
     def get(self, request):

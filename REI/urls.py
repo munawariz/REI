@@ -7,6 +7,7 @@ from siswa import views as siswa_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', guru_view.index),
     # URL for both Walikelas and Staf TU
     path('dashboard/', guru_view.dashboard.as_view(), name='dashboard'),
     path('profil/', guru_view.profil.as_view(), name='profil'),
@@ -14,6 +15,7 @@ urlpatterns = [
         path('', siswa_view.list_siswa.as_view(), name='list-siswa'),
         path('<nis>/', siswa_view.detail_siswa.as_view(), name='detail-siswa'),
         path('<nis>/nilai', siswa_view.nilai_siswa.as_view(), name='nilai-siswa'),
+        path('<nis>/absen', siswa_view.absen_siswa.as_view(), name='absen-siswa'),
     ])),
     
 

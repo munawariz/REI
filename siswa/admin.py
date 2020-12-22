@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Siswa, Nilai
+from .models import Siswa, Nilai, Absensi
 
 @admin.register(Siswa)
 class SiswaAdmin(admin.ModelAdmin):
@@ -12,3 +12,9 @@ class NilaiAdmin(admin.ModelAdmin):
     list_display = ('semester', 'siswa', 'matapelajaran', 'pengetahuan', 'keterampilan')
     search_fields = ('semester', 'siswa', 'matapelajaran', 'pengetahuan', 'keterampilan')
     ordering = ('semester', 'siswa', 'matapelajaran')
+
+@admin.register(Absensi)
+class AbsensiAdmin(admin.ModelAdmin):
+    list_display = ('semester', 'siswa', 'izin', 'sakit', 'bolos')
+    search_fields = ('semester', 'siswa', 'izin', 'sakit', 'bolos')
+    ordering = ('semester', 'siswa', 'izin', 'sakit', 'bolos')
