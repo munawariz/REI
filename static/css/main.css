@@ -112,13 +112,6 @@ form{
     transform: scale(0.7) translateY(-4.5rem);
 }
 
-.card-header{
-    background-color: var(--theme-color);
-    width: 80%;
-    margin-top: -20px;
-    font-size: 1.3rem;
-}
-
 .bg-primary{
     background-color: var(--bg-primary)!important;
 }
@@ -219,6 +212,13 @@ form{
     box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
 }
 
+.green-btn{
+    background: linear-gradient(60deg, #2ea21f, #429e3f);
+    color: var(--text-secondary);
+    border-radius: 0.25rem !important;
+    box-shadow: 1px 0.2rem 5px rgba(46, 162, 31, 0.7);
+}
+
 select > option{
     color: var(--text-secondary);
     background-color: var(--theme-color);
@@ -277,6 +277,10 @@ tbody{
     margin-top: -1.7rem;
     font-weight: 400;
     font-size: 1rem;
+}
+
+.border-100{
+    border-radius: 100% !important;
 }
 
 @media only screen and (max-width: 600px){

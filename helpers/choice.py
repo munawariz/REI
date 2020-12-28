@@ -11,8 +11,8 @@ TINGKAT_SEKOLAH = [
 ]
 
 SEMESTER_CHOICE = [
-    ('1', 'Ganjil'),
-    ('2', 'Genap')
+    ('Ganjil', 'Ganjil'),
+    ('Genap', 'Genap')
 ]
 
 MATAPELAJARAN_CHOICE = [

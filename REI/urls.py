@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from guru import views as guru_view
 from siswa import views as siswa_view
+from sekolah import views as sekolah_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -16,11 +17,14 @@ urlpatterns = [
         path('<nis>/', siswa_view.detail_siswa.as_view(), name='detail-siswa'),
         path('<nis>/nilai', siswa_view.nilai_siswa.as_view(), name='nilai-siswa'),
         path('<nis>/absen', siswa_view.absen_siswa.as_view(), name='absen-siswa'),
+        path('<nis>/ekskul', guru_view.placeholder, name='ekskul-siswa'),
     ])),
-    
-
-    path('insert-absensi/', guru_view.placeholder, name='insert-absensi'),
-    path('insert-ekskul/', guru_view.placeholder, name='insert-ekskul'),    
+    path('semester/', include([
+        path('', sekolah_view.list_semester.as_view(), name='list-semester'),
+        path('buat/', sekolah_view.buat_semester.as_view(), name='buat-semester'),
+        path('aktifkan/<semester>', sekolah_view.aktifkan_semester.as_view(), name='aktifkan-semester'),
+        path('hapus/<semester>', sekolah_view.hapus_semester.as_view(), name='hapus-semester')
+    ])),
     path('export-rapor/', guru_view.placeholder, name='export-rapor'),
     
     #URL for Staf TU
@@ -46,7 +50,6 @@ urlpatterns = [
     path('edit-ekskul/<id>', guru_view.placeholder, name='edit-ekskul'),
     path('delete-ekskul/<id>', guru_view.placeholder, name='delete-ekskul'),
     path('set-walikelas/', guru_view.placeholder, name='set-walikelas'),
-    path('set-semester/', guru_view.placeholder, name='set-semester'),
     path('insert-informasi-sekolah/', guru_view.placeholder, name='insert-informasi-sekolah'),
     path('dump-excel', guru_view.placeholder, name='dump-excel'),
     path('', include('django.contrib.auth.urls')),

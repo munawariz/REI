@@ -1,6 +1,6 @@
 {% load widget_tweaks %}
 
-<form method="post">
+<form method="post" action='{{action}}'>
     {% csrf_token %}
     {% if disabled %}
         <fieldset disabled>

@@ -33,16 +33,14 @@
                                     <div class="pb-3 pt-3">
                                         {% if semester %}
                                             {{semester.tahun_mulai}}/{{semester.tahun_akhir}}<br>
-                                            Semester
-                                            {% if semester.semester == 1 %}
-                                                Ganjil
-                                            {% else %}
-                                                Genap
-                                            {% endif %}
+                                            Semester {{semester.semester}}
                                         {% else %}
                                             Belum ada semester yang aktif.<br>
                                             Hanya Staf TU atau Admin yang bisa mengedit semester aktif.
-                                        {% endif %}
+                                        {% endif %}<br>
+                                        <a class="btn main-btn right m-3" href="{% url 'list-semester' %}">
+                                            Ganti
+                                        </a>
                                     </div>                                
                                 </div>
                             </div>
