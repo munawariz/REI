@@ -3,7 +3,7 @@ from django.db.models.query_utils import Q
 from django.http import request
 from django.shortcuts import redirect, render
 from django.views.generic import View
-from helpers.configuration import active_semester
+from helpers import active_semester
 from .models import Guru
 from siswa.models import Siswa
 from sekolah.models import Sekolah
@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.urls import reverse
 
 def placeholder(request):
     return render(request, 'index.html')
@@ -24,7 +25,7 @@ class dashboard(View):
     def get(self, request):
         context = {
             'sekolah': Sekolah.objects.get(),
-            'semester': active_semester,
+            'semester': active_semester(),
         }
         return render(request, 'pages/dashboard.html', context)
 
@@ -92,6 +93,6 @@ class profil(View):
                     return redirect('dashboard')
 
                 else:                    
-                    return render(request, 'pages/profil.html', context)
+                    return redirect(f"{reverse('profil')}?wrong_password=True")
         else:            
-            return render(request, 'pages/profil.html', context)
+            return redirect('profil')
