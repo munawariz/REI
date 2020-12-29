@@ -22,13 +22,12 @@
                         {% endif %}
                         <div class="row">
                             <div class="section-wrapper col-lg-3 col-11 m-4">
-                                <div class="row mt-2">
-                                    <div class="col">
-                                        <div class="section-header small-section">
-                                            Semester Aktif
-                                        </div>
-                                    </div>                    
-                                </div>                                
+                                <div class="section-header small-section">
+                                    Semester Aktif
+                                </div>
+                                <button type="button" class="btn btn-md help-icon right" data-bs-trigger='click hover focus' data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa melakukan buat, aktivasi, dan hapus semester">
+                                    <ion-icon name="help-circle"></ion-icon>
+                                </button>
                                 <div class="section-body small-section pb-4">
                                     <div class="pb-3 pt-3">
                                         {% if semester %}
@@ -38,9 +37,12 @@
                                             Belum ada semester yang aktif.<br>
                                             Hanya Staf TU atau Admin yang bisa mengedit semester aktif.
                                         {% endif %}<br>
-                                        <a class="btn main-btn right m-3" href="{% url 'list-semester' %}">
-                                            Ganti
-                                        </a>
+
+                                        {% if user.is_staftu or user.is_superuser %}
+                                            <a class="btn main-btn right m-3" href="{% url 'list-semester' %}">
+                                                Ganti
+                                            </a>
+                                        {% endif %}
                                     </div>                                
                                 </div>
                             </div>
