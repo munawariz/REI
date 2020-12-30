@@ -6,25 +6,28 @@
         {% include 'components/header.html' with title='Absen Siswa' %}
         <div class="row">
         <!-- Edit Absen Form -->
-            <div class="col-md-8 pb-4 m-3 mb-5 section-wrapper">
+            <div class="col-md-8 section-wrapper">
               <center>
                   <div class="section-header">
                     Absen Siswa
                   </div>
+                  <button class="btn btn-md help-icon right">
+                    <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Walikelas yang bisa mengubah absensi siswa"></ion-icon>
+                  </button>
                   <div class="section-body">
                     {% include 'components/form.html' with form=absen_form submit_button='Update' %}
                   </div>
               </center>
             </div>
             <!-- Siswa Profil -->
-            <div class="col-md-3 pb-4 m-3 mb-5 section-wrapper">
+            <div class="col-md-3 section-wrapper">
                 <center>
                     <div class="section-header">
                       Profil
                     </div>
                 </center>
                 <div class="section-body">
-                    <div class="info mt-3">
+                    <div class="info">
                         <h6 class="info-label">Nama</h6>
                         <h5 class="info-value">{{siswa.nama}}</h5>
                     </div>

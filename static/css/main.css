@@ -157,6 +157,9 @@ form{
     background-color: var(--bg-secondary);    
     box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
     height: fit-content;
+    padding-bottom: 1.5rem;
+    margin: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .section-header{
@@ -174,7 +177,8 @@ form{
 .section-body{
     width: 100%;    
     padding-top: 0.5rem;
-    background: transparent;    
+    background: transparent;
+    margin-top: 1rem;  
 }
 
 .modal-header{

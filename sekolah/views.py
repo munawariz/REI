@@ -5,12 +5,30 @@ from django.views.generic import View, ListView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.urls import reverse
-from .models import Semester
-from .forms import SemesterForm
+from .models import Sekolah, Semester
+from .forms import SekolahForm, SemesterForm
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
+from REI.decorators import staftu_required
+from helpers import get_initial, form_value
 
 @method_decorator(login_required, name='dispatch')
+class detail_sekolah(View):
+    def get(self, request):
+        sekolah = Sekolah.objects.get()
+        sekolah_form = SekolahForm(initial=get_initial(sekolah))
+        context = {
+            'sekolah_form': sekolah_form,
+        }
+        return render(request, 'pages/detail-sekolah.html', context)
+
+    def post(self, request):
+        sekolah_form = SekolahForm(request.POST)
+        if sekolah_form.is_valid():
+            Sekolah.objects.update(**form_value(sekolah_form))
+            return redirect('detail-sekolah')
+    
+@method_decorator(staftu_required, name='dispatch')
 class list_semester(View):
     def get(self, request):
         if 'search' in request.GET and request.GET['search'] != '':
@@ -34,20 +52,18 @@ class list_semester(View):
         }
         return render(request, 'pages/semester.html', context)
 
+@method_decorator(staftu_required, name='dispatch')
 class buat_semester(View):
     def post(self, request):
         semester_form = SemesterForm(request.POST)
         try:
             if semester_form.is_valid():
-                semester = Semester.objects.create(
-                    tahun_mulai=semester_form.cleaned_data['tahun_mulai'],
-                    tahun_akhir=semester_form.cleaned_data['tahun_akhir'],
-                    semester=semester_form.cleaned_data['semester'],
-                    is_active=False)
+                semester = Semester.objects.create(**form_value(semester_form), is_active=False)
             return redirect('list-semester')
         except ValidationError:
             return redirect(f"{reverse('list-semester')}?validation_error=True")
 
+@method_decorator(staftu_required, name='dispatch')
 class aktifkan_semester(View):
     def get(self, request, semester):
         semester = Semester.objects.get(pk=semester)
@@ -55,6 +71,7 @@ class aktifkan_semester(View):
         semester.save()
         return redirect('list-semester')
 
+@method_decorator(staftu_required, name='dispatch')
 class hapus_semester(View):
     def get(self, request, semester):
         try:

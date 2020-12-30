@@ -9,7 +9,7 @@ class Sekolah(SingletonModel):
     nama = models.CharField(max_length=255)
     tingkat = models.CharField(verbose_name='Tingkat Sekolah', max_length=3, choices=TINGKAT_SEKOLAH)
     npsn = models.CharField(max_length=8)
-    alamat = models.TextField()
+    alamat = models.CharField(max_length=255)
     kode_pos = models.CharField(max_length=5)
     no_telepon = models.CharField(verbose_name='Nomor Telepon', max_length=20)
     kelurahan = models.CharField(max_length=50)

@@ -3,7 +3,7 @@ from django.db.models.query_utils import Q
 from django.http import request
 from django.shortcuts import redirect, render
 from django.views.generic import View
-from helpers import active_semester
+from helpers import active_semester, get_initial, form_value
 from .models import Guru
 from siswa.models import Siswa
 from sekolah.models import Sekolah
@@ -32,35 +32,16 @@ class dashboard(View):
 @method_decorator(login_required, name='dispatch')
 class profil(View):
     def get(self, request):
-        active_guru = Guru.objects.get(pk=request.user.pk)        
-        initial = {
-            'nama' : active_guru.nama,
-            'gender' : active_guru.gender,
-            'tempat_lahir' : active_guru.tempat_lahir, 
-            'tanggal_lahir' : active_guru.tanggal_lahir, 
-            'agama' : active_guru.agama,
-            'alamat' : active_guru.alamat,
-            'email' : active_guru.email,
-        }
-
+        active_guru = Guru.objects.get(pk=request.user.pk)
         context = {
-            'profile_form': GuruEditForm(initial=initial),
+            'profile_form': GuruEditForm(initial=get_initial(active_guru)),
             'password_form': PasswordChangeForm()
         }
         return render(request, 'pages/profil.html', context)
 
     def post(self, request):
-        active_guru = Guru.objects.get(pk=request.user.pk) 
-        initial = {
-            'nama' : active_guru.nama,
-            'gender' : active_guru.gender,
-            'tempat_lahir' : active_guru.tempat_lahir, 
-            'tanggal_lahir' : active_guru.tanggal_lahir, 
-            'agama' : active_guru.agama,
-            'alamat' : active_guru.alamat,
-            'email' : active_guru.email,
-        }
-        profile_form = GuruEditForm(request.POST, initial=initial)
+        active_guru = Guru.objects.get(pk=request.user.pk)
+        profile_form = GuruEditForm(request.POST, initial=get_initial(active_guru))
         password_form = PasswordChangeForm(request.POST)
         context = {
             'profile_form': profile_form,
@@ -69,16 +50,7 @@ class profil(View):
         
         if profile_form.is_valid() or password_form.is_valid():
             if profile_form.is_valid():
-                guru = Guru.objects.get(pk=request.user.pk)
-                guru.nama = profile_form.cleaned_data['nama']
-                guru.email = profile_form.cleaned_data['email']
-                guru.gender = profile_form.cleaned_data['gender']
-                guru.tempat_lahir = profile_form.cleaned_data['tempat_lahir']
-                guru.tanggal_lahir = profile_form.cleaned_data['tanggal_lahir']
-                guru.agama = profile_form.cleaned_data['agama']
-                guru.alamat = profile_form.cleaned_data['alamat']
-                guru.save()
-
+                Guru.objects.filter(pk=request.user.pk).update(**form_value(profile_form))
                 return redirect('dashboard')
 
             if password_form.is_valid():

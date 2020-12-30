@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from helpers.nilai_helpers import zip_pelnilai
-from helpers import calculate_age, active_semester
+from helpers import calculate_age, active_semester, get_initial
 
 @method_decorator(login_required, name='dispatch')
 class list_siswa(View):
@@ -92,12 +92,7 @@ class absen_siswa(View):
         absen, created = Absensi.objects.get_or_create(
             siswa=active_siswa, semester=active_semester(),
             defaults={'izin': 0, 'sakit': 0, 'bolos': 0})
-        initial = {
-            'izin': absen.izin,
-            'sakit': absen.sakit,
-            'bolos': absen.bolos,
-        }
-        absen_form = AbsenForm(initial=initial)
+        absen_form = AbsenForm(initial=get_initial(absen))
         context = {
             'siswa': active_siswa,
             'absen_form': absen_form,

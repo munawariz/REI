@@ -6,30 +6,33 @@
         {% include 'components/header.html' with title='Nilai Siswa' %}
         <div class="row mt-3">
             <!-- Edit Siswa Form -->
-            <div class="col-md-8 pb-4 m-3 mb-5 section-wrapper">
+            <div class="col-md-8 section-wrapper">
               <center>
                   <div class="section-header">
                     Nilai Siswa
                   </div>
+                  <button class="btn btn-md help-icon right">
+                    <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Walikelas yang bisa mengubah nilai siswa"></ion-icon>
+                  </button>
                   <div class="section-body">
-                    <form method="post" class="mt-5">
-                        {% csrf_token %}
-                        {% for id, pelajaran, pengetahuan, keterampilan in data %}
-                            <h6 class="label-pelajaran">{{pelajaran}}</h6>
-                            <div class="row position-relative mb-5">
-                                <div class="col">
-                                    <div class="field">
-                                        <input type="number" name="pengetahuan-{{id}}" id="pengetahuan-{{id}}" placeholder=" " value="{{pengetahuan}}" class="input">
-                                        <label class="label">Pengetahuan</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="field">
-                                        <input type="number" name="keterampilan-{{id}}" id="keterampilan-{{id}}" placeholder=" " value="{{keterampilan}}" class="input">
-                                        <label class="label">Keterampilan</label>
-                                    </div>
-                                </div>
+                    <form method="post" class="mt-4">
+                      {% csrf_token %}
+                      {% for id, pelajaran, pengetahuan, keterampilan in data %}
+                        <h6 class="label-pelajaran">{{pelajaran}}</h6>
+                        <div class="row position-relative mb-5">
+                          <div class="col">
+                            <div class="field">
+                              <input type="number" name="pengetahuan-{{id}}" id="pengetahuan-{{id}}" placeholder=" " value="{{pengetahuan}}" class="input">
+                              <label class="label">Pengetahuan</label>
                             </div>
+                          </div>
+                          <div class="col">
+                            <div class="field">
+                              <input type="number" name="keterampilan-{{id}}" id="keterampilan-{{id}}" placeholder=" " value="{{keterampilan}}" class="input">
+                              <label class="label">Keterampilan</label>
+                            </div>
+                          </div>
+                          </div>
                         {% endfor %}
                         <input class="btn main-btn float-end mt-4 " type="submit" value="Update">
                     </form>
@@ -38,14 +41,14 @@
             </div>
   
             <!-- Siswa Profil -->
-            <div class="col-md-3 pb-4 m-3 mb-5 section-wrapper">
+            <div class="col-md-3 section-wrapper">
               <center>
                   <div class="section-header">
                     Profil
                   </div>
               </center>
                 <div class="section-body">
-                  <div class="info mt-3">
+                  <div class="info">
                     <h6 class="info-label">Nama</h6>
                     <h5 class="info-value">{{siswa.nama}}</h5>
                   </div>

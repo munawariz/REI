@@ -19,6 +19,7 @@ urlpatterns = [
         path('<nis>/absen', siswa_view.absen_siswa.as_view(), name='absen-siswa'),
         path('<nis>/ekskul', guru_view.placeholder, name='ekskul-siswa'),
     ])),
+    path('sekolah/', sekolah_view.detail_sekolah.as_view(), name='detail-sekolah'),
     path('semester/', include([
         path('', sekolah_view.list_semester.as_view(), name='list-semester'),
         path('buat/', sekolah_view.buat_semester.as_view(), name='buat-semester'),
