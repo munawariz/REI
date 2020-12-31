@@ -2,67 +2,64 @@
 {% load widget_tweaks %}
 
 {% block content %}
-    {% include 'components/navbar.html' %}
-    <main>
-        {% include 'components/header.html' with title='Detail Siswa' %}
-        <div class="row mt-3">
-          <!-- Edit Siswa Form -->
-          <div class="col-md-8 section-wrapper">
-            <center>
-                <div class="section-header">
-                  Data Siswa
-                </div>
-                <button class="btn btn-md help-icon right">
-                  <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah data siswa"></ion-icon>
-                </button>
-                <div class="section-body">
-                  {% if user.is_staftu or user.is_superuser%}                    
-                    {% include 'components/form.html' with submit_button='Update' %}
-                  {% elif user.is_walikelas%}
-                    {% include 'components/form.html' with submit_button='Update' disabled=True %}
-                  {% endif %}
-                </div>
-            </center>
+  {% include 'components/header.html' with title='Detail Siswa' %}
+  <div class="row mt-3">
+    <!-- Edit Siswa Form -->
+    <div class="col-md-8 section-wrapper">
+      <center>
+          <div class="section-header">
+            Data Siswa
           </div>
+          <button class="btn btn-md help-icon right">
+            <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah data siswa"></ion-icon>
+          </button>
+          <div class="section-body">
+            {% if user.is_staftu or user.is_superuser%}                    
+              {% include 'components/form.html' with submit_button='Update' %}
+            {% elif user.is_walikelas%}
+              {% include 'components/form.html' with submit_button='Update' disabled=True %}
+            {% endif %}
+          </div>
+      </center>
+    </div>
 
-          <!-- Siswa Profil -->
-          <div class="col-md-3 section-wrapper">
-            <center>
-              <div class="section-header">
-                Profil
-              </div>
-            </center>
-              <div class="section-body">
-                <div class="info">
-                  <h6 class="info-label">Nama</h6>
-                  <h5 class="info-value">{{siswa.nama}}</h5>
-                </div>
-                <div class="info">
-                  <h6 class="info-label">NIS/NISN</h6>
-                  <h5 class="info-value">{{siswa.nis}}/{{siswa.nisn}}</h5>
-                </div>
-                <div class="info">
-                  <h6 class="info-label">Usia</h6>
-                  <h5 class="info-value">{{usia}} Tahun</h5>
-                </div>
-                <div class="info">
-                  <h6 class="info-label">Kelas</h6>
-                  <h5 class="info-value">{{siswa.kelas.tingkat}} {{siswa.kelas.jurusan}} {{siswa.kelas.kelas}}</h5>
-                </div>
-                <div class="info">
-                  <h6 class="info-label">Walikelas</h6>
-                  <h5 class="info-value">{{siswa.kelas.walikelas}}</h5>
-                </div>
-                <div class="row mt-4">
-                  <div class="col">
-                    <a href="{% url 'nilai-siswa' siswa.nis %}" class="btn main-btn float-end w-100">Edit Nilai</a>
-                  </div>
-                  <div class="col">
-                    <a href="{% url 'absen-siswa' siswa.nis %}" class="btn main-btn w-100">Edit Absensi</a>
-                  </div>
-                </div>
-              </div>
+    <!-- Siswa Profil -->
+    <div class="col-md-3 section-wrapper">
+      <center>
+        <div class="section-header">
+          Profil
+        </div>
+      </center>
+        <div class="section-body">
+          <div class="info">
+            <h6 class="info-label">Nama</h6>
+            <h5 class="info-value">{{siswa.nama}}</h5>
+          </div>
+          <div class="info">
+            <h6 class="info-label">NIS/NISN</h6>
+            <h5 class="info-value">{{siswa.nis}}/{{siswa.nisn}}</h5>
+          </div>
+          <div class="info">
+            <h6 class="info-label">Usia</h6>
+            <h5 class="info-value">{{usia}} Tahun</h5>
+          </div>
+          <div class="info">
+            <h6 class="info-label">Kelas</h6>
+            <h5 class="info-value">{{siswa.kelas.tingkat}} {{siswa.kelas.jurusan}} {{siswa.kelas.kelas}}</h5>
+          </div>
+          <div class="info">
+            <h6 class="info-label">Walikelas</h6>
+            <h5 class="info-value">{{siswa.kelas.walikelas}}</h5>
+          </div>
+          <div class="row mt-4">
+            <div class="col">
+              <a href="{% url 'nilai-siswa' siswa.nis %}" class="btn main-btn float-end w-100">Edit Nilai</a>
+            </div>
+            <div class="col">
+              <a href="{% url 'absen-siswa' siswa.nis %}" class="btn main-btn w-100">Edit Absensi</a>
+            </div>
           </div>
         </div>
-    </main>
+    </div>
+  </div>
 {% endblock content %}

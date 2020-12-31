@@ -29,13 +29,18 @@ class Sekolah(SingletonModel):
 
 
 class Semester(models.Model):
+    nama = models.CharField(max_length=255, editable=False, null=True)
     tahun_mulai = models.CharField(verbose_name='Tahun Mulai', max_length=4)
     tahun_akhir = models.CharField(verbose_name='Tahun Berakhir', max_length=4)
     semester = models.CharField(max_length=6, choices=SEMESTER_CHOICE)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'{self.tahun_mulai}/{self.tahun_akhir} {self.semester}'
+        return self.nama
+
+    def save(self, *args, **kwargs):
+        self.nama = f'{self.tahun_mulai}/{self.tahun_akhir} {self.semester}'
+        super(Semester, self).save(*args, **kwargs)
         
 
 @receiver(models.signals.pre_save, sender=Semester)

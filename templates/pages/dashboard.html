@@ -2,66 +2,62 @@
 {% load static %}
 
 {% block content %}
-    {% include 'components/navbar.html' %}
-    <main>
-        {% include 'components/header.html' with title='Dashboard' %}
-        <div class="row mt-3">
-            <div class="section-wrapper col-md">
-                <center>
-                    <div class="section-header">
-                        Dashboard
-                    </div>
-                    <div class="section-body">
-                        Selamat datang {{user.nama}} <br>
-                        Anda adalah seorang
-                        {% if user.is_walikelas or user.is_superuser %}
-                            walikelas
-                        {% endif %}
-                        {% if user.is_staftu or user.is_superuser %}
-                            staf TU
-                        {% endif %}
-                        <div class="row mt-4">
-                            <div class="section-wrapper col-lg-3 col-11 pb-1">
-                                <div class="section-header small-section">
-                                    Semester Aktif
-                                </div>
-                                <button class="btn btn-md help-icon right">
-                                    <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa melakukan buat, aktivasi, dan hapus semester"></ion-icon>
-                                </button>
-                                <div class="section-body small-section">
-                                    <div class="pb-3 pt-3">
-                                        {% if semester %}
-                                            {{semester.tahun_mulai}}/{{semester.tahun_akhir}} {{semester.semester}}
-                                        {% else %}
-                                            Belum ada semester yang aktif.<br>
-                                            Hanya Staf TU atau Admin yang bisa mengedit semester aktif.
-                                        {% endif %}<br>
-
-                                        {% if user.is_staftu or user.is_superuser %}
-                                            <a class="btn main-btn right m-3" href="{% url 'list-semester' %}">
-                                                Ganti
-                                            </a>
-                                        {% endif %}
-                                    </div>                                
-                                </div>
+    {% include 'components/header.html' with title='Dashboard' %}
+    <div class="row mt-3">
+        <div class="section-wrapper col-md">
+            <center>
+                <div class="section-header">
+                    Dashboard
+                </div>
+                <div class="section-body">
+                    Selamat datang {{user.nama}} <br>
+                    Anda adalah seorang
+                    {% if user.is_walikelas or user.is_superuser %}
+                        walikelas
+                    {% endif %}
+                    {% if user.is_staftu or user.is_superuser %}
+                        staf TU
+                    {% endif %}
+                    <div class="row mt-4">
+                        <div class="section-wrapper col-lg-3 col-11 pb-1">
+                            <div class="section-header small-section">
+                                Semester Aktif
                             </div>
-                            <div class="section-wrapper col-lg-4 col pb-1">
-                                <div class="section-header small-section">
-                                    Informasi Sekolah
-                                </div>               
-                                <div class="section-body small-section">
-                                    <div class="pb-3 pt-3">                                        
-                                        {{sekolah.nama}}<br>
-                                        <a href="{% url 'detail-sekolah' %}" class="btn main-btn right m-3">
-                                            Detail
+                            <button class="btn btn-md help-icon right">
+                                <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa melakukan buat, aktivasi, dan hapus semester"></ion-icon>
+                            </button>
+                            <div class="section-body small-section">
+                                <div class="pb-3">
+                                    {% if semester %}
+                                        {{semester.nama}}
+                                    {% else %}
+                                        Belum ada semester yang aktif
+                                    {% endif %}<br>
+
+                                    {% if user.is_staftu or user.is_superuser %}
+                                        <a class="btn main-btn right m-3" href="{% url 'list-semester' %}">
+                                            Ganti
                                         </a>
-                                    </div>                                
-                                </div>
-                            </div>                         
+                                    {% endif %}
+                                </div>                                
+                            </div>
                         </div>
+                        <div class="section-wrapper col-lg-4 col pb-1">
+                            <div class="section-header small-section">
+                                Informasi Sekolah
+                            </div>               
+                            <div class="section-body small-section">
+                                <div class="pb-3">                                        
+                                    {{sekolah.nama}}<br>
+                                    <a href="{% url 'detail-sekolah' %}" class="btn main-btn right m-3">
+                                        Detail
+                                    </a>
+                                </div>                                
+                            </div>
+                        </div>                         
                     </div>
-                </center>
-            </div>
+                </div>
+            </center>
         </div>
-    </main>
+    </div>
 {% endblock content %}

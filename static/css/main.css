@@ -31,6 +31,10 @@ body::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb{
     background: var(--theme-color);
 }
 
+main{
+    margin-bottom: 4rem !important;
+}
+
 form{
     width: 95%;    
     position: relative;
@@ -301,6 +305,39 @@ tbody{
 
 .border-100{
     border-radius: 100% !important;
+}
+
+.alert{
+    border: none !important;
+}
+
+.main-alert{
+    color: var(--text-secondary);
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.5);
+    border-radius: 0.25rem;
+    width: 100% !important;
+}
+
+.error-alert{
+    color: var(--text-secondary);
+    background: linear-gradient(60deg, #a21f1f, #9e3f3f);
+    box-shadow: 1px 0.2rem 5px rgba(162, 31, 31, 0.5);
+    border-radius: 0.25rem;
+    width: 100% !important;
+}
+
+.success-alert{
+    color: var(--text-secondary);
+    background: linear-gradient(60deg, #2ea21f, #559e3f);
+    box-shadow: 1px 0.2rem 5px rgba(57, 162, 31, 0.5);
+    border-radius: 0.25rem;
+    width: 100% !important;
+}
+
+.alert-dismissible .btn-close{
+    padding: 0.5rem;
+    font-size: 0.8rem;
 }
 
 @media only screen and (max-width: 600px){

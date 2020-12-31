@@ -13,9 +13,10 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.urls import reverse
+from django.contrib import messages
 
 def placeholder(request):
-    return render(request, 'index.html')
+    return render(request, 'base.html')
 
 def index(request):
     return redirect('dashboard')
@@ -48,23 +49,21 @@ class profil(View):
             'password_form': password_form,
         }
         
-        if profile_form.is_valid() or password_form.is_valid():
-            if profile_form.is_valid():
-                Guru.objects.filter(pk=request.user.pk).update(**form_value(profile_form))
-                return redirect('dashboard')
+        if profile_form.is_valid():
+            Guru.objects.filter(pk=request.user.pk).update(**form_value(profile_form))
+            messages.success(request, 'Update profil berhasil!')
+            return redirect('profil')
 
-            if password_form.is_valid():
-                newpassword=password_form.cleaned_data['new_password1']
-                nip=request.user.nip
-                password=password_form.cleaned_data['old_password']
-
-                user = authenticate(nip=nip, password=password)
-                if user is not None:
-                    user.set_password(newpassword)
-                    user.save()
-                    return redirect('dashboard')
-
-                else:                    
-                    return redirect(f"{reverse('profil')}?wrong_password=True")
-        else:            
+        if password_form.is_valid():
+            newpassword=password_form.cleaned_data['new_password1']
+            password=password_form.cleaned_data['old_password']
+            user = authenticate(nip=request.user.nip, password=password)
+            if user is not None:
+                user.set_password(newpassword)
+                user.save()
+            else:
+                messages.error(request, 'Password lama anda salah, silahkan coba lagi')
+                return redirect('profil')
+        else:
+            if ValidationError: messages.error(request, 'Konfirmasi password baru anda salah')
             return redirect('profil')

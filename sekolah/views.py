@@ -11,6 +11,7 @@ from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required
 from helpers import get_initial, form_value
+from django.contrib import messages
 
 @method_decorator(login_required, name='dispatch')
 class detail_sekolah(View):
@@ -33,6 +34,7 @@ class list_semester(View):
     def get(self, request):
         if 'search' in request.GET and request.GET['search'] != '':
             list_semester = Semester.objects.filter(
+                Q(nama__istartswith=request.GET['search']) |
                 Q(tahun_mulai__icontains=request.GET['search']) |
                 Q(tahun_akhir__icontains=request.GET['search']) |
                 Q(semester__icontains=request.GET['search'])
@@ -59,9 +61,10 @@ class buat_semester(View):
         try:
             if semester_form.is_valid():
                 semester = Semester.objects.create(**form_value(semester_form), is_active=False)
-            return redirect('list-semester')
         except ValidationError:
-            return redirect(f"{reverse('list-semester')}?validation_error=True")
+            messages.error(request, 'Semester dengan data persis seperti itu sudah ada')
+        finally:
+            return redirect('list-semester')
 
 @method_decorator(staftu_required, name='dispatch')
 class aktifkan_semester(View):
@@ -76,6 +79,7 @@ class hapus_semester(View):
     def get(self, request, semester):
         try:
             Semester.objects.get(pk=semester).delete()
-            return redirect('list-semester')
         except ProtectedError:
-            return redirect(f"{reverse('list-semester')}?protected_error=True")
+            messages.error(request, 'Semester masih memiliki kelas aktif, tidak dapat dihapus')
+        finally:
+            return redirect('list-semester')

@@ -13,17 +13,36 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="{% url 'detail-sekolah' %}" class="nav-link">                
+                <ion-icon name="school-outline" class="icon-nav"></ion-icon>
+                <span class="link-text">Informasi Sekolah</span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{% url 'list-siswa' %}" class="nav-link">
                 <ion-icon name="list-outline" class="icon-nav"></ion-icon>
                 <span class="link-text">List Siswa</span>
             </a>
         </li>
+
+        {% if user.is_superuser or user.is_staftu %}
+        <li class="nav-item">
+            <a href="{% url 'list-semester' %}" class="nav-link">                
+                <ion-icon name="calendar-outline" class="icon-nav"></ion-icon>
+                <span class="link-text">Semester</span>
+            </a>
+        </li>
+        {% endif %}
+
+        {% if user.is_superuser or user.is_walikelas %}
         <li class="nav-item">
             <a href="#" class="nav-link">
                 <ion-icon name="people-outline" class="icon-nav"></ion-icon>
                 <span class="link-text">Status Kelas</span>
             </a>
         </li>
+        {% endif %}
+
         <li class="nav-item">
             <a href="#" class="nav-link">
                 <ion-icon name="code-slash-outline" class="icon-nav"></ion-icon>

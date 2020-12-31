@@ -10,19 +10,15 @@
         <title>REI - Rapor Elektronik</title>
     </head>
     <body>
-        {% block navbar %}
-        {% endblock navbar %}
+        {% if not request.path == '/login/' %}
+            {% include 'components/navbar.html' %}
+        {% endif %}
 
-        <div class="content">
-            {% block content %}        
+        <main>
+            {% include 'components/alert-messages.html' %}
+            {% block content %}
             {% endblock content %}
-        </div>
-
-        {% block pagination %}          
-        {% endblock pagination %}
-
-        {% block footer %}
-        {% endblock footer %}
+        </main>
 
         {% include 'include/js.html' %}
         {% block script %}
