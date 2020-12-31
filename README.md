@@ -83,8 +83,7 @@ activate.bat
 ```
 For Linux
 ```
-cd env/bin
-activate
+source env/bin/activate
 ```
 
 __3. Install The requirements.txt__<br>
