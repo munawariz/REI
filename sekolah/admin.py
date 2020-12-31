@@ -1,6 +1,6 @@
 from django.contrib import admin
 from solo.admin import SingletonModelAdmin
-from .models import Sekolah, Semester, Jurusan, MataPelajaran, KKM, Tingkat, Kelas
+from .models import Sekolah, Semester, Jurusan, MataPelajaran, KKM, Tingkat, Kelas, Ekskul
 
 admin.site.register(Sekolah, SingletonModelAdmin)
 
@@ -8,7 +8,7 @@ admin.site.register(Sekolah, SingletonModelAdmin)
 class TPAdmin(admin.ModelAdmin):
     list_display = ('tahun_mulai', 'tahun_akhir', 'semester', 'is_active')
     search_fields = ('tahun_mulai', 'tahun_akhir')
-    ordering = ('tahun_mulai', 'tahun_akhir', 'semester')
+    ordering = ('-tahun_mulai', '-tahun_akhir', '-semester')
 
 @admin.register(Jurusan)
 class JurusanAdmin(admin.ModelAdmin):
@@ -38,3 +38,10 @@ class KelasAdmin(admin.ModelAdmin):
     list_display = ('tingkat', 'jurusan', 'kelas', 'walikelas', 'semester')
     search_fields = ('tingkat', 'jurusan', 'kelas', 'walikelas', 'semester')
     ordering = ('tingkat', 'jurusan', 'kelas')
+
+@admin.register(Ekskul)
+class EkskulAdmin(admin.ModelAdmin):
+    list_display = ('nama', 'jenis')
+    search_fields = ('nama', 'jenis')
+    ordering = ('nama', 'jenis')
+    list_filter = ('jenis',)

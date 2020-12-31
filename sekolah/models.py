@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from solo.models import SingletonModel
 from django.dispatch import receiver
-from helpers.choice import TINGKAT_SEKOLAH, SEMESTER_CHOICE, MATAPELAJARAN_CHOICE, KELAS_CHOICE
+from helpers.choice import JENIS_EKSKUL, TINGKAT_SEKOLAH, SEMESTER_CHOICE, MATAPELAJARAN_CHOICE, KELAS_CHOICE
 from guru.models import Guru
 
 class Sekolah(SingletonModel):    
@@ -152,3 +152,11 @@ def unique_together_all(sender, instance, **kwargs):
             raise ValidationError('Kelas with all of that exact value already exists')
     except ObjectDoesNotExist:
         pass
+
+
+class Ekskul(models.Model):
+    nama = models.CharField(max_length=255)
+    jenis = models.CharField(max_length=255, choices=JENIS_EKSKUL, verbose_name='Jenis Ekskul')
+
+    def __str__(self):
+        return self.nama

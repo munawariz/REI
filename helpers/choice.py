@@ -74,3 +74,11 @@ KELAS_CHOICE = [
     ('C', 'C'),
     ('D', 'D'),
 ]
+
+JENIS_EKSKUL = [
+    ('Kepemimpinan', 'Kepemimpinan'),
+    ('Keagamaan', 'Keagamaan'),
+    ('Kesenian', 'Kesenian'),
+    ('Olahraga', 'Olahraga'),              
+    ('Lain-Lain', 'Lain-Lain'),
+]
