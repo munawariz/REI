@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  {% include 'components/header.html' with title='List Semester' searchbar=True %}
   <div class="row mt-3">
     <div class="col-md-8 section-wrapper">
       <center>
@@ -9,6 +8,7 @@
           Semester
         </div>
         <div class="section-body">
+          {% include 'components/searchbar.html' %}
           {% for semester in list_semester %}
             <div class="card mt-3 bg-primary">
               <div class="card-body">

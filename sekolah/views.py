@@ -16,6 +16,7 @@ from django.contrib import messages
 @method_decorator(login_required, name='dispatch')
 class detail_sekolah(View):
     def get(self, request):
+        request.session['page'] = 'Detail Sekolah'
         sekolah = Sekolah.objects.get()
         sekolah_form = SekolahForm(initial=get_initial(sekolah))
         context = {
@@ -32,6 +33,7 @@ class detail_sekolah(View):
 @method_decorator(staftu_required, name='dispatch')
 class list_semester(View):
     def get(self, request):
+        request.session['page'] = 'Daftar Semester'
         if 'search' in request.GET and request.GET['search'] != '':
             list_semester = Semester.objects.filter(
                 Q(nama__istartswith=request.GET['search']) |

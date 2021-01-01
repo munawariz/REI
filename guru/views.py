@@ -24,6 +24,7 @@ def index(request):
 @method_decorator(login_required, name='dispatch')
 class dashboard(View):
     def get(self, request):
+        request.session['page'] = 'Dashboard'
         context = {
             'sekolah': Sekolah.objects.get(),
             'semester': active_semester(),
@@ -33,6 +34,7 @@ class dashboard(View):
 @method_decorator(login_required, name='dispatch')
 class profil(View):
     def get(self, request):
+        request.session['page'] = 'Profil Anda'
         active_guru = Guru.objects.get(pk=request.user.pk)
         context = {
             'profile_form': GuruEditForm(initial=get_initial(active_guru)),

@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {% include 'components/header.html' with title='List Siswa' searchbar=True %}
     <div class="row mt-3">
         <div class="section-wrapper col-md">
             <center>
@@ -9,6 +8,7 @@
                     List Siswa
                 </div>
                 <div class="section-body">
+                    {% include 'components/searchbar.html' %}
                     <div class="table-responsive">
                         <table class="table table-hover bg-transparent">
                             <thead class="text-secondary">

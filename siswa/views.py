@@ -11,11 +11,13 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from helpers.nilai_helpers import zip_pelnilai
-from helpers import calculate_age, active_semester, get_initial
+from helpers import calculate_age, active_semester, get_initial, form_value
+from django.contrib import messages
 
 @method_decorator(login_required, name='dispatch')
 class list_siswa(View):
     def get(self, request):
+        request.session['page'] = 'Daftar Siswa'
         if 'search' in request.GET and request.GET['search'] != '':
             list_siswa = Siswa.objects.filter(
                 Q(kelas__semester=active_semester()) &
@@ -57,6 +59,7 @@ class detail_siswa(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class nilai_siswa(View):
     def get(self, request, nis):
+        request.session['page'] = 'Nilai Siswa'
         active_siswa = Siswa.objects.get(nis=nis)
         
         context = {
@@ -70,24 +73,23 @@ class nilai_siswa(View):
         try:                
             active_siswa = Siswa.objects.get(nis=nis)
             data = zip_pelnilai(active_siswa, active_semester())
-            completed = True
             for id_, matapelajaran, pengetahuan, keterampilan in data:
                 matapelajaran = MataPelajaran.objects.get(id=id_)
                 nilai_pengetahuan = int(request.POST[f'pengetahuan-{id_}'])
                 nilai_keterampilan = int(request.POST[f'keterampilan-{id_}'])
-                if nilai_pengetahuan == 0 or nilai_keterampilan == 0:
-                    completed = False
                 obj, created = Nilai.objects.update_or_create(
                     siswa=active_siswa, matapelajaran=matapelajaran, semester=active_semester(),
                     defaults={'pengetahuan': nilai_pengetahuan, 'keterampilan': nilai_keterampilan}
                 )
-            return redirect('detail-siswa', nis=nis)
+            messages.success(request, f'Update nilai {active_siswa.nama} berhasil')
+            return redirect('nilai-siswa', nis=nis)
         except Siswa.DoesNotExist: 
             raise Http404
 
 @method_decorator(login_required, name='dispatch')
 class absen_siswa(View):
     def get(self, request, nis):
+        request.session['page'] = 'Absensi Siswa'
         active_siswa = Siswa.objects.get(nis=nis)
         absen, created = Absensi.objects.get_or_create(
             siswa=active_siswa, semester=active_semester(),
@@ -104,10 +106,6 @@ class absen_siswa(View):
         absen_form = AbsenForm(request.POST)
         if absen_form.is_valid():
             absen = Absensi.objects.filter(siswa=active_siswa, semester=active_semester())
-            absen.update(
-                izin=absen_form.cleaned_data['izin'],
-                sakit=absen_form.cleaned_data['sakit'],
-                bolos=absen_form.cleaned_data['bolos'])
-            return redirect('detail-siswa', nis=nis)
-        else:
+            absen.update(**form_value(absen_form))
+            messages.success(request, f'Update absensi {active_siswa.nama} berhasil')
             return redirect('absen-siswa', nis=nis)

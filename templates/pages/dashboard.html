@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block content %}
-    {% include 'components/header.html' with title='Dashboard' %}
     <div class="row mt-3">
         <div class="section-wrapper col-md">
             <center>
@@ -10,14 +9,6 @@
                     Dashboard
                 </div>
                 <div class="section-body">
-                    Selamat datang {{user.nama}} <br>
-                    Anda adalah seorang
-                    {% if user.is_walikelas or user.is_superuser %}
-                        walikelas
-                    {% endif %}
-                    {% if user.is_staftu or user.is_superuser %}
-                        staf TU
-                    {% endif %}
                     <div class="row mt-4">
                         <div class="section-wrapper col-lg-3 col-11 pb-1">
                             <div class="section-header small-section">
