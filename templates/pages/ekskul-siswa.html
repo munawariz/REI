@@ -1,50 +1,55 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="row mt-3">
-        <div class="col-md-8 section-wrapper">
+    <div class="row mt-3 flex-center">
+        <div class="col-lg-7 col-md-6 col-sm-11 section-wrapper">
             <center>
                 <div class="section-header">
                     Ekskul Siswa
                 </div>
                 <div class="section-body">
-                    <form method="post" class="mt-4">
-                        {% csrf_token %}
-                        {% for id_nil, id_eks, ekskul, nilai in data %}
-                            <div class="row">
-                                <div class="col-11">
-                                    <div class="field">
-                                        <select name="nilai-{{id_eks}}" id="nilai-{{id_eks}}" class="input">
-                                            <option value="A" {% if nilai == 'A' %}selected{% endif %}>A</option>
-                                            <option value="B" {% if nilai == 'B' %}selected{% endif %}>B</option>
-                                            <option value="C" {% if nilai == 'C' %}selected{% endif %}>C</option>
-                                        </select>
-                                        <label class="label">{{ekskul}}</label>
+                    <div class="row flex-center">
+                        <div class="col-12 col-md-8 mb-5">
+                            <form method="post" class="mt-4">
+                                {% csrf_token %}
+                                {% for id_nil, id_eks, ekskul, nilai in data %}
+                                    <div class="row">
+                                        <div class="col-11">
+                                            <div class="field">
+                                                <select name="nilai-{{id_eks}}" id="nilai-{{id_eks}}" class="input">
+                                                    <option value="A" {% if nilai == 'A' %}selected{% endif %}>A</option>
+                                                    <option value="B" {% if nilai == 'B' %}selected{% endif %}>B</option>
+                                                    <option value="C" {% if nilai == 'C' %}selected{% endif %}>C</option>
+                                                </select>
+                                                <label class="label">{{ekskul}}</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-1 mt-3">
+                                            <a href="{% url 'hapus-ekskul-siswa' siswa.nis ekskul.pk %}" class="btn main-btn right" style="margin-right: -0.8rem;"><ion-icon name="trash"></ion-icon></a>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-1 mt-3">
-                                    <a href="{% url 'hapus-ekskul-siswa' siswa.nis ekskul.pk %}" class="btn main-btn right" style="margin-right: -0.8rem;"><ion-icon name="trash"></ion-icon></a>
-                                </div>
-                            </div>
-                            {% if forloop.last %}
-                                <input class="btn main-btn float-end mt-4 " type="submit" value="Update">
-                            {% endif %}
-                        {% endfor %}
-                        
-                    </form>
-                </div>
-            </center>
-        </div>
+                                    {% if forloop.last %}
+                                        <input class="btn main-btn float-end mt-4 " type="submit" value="Update">
+                                    {% endif %}
+                                {% endfor %}
+                            </form>
+                        </div>
 
-        <div class="col-md-3 section-wrapper">
-            <center>
-                <div class="section-header">
-                    Tambah Ekskul
-                </div>
-                <div class="section-body">
-                    {% include 'components/form.html' with form=tambah_absen_form submit_button='Tambah' action='tambah/' %}                    
+                        <div class="col col-md-3 section-wrapper mt-3">
+                            <center>
+                                <div class="section-header fs-6">
+                                    Tambah Ekskul
+                                </div>
+                                <div class="section-body">
+                                    {% include 'components/form.html' with form=tambah_absen_form submit_button='Tambah' action='tambah/' %}                    
+                                </div>
+                            </center>
+                        </div>
+                    </div>
+                    
                 </div>
             </center>
         </div>
+        {% include 'components/siswa-navcard.html' %}
     </div>
 {% endblock content %}

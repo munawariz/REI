@@ -8,7 +8,7 @@
                 Detail Siswa
                 </div>
             </center>
-            <div class="row mt-5">
+            <div class="row mt-5 flex-center">
                 <div class="col-11 col-md-4 section-wrapper">
                     <center>
                         <div class="section-header fs-6 p-1">
@@ -45,7 +45,7 @@
                     {% include 'components/modal-form.html' with target='profilSiswa' title='Profil Lengkap Siswa' modal_form=siswa_form %}
                 </div>
 
-                <div class="col-6 col-md-4 section-wrapper">
+                <div class="col-6 col-md-3 section-wrapper">
                     <center>
                         <div class="section-header fs-6 p-1">
                             Profil Kelas
@@ -75,10 +75,10 @@
                     <a href="{% url 'detail-siswa' siswa.nis %}" class="btn main-btn right">Ubah</a>
                 </div>
 
-                <div class="col-4 col-lg-3 col-md-2 section-wrapper">
+                <div class="col-4 col-md-3 section-wrapper">
                     <center>
                         <div class="section-header fs-6 p-1">
-                            Kehadiran Siswa
+                            Kehadiran
                         </div>
                     </center>
                     <button class="btn btn-md help-icon right mt-n2">
@@ -102,7 +102,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row flex-center">
                 <div class="col-11 col-md-7 section-wrapper">
                     <center>
                         <div class="section-header fs-6 p-1">
@@ -132,7 +132,7 @@
                     <a href="{% url 'nilai-siswa' siswa.nis %}" class="btn main-btn right">Ubah</a>
                 </div>
 
-                <div class="col-11 col-lg-4 col-md-3 section-wrapper">
+                <div class="col-11 col-md-3 section-wrapper">
                     <center>
                         <div class="section-header fs-6 p-1">
                             Ekskul Siswa

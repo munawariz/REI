@@ -73,7 +73,7 @@ class profil_siswa(UpdateView):
     def get_success_url(self, **kwargs):
         siswa = Siswa.objects.get(nis=self.kwargs['nis'])
         messages.success(self.request, f'Update profil {siswa.nama} berhasil')
-        return reverse('profil-siswa', kwargs={'nis':siswa.nis})
+        return reverse('detail-siswa', kwargs={'nis':siswa.nis})
 
 @method_decorator(walikelas_required, name='dispatch')
 class nilai_siswa(View):
