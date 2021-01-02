@@ -15,17 +15,19 @@ urlpatterns = [
     path('siswa/', include([
         path('', siswa_view.list_siswa.as_view(), name='list-siswa'),
         path('<nis>/', siswa_view.detail_siswa.as_view(), name='detail-siswa'),
+        path('<nis>/profil/', siswa_view.profil_siswa.as_view(), name='profil-siswa'),
         path('<nis>/nilai/', siswa_view.nilai_siswa.as_view(), name='nilai-siswa'),
         path('<nis>/absen/', siswa_view.absen_siswa.as_view(), name='absen-siswa'),
-        path('<nis>/ekskul/', guru_view.placeholder, name='ekskul-siswa'),
-        path('<nis>/profil/', siswa_view.profil_siswa.as_view(), name='profil-siswa'),
+        path('<nis>/ekskul/', siswa_view.ekskul_siswa.as_view(), name='ekskul-siswa'),
+        path('<nis>/ekskul/tambah/', siswa_view.tambah_ekskul.as_view(), name='tambah-ekskul'),
+        path('<nis>/ekskul/hapus/<ekskul>', siswa_view.hapus_ekskul_siswa.as_view(), name='hapus-ekskul-siswa'),
     ])),
     path('sekolah/', sekolah_view.detail_sekolah.as_view(), name='detail-sekolah'),
     path('semester/', include([
         path('', sekolah_view.list_semester.as_view(), name='list-semester'),
         path('buat/', sekolah_view.buat_semester.as_view(), name='buat-semester'),
-        path('aktifkan/<semester>', sekolah_view.aktifkan_semester.as_view(), name='aktifkan-semester'),
-        path('hapus/<semester>', sekolah_view.hapus_semester.as_view(), name='hapus-semester')
+        path('<semester>/aktifkan/', sekolah_view.aktifkan_semester.as_view(), name='aktifkan-semester'),
+        path('<semester>/hapus/', sekolah_view.hapus_semester.as_view(), name='hapus-semester')
     ])),
     path('export-rapor/', guru_view.placeholder, name='export-rapor'),
     

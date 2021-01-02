@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import fields
-from .models import Siswa, Nilai, Absensi
+from .models import Siswa, Nilai, Absensi, NilaiEkskul
 from helpers import input_type as type
 
 class SiswaForm(forms.ModelForm):    
@@ -21,3 +21,8 @@ class AbsenForm(forms.ModelForm):
     class Meta:
         model = Absensi
         fields = ('izin', 'sakit', 'bolos')
+
+class NilaiEkskulForm(forms.ModelForm):
+    class Meta:
+        model = NilaiEkskul
+        fields = ('ekskul', 'nilai')

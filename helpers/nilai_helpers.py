@@ -1,4 +1,4 @@
-from siswa.models import MataPelajaran, Nilai
+from siswa.models import MataPelajaran, Nilai, NilaiEkskul
 
 def pengetahuan(matapelajaran, siswa, semester):
     nil = Nilai.objects.filter(matapelajaran=matapelajaran, siswa=siswa, semester=semester)
@@ -25,3 +25,13 @@ def zip_pelnilai(siswa, semester):
     list_keterampilan = [keterampilan(matapelajaran, siswa, semester) for matapelajaran in matapelajaran]
 
     return zip(list_id, list_pelajaran, list_pengetahuan, list_keterampilan)
+
+def zip_eksnilai(siswa, semester):
+    nilai_ekskul = NilaiEkskul.objects.filter(siswa=siswa, semester=semester)
+    
+    list_id_nilai = [obj.pk for obj in nilai_ekskul]
+    list_id_ekskul = [obj.ekskul.pk for obj in nilai_ekskul]
+    list_ekskul = [obj.ekskul for obj in nilai_ekskul]
+    list_nilai = [obj.nilai for obj in nilai_ekskul]
+
+    return zip(list_id_nilai, list_id_ekskul, list_ekskul, list_nilai)

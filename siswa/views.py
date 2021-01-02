@@ -1,17 +1,17 @@
-from REI.decorators import staftu_required
+from REI.decorators import staftu_required, walikelas_required
 from django.http.response import Http404
-from sekolah.models import MataPelajaran
+from sekolah.models import Ekskul, MataPelajaran
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.query_utils import Q
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import View, UpdateView
-from .models import Absensi, Siswa, Nilai
-from .forms import NilaiForm, SiswaForm, AbsenForm
+from .models import Absensi, NilaiEkskul, Siswa, Nilai
+from .forms import NilaiForm, SiswaForm, AbsenForm, NilaiEkskulForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from helpers.nilai_helpers import zip_pelnilai
+from helpers.nilai_helpers import zip_eksnilai, zip_pelnilai
 from helpers import calculate_age, active_semester, get_initial, form_value
 from django.contrib import messages
 
@@ -72,12 +72,11 @@ class profil_siswa(UpdateView):
         messages.success(self.request, f'Update profil {siswa.nama} berhasil')
         return reverse('profil-siswa', kwargs={'nis':siswa.nis})
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(walikelas_required, name='dispatch')
 class nilai_siswa(View):
     def get(self, request, nis):
         request.session['page'] = 'Nilai Siswa'
         active_siswa = Siswa.objects.get(nis=nis)
-        
         context = {
             'siswa': active_siswa,
             'usia': calculate_age(active_siswa.tanggal_lahir),
@@ -102,7 +101,7 @@ class nilai_siswa(View):
         except Siswa.DoesNotExist: 
             raise Http404
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(walikelas_required, name='dispatch')
 class absen_siswa(View):
     def get(self, request, nis):
         request.session['page'] = 'Absensi Siswa'
@@ -121,7 +120,53 @@ class absen_siswa(View):
         active_siswa = Siswa.objects.get(nis=nis)
         absen_form = AbsenForm(request.POST)
         if absen_form.is_valid():
-            absen = Absensi.objects.filter(siswa=active_siswa, semester=active_semester())
-            absen.update(**form_value(absen_form))
+            Absensi.objects.filter(siswa=active_siswa, semester=active_semester()).update(**form_value(absen_form))
             messages.success(request, f'Update absensi {active_siswa.nama} berhasil')
             return redirect('absen-siswa', nis=nis)
+
+@method_decorator(walikelas_required, name='dispatch')
+class ekskul_siswa(View):
+    def get(self, request, nis):
+        request.session['page'] = 'Ekskul Siswa'
+        active_siswa = Siswa.objects.get(nis=nis)
+        context = {
+            'siswa': active_siswa,
+            'data': zip_eksnilai(active_siswa, active_semester()),
+            'tambah_absen_form': NilaiEkskulForm()
+        }
+        return render(request, 'pages/ekskul-siswa.html', context)
+
+    def post(self, request, nis):
+        active_siswa = Siswa.objects.get(nis=nis)
+        data = zip_eksnilai(active_siswa, active_semester())
+        for id_nil, id_eks, ekskul, nilai in data:
+            nilai_form = request.POST[f'nilai-{id_eks}']
+            if nilai != nilai_form:
+                ekskul = Ekskul.objects.get(pk=id_eks)
+                NilaiEkskul.objects.filter(siswa=active_siswa, ekskul=ekskul, semester=active_semester()).update(nilai=nilai_form)
+                messages.success(request, f'Nilai {active_siswa.nama} untuk ekskul {ekskul.nama} berhasil diubah')
+        return redirect('ekskul-siswa', nis=nis)
+
+
+@method_decorator(walikelas_required, name='dispatch')
+class tambah_ekskul(View):
+    def post(self, request, nis):
+        absen_form = NilaiEkskulForm(request.POST)
+        active_siswa = Siswa.objects.get(nis=nis)
+        try:
+            if absen_form.is_valid():
+                NilaiEkskul.objects.create(**form_value(absen_form), siswa=active_siswa, semester=active_semester())
+                messages.success(request, f'Ekskul {absen_form.cleaned_data["ekskul"]} berhasil ditambahkan untuk {active_siswa.nama}')
+        except ValidationError:
+            messages.error(request, f'{active_siswa.nama} sudah memiliki ekskul {absen_form.cleaned_data["ekskul"]}')
+        finally:
+            return redirect('ekskul-siswa', nis=nis)
+    
+@method_decorator(walikelas_required, name='dispatch')
+class hapus_ekskul_siswa(View):
+    def get(self, request, nis, ekskul):
+        active_siswa = Siswa.objects.get(nis=nis)
+        ekskul = Ekskul.objects.get(pk=ekskul)
+        NilaiEkskul.objects.get(ekskul=ekskul, siswa=active_siswa, semester=active_semester()).delete()
+        messages.success(request, f'Ekskul {ekskul.nama} sudah dihapus dari data {active_siswa.nama}')
+        return redirect('ekskul-siswa', nis=nis)

@@ -40,8 +40,7 @@ def staftu_required(function=None):
 def walikelas_required(function=None):
     @wraps(function)
     def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('login')
+        if not request.user.is_authenticated: return login_redirect(request)
         user = Guru.objects.filter(Q(pk=request.user.pk) & (Q(is_walikelas=True) | Q(is_superuser=True)))
         if user:
             return function(request, *args, **kwargs)

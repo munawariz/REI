@@ -1,9 +1,11 @@
+import helpers
 from django.db import models
 from django.db.models import signals
 from sekolah.models import Kelas, Tingkat, MataPelajaran, Semester
-from helpers.choice import GENDER_CHOICE
+from helpers.choice import GENDER_CHOICE, NILAI_EKSKUL
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.dispatch import receiver
+from sekolah.models import Ekskul
 
 class Siswa(models.Model):
     nama = models.CharField(max_length=255, verbose_name='Nama Siswa')
@@ -25,6 +27,12 @@ class Siswa(models.Model):
 
     def __str__(self):
         return f'{self.nisn}/{self.nis}-{self.nama}'
+
+@receiver(models.signals.post_save, sender=Siswa)
+def nilai_post_save(sender, instance, created, **kwargs):
+    if created:
+        instance.semester = instance.siswa.kelas.semester
+        instance.save()
 
 
 class Nilai(models.Model):
@@ -77,6 +85,25 @@ def unique_together_siswa_semester(sender, instance, **kwargs):
         absen = Absensi.objects.filter(siswa=instance.siswa, semester=instance.semester)
         if absen and instance not in absen:
             raise ValidationError('Absen for that siswa in that semester already exists')
+    except ObjectDoesNotExist:
+        pass
+
+
+class NilaiEkskul(models.Model):
+    ekskul = models.ForeignKey(Ekskul, on_delete=models.CASCADE, related_name='nilai')
+    siswa = models.ForeignKey(Siswa, on_delete=models.CASCADE, related_name='ekskul')
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, related_name='nilai_ekskul')
+    nilai = models.CharField(max_length=1, choices=NILAI_EKSKUL)
+
+    def __str__(self):
+        return f'{self.siswa} - {self.ekskul} - {self.nilai}'
+
+@receiver(models.signals.pre_save, sender=NilaiEkskul)
+def unique_together_siswa_ekskul_semester(sender, instance, **kwargs):
+    try:
+        nileks = NilaiEkskul.objects.filter(siswa=instance.siswa, semester=instance.semester, ekskul=instance.ekskul)
+        if nileks and instance not in nileks:
+            raise ValidationError('Nilai Ekskul for that siswa in that semester already exists')
     except ObjectDoesNotExist:
         pass
 

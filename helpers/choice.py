@@ -82,3 +82,9 @@ JENIS_EKSKUL = [
     ('Olahraga', 'Olahraga'),              
     ('Lain-Lain', 'Lain-Lain'),
 ]
+
+NILAI_EKSKUL = [
+    ('A', 'A'),
+    ('B', 'B'),
+    ('C', 'C'),
+]
