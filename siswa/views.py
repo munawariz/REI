@@ -1,3 +1,4 @@
+from REI.decorators import staftu_required
 from django.http.response import Http404
 from sekolah.models import MataPelajaran
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -41,20 +42,35 @@ class list_siswa(View):
         return render(request,  'pages/siswa.html', context)
 
 @method_decorator(login_required, name='dispatch')
-class detail_siswa(UpdateView):
+class detail_siswa(View):
+    def get(self, request, nis):
+        request.session['page'] = 'Detail Siswa'
+        active_siswa = Siswa.objects.get(nis=nis)
+        context = {
+            'siswa': active_siswa,
+            'usia': calculate_age(active_siswa.tanggal_lahir),
+            'siswa_form': SiswaForm(initial=get_initial(active_siswa))
+        }
+        return render(request, 'pages/detail-siswa.html', context)
+
+@method_decorator(staftu_required, name='dispatch')
+class profil_siswa(UpdateView):
     model = Siswa
-    template_name = 'pages/detail-siswa.html'
+    template_name = 'pages/profil-siswa.html'
     form_class = SiswaForm
     slug_field = 'nis'
     slug_url_kwarg = 'nis'    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        self.request.session['page'] = 'Profil Siswa'
         context['usia'] = calculate_age(context['object'].tanggal_lahir)
         return context
 
-    def get_success_url(self):
-        return reverse('detail-siswa', kwargs={'nis':self.kwargs['nis']})
+    def get_success_url(self, **kwargs):
+        siswa = Siswa.objects.get(nis=self.kwargs['nis'])
+        messages.success(self.request, f'Update profil {siswa.nama} berhasil')
+        return reverse('profil-siswa', kwargs={'nis':siswa.nis})
 
 @method_decorator(login_required, name='dispatch')
 class nilai_siswa(View):

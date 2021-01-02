@@ -133,7 +133,6 @@ form{
     background: transparent;
     border: none;
     border-radius: 100%;
-    margin-top: -1.5rem;
     margin-right: -1rem;
     font-size: 1.2rem;
 }
@@ -222,6 +221,19 @@ form{
     color: var(--theme-color) !important;
 }
 
+.mt-n1{
+    margin-top: -0.5rem;
+}
+.mt-n2{
+    margin-top: -1rem;
+}
+.mt-n3{
+    margin-top: -1.5rem;
+}
+.mt-n4{
+    margin-top: -2rem;
+}
+
 .section-wrapper{
     border-radius: 0.25rem;    
     background-color: var(--bg-secondary);    
@@ -245,10 +257,10 @@ form{
 }
 
 .section-body{
-    width: 100%;    
+    width: 100%;
     padding-top: 0.5rem;
     background: transparent;
-    margin-top: 1rem;  
+    margin-top: 0.5rem;  
 }
 
 .modal-header{
@@ -268,16 +280,8 @@ form{
     border-radius: 0.25rem;
 }
 
-.modal-dialog{
-    width: 70%;    
-}
-
 .modal-content{
     background-color: var(--bg-secondary);
-}
-
-.small-section{
-    font-size: 1rem !important;
 }
 
 .left{
@@ -406,7 +410,11 @@ tbody{
     font-size: 0.8rem;
 }
 
-@media only screen and (max-width: 600px){
+.list-unstyled li{
+    margin-top: 0.3rem;
+}
+
+@media only screen and (max-width: 576px){
     main{
         margin: 0;
         margin-bottom: 5rem;
@@ -417,9 +425,13 @@ tbody{
         margin-left: -1rem;
         box-shadow: none;
     }
+
+    .modal-dialog{
+        width: 90vw;
+    }
 }
 
-@media only screen and (min-width: 600px){
+@media only screen and (min-width: 576px){
     main{
         margin-left: 5rem;
     }
@@ -427,5 +439,9 @@ tbody{
     .content{
         margin: 1rem 0 0 -1rem;
         padding-top: 2rem;
+    }
+
+    .modal-dialog{
+        max-width: 60vw !important;
     }
 }

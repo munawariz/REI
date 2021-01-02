@@ -1,7 +1,7 @@
 <div class="appbar">
     <ul class="appbar-nav right">
-        <li class="appbar-item">
-            Selamat Datang, <b>Admin</b>
+        <li class="appbar-item" style='margin-top: 1rem;'>
+            Selamat Datang,<br><b>{{user.nama}}</b>
             {% if user.is_superuser or user.is_walikelas and user.is_staftu %}
                 (Admin)
             {% elif user.is_walikelas %}
@@ -15,7 +15,7 @@
                 <ion-icon name="chevron-down"></ion-icon>
             </a> 
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                <li><a class="dropdown-item" href="{% url 'profil' %}">Profil</a></li>
+                <li><a class="dropdown-item" href="{% url 'profil' %}">Profil Anda</a></li>
                 <li><a class="dropdown-item" href="{% url 'detail-sekolah' %}">Informasi Sekolah</a></li>
                 <li><a class="dropdown-item" href="#">Tentang Pengembang</a></li>
                 <li><hr class="dropdown-divider"></li>

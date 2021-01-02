@@ -15,9 +15,10 @@ urlpatterns = [
     path('siswa/', include([
         path('', siswa_view.list_siswa.as_view(), name='list-siswa'),
         path('<nis>/', siswa_view.detail_siswa.as_view(), name='detail-siswa'),
-        path('<nis>/nilai', siswa_view.nilai_siswa.as_view(), name='nilai-siswa'),
-        path('<nis>/absen', siswa_view.absen_siswa.as_view(), name='absen-siswa'),
-        path('<nis>/ekskul', guru_view.placeholder, name='ekskul-siswa'),
+        path('<nis>/nilai/', siswa_view.nilai_siswa.as_view(), name='nilai-siswa'),
+        path('<nis>/absen/', siswa_view.absen_siswa.as_view(), name='absen-siswa'),
+        path('<nis>/ekskul/', guru_view.placeholder, name='ekskul-siswa'),
+        path('<nis>/profil/', siswa_view.profil_siswa.as_view(), name='profil-siswa'),
     ])),
     path('sekolah/', sekolah_view.detail_sekolah.as_view(), name='detail-sekolah'),
     path('semester/', include([

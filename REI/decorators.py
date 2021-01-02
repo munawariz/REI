@@ -30,7 +30,10 @@ def staftu_required(function=None):
             return function(request, *args, **kwargs)
         else:
             messages.error(request, 'Hanya Staf TU atau Admin yang diperbolehkan mengakses halaman tadi')
-            return redirect('dashboard')
+            if request.META.get('HTTP_REFERER'):
+                return redirect(request.META.get('HTTP_REFERER'))
+            else:
+                return redirect('dashboard')
 
     return wrapper
 
@@ -44,6 +47,9 @@ def walikelas_required(function=None):
             return function(request, *args, **kwargs)
         else:
             messages.error(request, 'Hanya Walikelas atau Admin yang diperbolehkan mengakses halaman tadi')
-            return redirect('dashboard')
+            if request.META.get('HTTP_REFERER'):
+                return redirect(request.META.get('HTTP_REFERER'))
+            else:
+                return redirect('dashboard')
 
     return wrapper

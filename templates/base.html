@@ -15,12 +15,14 @@
             {% include 'components/navbar.html' %}
         {% endif %}
         <main>
-            {% include 'components/appbar.html' %}
-            <div class="content">
-                {% include 'components/alert-messages.html' %}
-                {% block content %}
-                {% endblock content %}
-            <div>
+            {% if not request.path == '/login/' %}
+                {% include 'components/appbar.html' %}
+                <div class="content">
+            {% endif %}
+                    {% include 'components/alert-messages.html' %}
+                    {% block content %}
+                    {% endblock content %}
+                </div>
         </main>
 
         {% include 'include/js.html' %}
