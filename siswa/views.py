@@ -49,7 +49,10 @@ class detail_siswa(View):
         context = {
             'siswa': active_siswa,
             'usia': calculate_age(active_siswa.tanggal_lahir),
-            'siswa_form': SiswaForm(initial=get_initial(active_siswa))
+            'siswa_form': SiswaForm(initial=get_initial(active_siswa)),
+            'absensi': Absensi.objects.get(siswa=active_siswa, semester=active_semester()),
+            'data_akademik': zip_pelnilai(active_siswa, active_semester()),
+            'data_ekskul': zip_eksnilai(active_siswa, active_semester()),
         }
         return render(request, 'pages/detail-siswa.html', context)
 
