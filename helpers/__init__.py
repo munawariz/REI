@@ -1,7 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import date
 from django import forms
-
 from django.forms.models import model_to_dict 
   
 def calculate_age(birthDate):
@@ -30,3 +29,49 @@ def form_value(valid_form: forms):
         field_value[key] = value
 
     return field_value
+
+def get_validwalikelas():
+    from guru.models import Guru
+    from sekolah.models import Kelas
+    valid_walikelas = []
+    all_walikelas = Guru.objects.filter(is_walikelas=True, is_superuser=False, is_staftu=False)
+    for walikelas in all_walikelas:
+        if walikelas.kelas:
+            list_kelas = [kelas.semester for kelas in Kelas.objects.filter(walikelas=walikelas)]
+            if not active_semester() in list_kelas:
+                valid_walikelas.append(walikelas)
+        else:
+            valid_walikelas.append(walikelas)
+
+    return valid_walikelas
+
+def get_validsiswabaru():
+    from siswa.models import Siswa
+    from sekolah.models import Kelas
+    valid_siswa = []
+    all_siswa = Siswa.objects.all()
+    for siswa in all_siswa:
+        if siswa.kelas:
+            list_kelas = [kelas.semester for kelas in Kelas.objects.filter(siswa=siswa)]
+            if not active_semester() in list_kelas:
+                valid_siswa.append(siswa)
+        else:
+            valid_siswa.append(siswa)
+
+    return valid_siswa
+
+def get_validpelajaran(kelas):
+    from sekolah.models import MataPelajaran
+    from sekolah.models import Kelas
+    valid_pelajaran = []
+    all_pelajaran = MataPelajaran.objects.all()
+    kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
+    for pelajaran in all_pelajaran:
+        if pelajaran.kelas.all():
+            list_kelas = [kelas for kelas in pelajaran.kelas.all()]
+            if not kelas in list_kelas:
+                valid_pelajaran.append(pelajaran)
+        else:
+            valid_pelajaran.append(pelajaran)
+            
+    return valid_pelajaran

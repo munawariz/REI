@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row mt-5">
+        <div class="col-md-7 section-wrapper">
+            <center>
+                <div class="section-header">
+                    Anggota Kelas {{kelas.nama}}
+                </div>
+            </center>
+            <ul class="section-body list-unstyled three-columns p-0">
+                {% for siswa in list_siswa %}
+                    <li class="mt-3">
+                        <div class="text-primary small">{{siswa.nama}}</div>
+                        <h5 class="small">{{siswa.nis}}/{{siswa.nisn}}</h5>
+                        <a href="{% url 'hapus-anggota' kelas.nama siswa.nis %}" class="btn main-btn" ><ion-icon name="trash"></ion-icon></a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-4 section-wrapper">
+            <center>
+                <div class="section-header">
+                    Tambah Siswa
+                </div>
+            </center>
+            <div class="section-body">
+                <div class="table-responsive">
+                    <table class="table table-hover bg-transparent small">
+                        <thead class="text-secondary">
+                            <tr class='column-name'>
+                                <td>NIS</td>
+                                <td>NISN</td>
+                                <td>Nama</td>
+                                <td>Tambah</td>
+                            </tr>
+                        </thead>
+                        <tbody class="text-primary">
+                            {% for siswa in siswa_baru %}
+                                <tr data-href="{% url 'detail-siswa' siswa.nis %}">
+                                    <td>{{siswa.nis}}</td>
+                                    <td>{{siswa.nisn}}</td>
+                                    <td>{{siswa.nama}}</td>
+                                    <td><a href="{% url 'tambah-anggota' kelas.nama siswa.nis %}" class="btn main-btn small"><ion-icon name="add-outline" size='small'></ion-icon></a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>                                
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% include 'components/kelas-navcard.html' %}
+    </div>
+{% endblock content %}

@@ -233,6 +233,12 @@ form{
 .mt-n4{
     margin-top: -2rem;
 }
+.mt-n5{
+    margin-top: -2.6rem;
+}
+.mt-n6{
+    margin-top: -3.5rem;
+}
 
 .flex-center{
     display: flex;
@@ -419,6 +425,23 @@ tbody{
     margin-top: 0.3rem;
 }
 
+.card-a{
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 500 !important;
+    color: var(--text-secondary);
+}
+
+.card-a:hover{
+    cursor: pointer;
+    color: var(--theme-color);
+}
+
+ul.three-columns{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
 @media only screen and (max-width: 768px){
     main{
         margin: 0;
@@ -437,6 +460,11 @@ tbody{
 
     .flex-center{
         justify-content: unset;
+    }
+
+    ul.three-columns{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 

@@ -1,0 +1,28 @@
+<div class="col-md-4 section-wrapper">
+    <center>
+        <div class="section-header">
+            Profil Kelas
+        </div>
+    </center>
+    <div class="section-body">
+        <div class="info">
+            <h6 class="info-label">Tingkat</h6>
+            <h5 class="info-value">{{kelas.tingkat}}</h5>
+        </div>
+        <div class="info">
+            <h6 class="info-label">Jurusan</h6>
+            <h5 class="info-value">{{kelas.jurusan}}</h5>
+        </div>
+        <div class="info">
+            <h6 class="info-label">Kelas</h6>
+            <h5 class="info-value">{{kelas.kelas}}</h5>
+        </div>
+        <div class="info">
+            <h6 class="info-label">Walikelas</h6>
+            <h5 class="info-value">{{kelas.walikelas.nama}}</h5>
+        </div>
+        <div class="row-cols-auto pt-2">
+            <a href="{% url 'detail-kelas' kelas.nama %}" class="btn main-btn w-100">Kembali ke Detail Kelas</a>
+        </div>
+    </div>
+</div>

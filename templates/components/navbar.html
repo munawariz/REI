@@ -15,7 +15,7 @@
         <li class="nav-item">
             <a href="{% url 'list-siswa' %}" class="nav-link">
                 <ion-icon name="list-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">List Siswa</span>
+                <span class="link-text">Daftar Siswa</span>
             </a>
         </li>
 
@@ -30,9 +30,9 @@
 
         {% if user.is_superuser or user.is_walikelas %}
         <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{% url 'list-kelas' %}" class="nav-link">
                 <ion-icon name="people-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">Status Kelas</span>
+                <span class="link-text">Daftar Kelas</span>
             </a>
         </li>
         {% endif %}

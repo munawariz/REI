@@ -14,10 +14,10 @@
                         <div class="section-header fs-6 p-1">
                             Profil Siswa
                         </div>
-                        <button class="btn btn-md help-icon right mt-n2">
-                            <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah profil siswa"></ion-icon>
-                        </button>
                     </center>
+                    <button class="btn btn-md help-icon right mt-n2">
+                        <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah profil siswa"></ion-icon>
+                    </button>
                     <ul class="section-body list-unstyled">
                         <li>
                             <div class="small text-primary">Nama</div>
@@ -50,29 +50,31 @@
                         <div class="section-header fs-6 p-1">
                             Profil Kelas
                         </div>
-                        <button class="btn btn-md help-icon right mt-n2">
-                            <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah data kelas"></ion-icon>
-                        </button>
                     </center>
+                    <button class="btn btn-md help-icon right mt-n2">
+                        <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah data kelas"></ion-icon>
+                    </button>
                     <ul class="section-body list-unstyled">
                         <li>
                             <div class="small text-primary">Tingkat</div>
-                            {{siswa.kelas.tingkat}}
+                            {{kelas.tingkat}}
                         </li>
                         <li>
                             <div class="small text-primary">Jurusan</div>
-                            {{siswa.kelas.jurusan.nama}}
+                            {{kelas.jurusan.nama}}
                         </li>
                         <li>
                             <div class="small text-primary">Kelas</div>
-                            {{siswa.kelas.kelas}}
+                            {{kelas.kelas}}
                         </li>
                         <li>
                             <div class="small text-primary">Walikelas</div>
-                            {{siswa.kelas.walikelas}}
+                            {{kelas.walikelas}}
                         </li>
                     </ul>
-                    <a href="{% url 'detail-siswa' siswa.nis %}" class="btn main-btn right">Ubah</a>
+                    {% if kelas %}
+                        <a href="{% url 'detail-kelas' siswa.kelas.nama %}" class="btn main-btn right">Ubah</a>
+                    {% endif %}
                 </div>
 
                 <div class="col-4 col-md-3 section-wrapper">

@@ -11,7 +11,7 @@ class Siswa(models.Model):
     nama = models.CharField(max_length=255, verbose_name='Nama Siswa')
     nisn = models.CharField(max_length=10, unique=True)
     nis = models.CharField(max_length=9, unique=True)
-    email = models.EmailField(null=True)
+    email = models.EmailField()
     tempat_lahir = models.CharField(max_length=255)
     tanggal_lahir = models.DateField()
     gender = models.CharField(verbose_name='Jenis Kelamin', max_length=1, choices=GENDER_CHOICE, default=GENDER_CHOICE[0][0])
@@ -23,7 +23,7 @@ class Siswa(models.Model):
     nama_ayah = models.CharField(max_length=255)
     nama_ibu = models.CharField(max_length=255)
     nama_wali = models.CharField(max_length=255, null=True, blank=True)
-    kelas = models.ForeignKey(Kelas, on_delete=models.PROTECT, related_name='siswa')
+    kelas = models.ForeignKey(Kelas, on_delete=models.PROTECT, related_name='siswa', null=True, blank=True)
 
     def __str__(self):
         return f'{self.nisn}/{self.nis}-{self.nama}'
@@ -72,9 +72,9 @@ def nilai_post_save(sender, instance, created, **kwargs):
 class Absensi(models.Model):
     siswa = models.ForeignKey(Siswa, on_delete=models.CASCADE, related_name='absensi')
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, related_name='absensi')
-    izin = models.PositiveSmallIntegerField()
-    sakit = models.PositiveSmallIntegerField()
-    bolos = models.PositiveSmallIntegerField()
+    izin = models.PositiveSmallIntegerField(default=0)
+    sakit = models.PositiveSmallIntegerField(default=0)
+    bolos = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
         return f'{self.siswa}/{self.semester}'

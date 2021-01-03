@@ -3,10 +3,7 @@ from .models import Guru
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 @admin.register(Guru)
-class UserAdmin(BaseUserAdmin):
-        # form = EditUserForm
-        # add_form = RegistrationForm
-    
+class UserAdmin(BaseUserAdmin): 
     list_display = ('nip', 'nama', 'email', 'is_walikelas', 'is_staftu', 'gender')
     list_filter = ('is_walikelas', 'is_staftu', 'gender')
     fieldsets = (

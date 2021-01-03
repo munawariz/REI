@@ -1,6 +1,6 @@
 from REI.decorators import staftu_required, walikelas_required
 from django.http.response import Http404
-from sekolah.models import Ekskul, MataPelajaran
+from sekolah.models import Ekskul, Kelas, MataPelajaran
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.query_utils import Q
 from django.shortcuts import redirect, render
@@ -21,14 +21,13 @@ class list_siswa(View):
         request.session['page'] = 'Daftar Siswa'
         if 'search' in request.GET and request.GET['search'] != '':
             list_siswa = Siswa.objects.filter(
-                Q(kelas__semester=active_semester()) &
                 (Q(nama__icontains=request.GET['search']) | Q(nis__istartswith=request.GET['search']) |
                 Q(nisn__istartswith=request.GET['search']) | Q(email__icontains=request.GET['search']) |
                 Q(tempat_lahir__icontains=request.GET['search']) | Q(tanggal_lahir__icontains=request.GET['search']) |
                 Q(agama__icontains=request.GET['search']))
                 ).order_by('nis')
         else:
-            list_siswa = Siswa.objects.filter(kelas__semester=active_semester()).order_by('nis')
+            list_siswa = Siswa.objects.all().order_by('nis')
 
         paginator = Paginator(list_siswa, 10)
         page_number = request.GET.get('page')
@@ -45,14 +44,26 @@ class list_siswa(View):
 class detail_siswa(View):
     def get(self, request, nis):
         request.session['page'] = 'Detail Siswa'
-        active_siswa = Siswa.objects.get(nis=nis)
+        try:
+            active_siswa = Siswa.objects.get(nis=nis)
+        except ObjectDoesNotExist:
+            raise Http404
+        
+        if active_siswa.kelas.semester == active_semester():
+            kelas = Kelas.objects.get(nama=active_siswa.kelas.nama)
+        else:
+            kelas = None
+
+        absen, created = Absensi.objects.get_or_create(siswa=active_siswa, semester=active_semester())
+        
         context = {
             'siswa': active_siswa,
             'usia': calculate_age(active_siswa.tanggal_lahir),
             'siswa_form': SiswaForm(initial=get_initial(active_siswa)),
-            'absensi': Absensi.objects.get(siswa=active_siswa, semester=active_semester()),
+            'absensi': absen,
             'data_akademik': zip_pelnilai(active_siswa, active_semester()),
             'data_ekskul': zip_eksnilai(active_siswa, active_semester()),
+            'kelas': kelas,
         }
         return render(request, 'pages/siswa/detail-siswa.html', context)
 
@@ -149,7 +160,6 @@ class ekskul_siswa(View):
                 NilaiEkskul.objects.filter(siswa=active_siswa, ekskul=ekskul, semester=active_semester()).update(nilai=nilai_form)
                 messages.success(request, f'Nilai {active_siswa.nama} untuk ekskul {ekskul.nama} berhasil diubah')
         return redirect('ekskul-siswa', nis=nis)
-
 
 @method_decorator(walikelas_required, name='dispatch')
 class tambah_ekskul(View):

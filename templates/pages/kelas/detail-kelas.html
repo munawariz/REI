@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row mt-3">
+        <div class="section-wrapper col-md">
+            <center>
+                <div class="section-header">
+                    Detail {{kelas.nama}}
+                </div>
+            </center>
+            <div class="row mt-5 flex-center">
+                <div class="section-wrapper col-md-3 col-11">
+                    <center>
+                        <div class="section-header fs-6 p-1">
+                            Profil Kelas
+                        </div>
+                    </center>
+                    <ul class="list-unstyled section-body">
+                        <li>
+                            <div class="small text-primary">Tingkat</div>
+                            {{kelas.tingkat}}
+                        </li>
+                        <li>
+                            <div class="small text-primary">jurusan</div>
+                            {{kelas.jurusan}}
+                        </li>
+                        <li>
+                            <div class="small text-primary">Kelas</div>
+                            {{kelas.kelas}}
+                        </li>
+                        <li>
+                            <div class="small text-primary">Semester</div>
+                            {{kelas.semester}}
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-wrapper col-md-3 col-11">
+                    <center>
+                        <div class="section-header fs-6 p-1">
+                            Walikelas
+                        </div>
+                    </center>
+                    <button class="btn btn-md help-icon right mt-n2">
+                        <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah data walikelas"></ion-icon>
+                    </button>
+                    <div class="section-body">
+                        <center class="mb-3">{{kelas.walikelas}}</center>
+                        <a href="{% url 'walikelas-kelas' kelas.nama %}" class="btn main-btn right">Ubah</a>
+                        <a href="#" class="btn main-btn">Detail Walikelas</a>    
+                    </div>
+                </div>
+
+                <div class="section-wrapper col-md-3 col-11">
+                    <center>
+                        <div class="section-header fs-6 p-1">
+                            Daftar Matapelajaran
+                        </div>
+                    </center>
+                    <button class="btn btn-md help-icon right mt-n2">
+                        <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah data matapelajaran"></ion-icon>
+                    </button>
+                    <ul class="section-body list-unstyled">
+                        {% for matapelajaran in list_matapelajaran %}
+                            <li>
+                                <div class="text-primary small">{{matapelajaran.nama}}</div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'pelajaran-kelas' kelas.nama %}" class="btn main-btn right">Ubah</a>
+                </div>
+
+                <div class="section-wrapper col-md-7 col-11">
+                    <center>
+                        <div class="section-header fs-6 p-1">
+                            Daftar Siswa
+                        </div>
+                    </center>
+                    <button class="btn btn-md help-icon right mt-n2">
+                        <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah data siswa"></ion-icon>
+                    </button>
+                    <ul class="section-body list-unstyled three-columns">
+                        {% for siswa in list_siswa %}
+                            <li>
+                                <div class="text-primary small">{{siswa.nama}}</div>
+                                <h5 class="small">{{siswa.nis}}/{{siswa.nisn}}</h5>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'anggota-kelas' kelas.nama %}" class="btn main-btn right">Ubah</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

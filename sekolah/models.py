@@ -130,7 +130,7 @@ class Kelas(models.Model):
     nama = models.CharField(max_length=255, editable=False, null=True, blank=True)
 
     def __str__(self):
-        return self.nama
+        return f'{self.tingkat}-{self.jurusan}-{self.kelas}'
 
     def save(self, *args, **kwargs):
         if not self.jurusan:
@@ -138,11 +138,6 @@ class Kelas(models.Model):
             self.jurusan = None
         else:
             self.nama = f'{self.tingkat}-{self.jurusan}-{self.kelas}'
-        super(Kelas, self).save(*args, **kwargs)
-
-    def clean(self, *args, **kwargs):
-        if not self.jurusan:
-            self.jurusan = None
         super(Kelas, self).save(*args, **kwargs)
 
 @receiver(models.signals.pre_save, sender=Kelas)
