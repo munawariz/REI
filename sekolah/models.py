@@ -127,22 +127,23 @@ class Kelas(models.Model):
     matapelajaran = models.ManyToManyField(MataPelajaran, related_name='kelas', blank=True)
     walikelas = models.ForeignKey(Guru, on_delete=models.SET_NULL, related_name='kelas', null=True, blank=True)
     semester = models.ForeignKey(Semester, on_delete=models.PROTECT, related_name='kelas', null=True)
+    nama = models.CharField(max_length=255, editable=False, null=True, blank=True)
 
     def __str__(self):
-        if self.jurusan:
-            return f'{self.tingkat}-{self.jurusan}-{self.kelas}-{self.semester}'
-        else:
-            return f'{self.tingkat}-{self.kelas}-{self.semester}'
+        return self.nama
 
     def save(self, *args, **kwargs):
-         if not self.jurusan:
-              self.jurusan = None
-         super(Kelas, self).save(*args, **kwargs)
+        if not self.jurusan:
+            self.nama = f'{self.tingkat}-{self.kelas}'
+            self.jurusan = None
+        else:
+            self.nama = f'{self.tingkat}-{self.jurusan}-{self.kelas}'
+        super(Kelas, self).save(*args, **kwargs)
 
     def clean(self, *args, **kwargs):
-         if not self.jurusan:
-              self.jurusan = None
-         super(Kelas, self).save(*args, **kwargs)
+        if not self.jurusan:
+            self.jurusan = None
+        super(Kelas, self).save(*args, **kwargs)
 
 @receiver(models.signals.pre_save, sender=Kelas)
 def unique_together_all(sender, instance, **kwargs):
