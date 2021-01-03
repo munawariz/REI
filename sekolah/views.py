@@ -55,7 +55,7 @@ class list_semester(View):
             'create_form': SemesterForm(),
             'number_of_pages': number_of_pages,
         }
-        return render(request, 'pages/semester.html', context)
+        return render(request, 'pages/semester/semester.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
 class buat_semester(View):

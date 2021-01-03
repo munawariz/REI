@@ -39,7 +39,7 @@ class list_siswa(View):
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
         }
-        return render(request,  'pages/siswa.html', context)
+        return render(request,  'pages/siswa/siswa.html', context)
 
 @method_decorator(login_required, name='dispatch')
 class detail_siswa(View):
@@ -54,12 +54,12 @@ class detail_siswa(View):
             'data_akademik': zip_pelnilai(active_siswa, active_semester()),
             'data_ekskul': zip_eksnilai(active_siswa, active_semester()),
         }
-        return render(request, 'pages/detail-siswa.html', context)
+        return render(request, 'pages/siswa/detail-siswa.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
 class profil_siswa(UpdateView):
     model = Siswa
-    template_name = 'pages/profil-siswa.html'
+    template_name = 'pages/siswa/profil-siswa.html'
     form_class = SiswaForm
     slug_field = 'nis'
     slug_url_kwarg = 'nis'    
@@ -85,7 +85,7 @@ class nilai_siswa(View):
             'usia': calculate_age(active_siswa.tanggal_lahir),
             'data': zip_pelnilai(active_siswa, active_semester()),
         }
-        return render(request, 'pages/nilai-siswa.html', context)
+        return render(request, 'pages/siswa/nilai-siswa.html', context)
 
     def post(self, request, nis):
         try:                
@@ -117,7 +117,7 @@ class absen_siswa(View):
             'siswa': active_siswa,
             'absen_form': absen_form,
         }
-        return render(request, 'pages/absen-siswa.html', context)
+        return render(request, 'pages/siswa/absen-siswa.html', context)
 
     def post(self, request, nis):
         active_siswa = Siswa.objects.get(nis=nis)
@@ -137,7 +137,7 @@ class ekskul_siswa(View):
             'data': zip_eksnilai(active_siswa, active_semester()),
             'tambah_absen_form': NilaiEkskulForm()
         }
-        return render(request, 'pages/ekskul-siswa.html', context)
+        return render(request, 'pages/siswa/ekskul-siswa.html', context)
 
     def post(self, request, nis):
         active_siswa = Siswa.objects.get(nis=nis)
