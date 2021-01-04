@@ -130,7 +130,7 @@ class Kelas(models.Model):
     nama = models.CharField(max_length=255, editable=False, null=True, blank=True)
 
     def __str__(self):
-        return f'{self.tingkat}-{self.jurusan}-{self.kelas}'
+        return f'{self.tingkat}-{self.jurusan}-{self.kelas} {self.semester}'
 
     def save(self, *args, **kwargs):
         if not self.jurusan:

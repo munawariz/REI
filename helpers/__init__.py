@@ -1,7 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import date
 from django import forms
-from django.forms.models import model_to_dict 
+from django.forms.models import model_to_dict
+from django.contrib import messages 
   
 def calculate_age(birthDate):
     days_in_year = 365    
@@ -75,3 +76,31 @@ def get_validpelajaran(kelas):
             valid_pelajaran.append(pelajaran)
             
     return valid_pelajaran
+
+def realkelas(siswa):
+    from sekolah.models import Kelas
+    from siswa.models import Siswa
+    siswa = Siswa.objects.get(nis=siswa.nis)
+    try:
+        if siswa.kelas:
+            kelas = Kelas.objects.get(nama=siswa.kelas.nama, semester=active_semester())
+            anggota_kelas = [siswa for siswa in Siswa.objects.filter(kelas=kelas)]
+            if siswa in anggota_kelas:
+                return kelas
+            else:
+                raise ObjectDoesNotExist
+        else:
+            raise ObjectDoesNotExist
+    except ObjectDoesNotExist:
+        return None
+
+def get_validkelas(siswa):
+    from sekolah.models import Kelas
+    try: 
+        kelas = Kelas.objects.get(nama=siswa.kelas.nama, semester=active_semester())
+        if kelas == realkelas(siswa):
+            return kelas
+        else:
+            raise ObjectDoesNotExist
+    except ObjectDoesNotExist:
+        return None

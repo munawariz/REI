@@ -1,3 +1,7 @@
+from helpers import get_validkelas
+from sekolah.models import Kelas
+from siswa.models import Siswa
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query_utils import Q
 from django.shortcuts import redirect
 from guru.models import Guru
@@ -50,5 +54,16 @@ def walikelas_required(function=None):
                 return redirect(request.META.get('HTTP_REFERER'))
             else:
                 return redirect('dashboard')
+
+    return wrapper
+
+def validkelas_required(function=None):
+    @wraps(function)
+    def wrapper(request, *args, **kwargs):
+        siswa = Siswa.objects.get(nis=kwargs['nis'])
+        if get_validkelas(siswa):
+            return function(request, *args, **kwargs)
+        else:
+            return redirect('detail-siswa', nis=siswa.nis)
 
     return wrapper

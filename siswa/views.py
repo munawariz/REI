@@ -1,4 +1,4 @@
-from REI.decorators import staftu_required, walikelas_required
+from REI.decorators import staftu_required, walikelas_required, validkelas_required
 from django.http.response import Http404
 from sekolah.models import Ekskul, Kelas, MataPelajaran
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from helpers.nilai_helpers import zip_eksnilai, zip_pelnilai
-from helpers import calculate_age, active_semester, get_initial, form_value
+from helpers import calculate_age, active_semester, get_initial, form_value, get_validkelas
 from django.contrib import messages
 
 @method_decorator(login_required, name='dispatch')
@@ -45,25 +45,22 @@ class detail_siswa(View):
     def get(self, request, nis):
         request.session['page'] = 'Detail Siswa'
         try:
-            active_siswa = Siswa.objects.get(nis=nis)
+            siswa = Siswa.objects.get(nis=nis)
         except ObjectDoesNotExist:
             raise Http404
-        
-        if active_siswa.kelas.semester == active_semester():
-            kelas = Kelas.objects.get(nama=active_siswa.kelas.nama)
-        else:
-            kelas = None
+        if not get_validkelas(siswa):
+            messages.error(request, f'{siswa.nama} belum memiliki kelas di semester ini')
 
-        absen, created = Absensi.objects.get_or_create(siswa=active_siswa, semester=active_semester())
+        absen, created = Absensi.objects.get_or_create(siswa=siswa, semester=active_semester())
         
         context = {
-            'siswa': active_siswa,
-            'usia': calculate_age(active_siswa.tanggal_lahir),
-            'siswa_form': SiswaForm(initial=get_initial(active_siswa)),
+            'siswa': siswa,
+            'usia': calculate_age(siswa.tanggal_lahir),
+            'siswa_form': SiswaForm(initial=get_initial(siswa)),
             'absensi': absen,
-            'data_akademik': zip_pelnilai(active_siswa, active_semester()),
-            'data_ekskul': zip_eksnilai(active_siswa, active_semester()),
-            'kelas': kelas,
+            'data_akademik': zip_pelnilai(siswa, active_semester()),
+            'data_ekskul': zip_eksnilai(siswa, active_semester()),
+            'kelas': get_validkelas(siswa),
         }
         return render(request, 'pages/siswa/detail-siswa.html', context)
 
@@ -87,6 +84,7 @@ class profil_siswa(UpdateView):
         return reverse('detail-siswa', kwargs={'nis':siswa.nis})
 
 @method_decorator(walikelas_required, name='dispatch')
+@method_decorator(validkelas_required, name='dispatch')
 class nilai_siswa(View):
     def get(self, request, nis):
         request.session['page'] = 'Nilai Siswa'
@@ -116,6 +114,7 @@ class nilai_siswa(View):
             raise Http404
 
 @method_decorator(walikelas_required, name='dispatch')
+@method_decorator(validkelas_required, name='dispatch')
 class absen_siswa(View):
     def get(self, request, nis):
         request.session['page'] = 'Absensi Siswa'
@@ -139,6 +138,7 @@ class absen_siswa(View):
             return redirect('absen-siswa', nis=nis)
 
 @method_decorator(walikelas_required, name='dispatch')
+@method_decorator(validkelas_required, name='dispatch')
 class ekskul_siswa(View):
     def get(self, request, nis):
         request.session['page'] = 'Ekskul Siswa'
@@ -162,6 +162,7 @@ class ekskul_siswa(View):
         return redirect('ekskul-siswa', nis=nis)
 
 @method_decorator(walikelas_required, name='dispatch')
+@method_decorator(validkelas_required, name='dispatch')
 class tambah_ekskul(View):
     def post(self, request, nis):
         absen_form = NilaiEkskulForm(request.POST)
@@ -176,6 +177,7 @@ class tambah_ekskul(View):
             return redirect('ekskul-siswa', nis=nis)
     
 @method_decorator(walikelas_required, name='dispatch')
+@method_decorator(validkelas_required, name='dispatch')
 class hapus_ekskul_siswa(View):
     def get(self, request, nis, ekskul):
         active_siswa = Siswa.objects.get(nis=nis)

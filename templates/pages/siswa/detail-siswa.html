@@ -44,7 +44,8 @@
                     <a href="{% url 'profil-siswa' siswa.nis %}" class="btn main-btn right">Ubah</a>
                     {% include 'components/modal-form.html' with target='profilSiswa' title='Profil Lengkap Siswa' modal_form=siswa_form %}
                 </div>
-
+                
+                {% if kelas %}
                 <div class="col-6 col-md-3 section-wrapper">
                     <center>
                         <div class="section-header fs-6 p-1">
@@ -72,9 +73,7 @@
                             {{kelas.walikelas}}
                         </li>
                     </ul>
-                    {% if kelas %}
-                        <a href="{% url 'detail-kelas' siswa.kelas.nama %}" class="btn main-btn right">Ubah</a>
-                    {% endif %}
+                    <a href="{% url 'detail-kelas' kelas.nama %}" class="btn main-btn right">Ubah</a>
                 </div>
 
                 <div class="col-4 col-md-3 section-wrapper">
@@ -102,9 +101,7 @@
                     </ul>
                     <a href="{% url 'absen-siswa' siswa.nis %}" class="btn main-btn right">Ubah</a>
                 </div>
-            </div>
 
-            <div class="row flex-center">
                 <div class="col-11 col-md-7 section-wrapper">
                     <center>
                         <div class="section-header fs-6 p-1">
@@ -153,6 +150,7 @@
                     </ul>
                     <a href="{% url 'ekskul-siswa' siswa.nis %}" class="btn main-btn right">Ubah</a>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
