@@ -2,47 +2,26 @@
 
 <form method="post" action='{{action}}'>
     {% csrf_token %}
-    {% if disabled %}
-        <fieldset disabled>
-    {% endif %}
-    
-    {% for field in form %}
-        {% if not forloop.counter|divisibleby:'2' %}
-        <div class="row">
-            <div class="col-md">
-                <div class="field mb-4">
-                    {% render_field field|add_class:"input" placeholder=" "%}
-                    <label class="label">{{field.label}}</label>
-                </div>
-            </div>
-            {% if forloop.last %}
-                <div class="col-md">
-                </div>
-            </div>
-            {% endif %}
-        {% else %}
-            <div class="col-md">
-                <div class="field mb-4">
-                    {% render_field field|add_class:"input" placeholder=" "%}
-                    <label class="label">{{field.label}}</label>
-                </div>
-            </div>
-        </div>
-        {% endif %}
+    {% if disabled %}<fieldset disabled>{% endif %}
+
+        <ul class="list-unstyled {{col|default:'two'}}-columns">
+            {% for field in form %}
+                <li class="ms-1 me-1">
+                    <div class="field mb-4">
+                        {% render_field field|add_class:"input" placeholder=" "%}
+                        <label class="label">{{field.label}}</label>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
 
         {% if form.non_field_errors %}
             <small>{{form.non_field_errors.as_text}}</small>  
         {% endif %}
-        
-        {% if forloop.last %}
-            <div class="row float-end mt-4">
-                <input class="btn main-btn" type="submit" value="{{submit_button}}">
-            </div>
-        {% endif %}
-    {% endfor %}
 
-    {% if disabled %}
-        </fieldset>
-    {% endif %}    
-    
+        <div class="row float-end mt-4">
+            <input class="btn main-btn" type="submit" value="{{submit_button}}">
+        </div>
+
+    {% if disabled %}</fieldset>{% endif %}
 </form>

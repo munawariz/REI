@@ -442,6 +442,16 @@ ul.three-columns{
     grid-template-columns: repeat(3, 1fr);
 }
 
+ul.two-columns{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+ul.one-columns{
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+}
+
 @media only screen and (max-width: 768px){
     main{
         margin: 0;
@@ -465,6 +475,11 @@ ul.three-columns{
     ul.three-columns{
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    ul.two-columns{
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
     }
 }
 
