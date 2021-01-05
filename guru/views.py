@@ -43,19 +43,16 @@ class profil(View):
         return render(request, 'pages/profil.html', context)
 
     def post(self, request):
-        active_guru = Guru.objects.get(pk=request.user.pk)
-        profile_form = GuruEditForm(request.POST, initial=get_initial(active_guru))
-        password_form = PasswordChangeForm(request.POST)
-        context = {
-            'profile_form': profile_form,
-            'password_form': password_form,
-        }
-        
+        profile_form = GuruEditForm(request.POST)
         if profile_form.is_valid():
             Guru.objects.filter(pk=request.user.pk).update(**form_value(profile_form))
             messages.success(request, 'Update profil berhasil!')
             return redirect('profil')
 
+@method_decorator(login_required, name='dispatch')
+class ganti_password(View):
+    def post(self, request):
+        password_form = PasswordChangeForm(request.POST)
         if password_form.is_valid():
             newpassword=password_form.cleaned_data['new_password1']
             password=password_form.cleaned_data['old_password']
@@ -63,9 +60,10 @@ class profil(View):
             if user is not None:
                 user.set_password(newpassword)
                 user.save()
+                messages.success(request, 'Password anda berhasil diganti')
             else:
                 messages.error(request, 'Password lama anda salah, silahkan coba lagi')
-                return redirect('profil')
         else:
             if ValidationError: messages.error(request, 'Konfirmasi password baru anda salah')
-            return redirect('profil')
+        
+        return redirect('profil')

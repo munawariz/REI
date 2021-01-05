@@ -12,6 +12,7 @@ urlpatterns = [
     # URL for both Walikelas and Staf TU
     path('dashboard/', guru_view.dashboard.as_view(), name='dashboard'),
     path('profil/', guru_view.profil.as_view(), name='profil'),
+    path('profil/password/ganti/', guru_view.ganti_password.as_view(), name='ganti-password'),
     path('siswa/', include([
         path('', siswa_view.list_siswa.as_view(), name='list-siswa'),
         path('<nis>/', siswa_view.detail_siswa.as_view(), name='detail-siswa'),
@@ -42,6 +43,9 @@ urlpatterns = [
         path('<kelas>/pelajaran/tambah/<pelajaran>/', sekolah_view.tambah_pelajaran.as_view(), name='tambah-pelajaran'),
         path('<kelas>/pelajaran/hapus/<pelajaran>/', sekolah_view.hapus_pelajaran.as_view(), name='hapus-pelajaran'),
         path('<kelas>/hapus/', sekolah_view.hapus_kelas.as_view(), name='hapus-kelas'),
+    ])),
+    path('guru/', include([
+        path('<nip>/', guru_view.placeholder),
     ])),
     path('export-rapor/', guru_view.placeholder, name='export-rapor'),
     
