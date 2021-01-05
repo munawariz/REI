@@ -47,7 +47,7 @@
                     <div class="section-body">
                         <center class="mb-3">{{kelas.walikelas}}</center>
                         <a href="{% url 'walikelas-kelas' kelas.nama %}" class="btn main-btn right">Ubah</a>
-                        <a href="#" class="btn main-btn">Detail Walikelas</a>    
+                        <a href="{% url 'profil-guru-lain' kelas.walikelas.nip %}" class="btn main-btn">Detail Walikelas</a>    
                     </div>
                 </div>
 

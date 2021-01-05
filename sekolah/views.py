@@ -179,7 +179,7 @@ class ganti_walikelas(View):
             kelas.walikelas = new_walikelas
             kelas.save()
             messages.success(request, f'Walikelas untuk {kelas.nama} berhasil diubah')
-        return redirect('walikelas-kelas', kelas=kelas)
+        return redirect('walikelas-kelas', kelas=kelas.nama)
 
 @method_decorator(staftu_required, name='dispatch')
 class anggota_kelas(View):

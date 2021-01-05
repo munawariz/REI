@@ -5,14 +5,19 @@ from django.conf.urls.static import static
 from guru import views as guru_view
 from siswa import views as siswa_view
 from sekolah import views as sekolah_view
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+    path('login/', auth_views.LoginView.as_view(template_name='pages/guru/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(template_name='pages/guru/login.html'), name='logout'),
     path('admin/', admin.site.urls),
     path('', guru_view.index),
     # URL for both Walikelas and Staf TU
     path('dashboard/', guru_view.dashboard.as_view(), name='dashboard'),
-    path('profil/', guru_view.profil.as_view(), name='profil'),
-    path('profil/password/ganti/', guru_view.ganti_password.as_view(), name='ganti-password'),
+    path('profil/', include([
+        path('', guru_view.profil.as_view(), name='profil'),
+        path('profil/password/ganti/', guru_view.ganti_password.as_view(), name='ganti-password'),
+    ])),
     path('siswa/', include([
         path('', siswa_view.list_siswa.as_view(), name='list-siswa'),
         path('<nis>/', siswa_view.detail_siswa.as_view(), name='detail-siswa'),
@@ -44,9 +49,6 @@ urlpatterns = [
         path('<kelas>/pelajaran/hapus/<pelajaran>/', sekolah_view.hapus_pelajaran.as_view(), name='hapus-pelajaran'),
         path('<kelas>/hapus/', sekolah_view.hapus_kelas.as_view(), name='hapus-kelas'),
     ])),
-    path('guru/', include([
-        path('<nip>/', guru_view.placeholder),
-    ])),
     path('export-rapor/', guru_view.placeholder, name='export-rapor'),
     
     #URL for Staf TU
@@ -74,5 +76,4 @@ urlpatterns = [
     path('set-walikelas/', guru_view.placeholder, name='set-walikelas'),
     path('insert-informasi-sekolah/', guru_view.placeholder, name='insert-informasi-sekolah'),
     path('dump-excel', guru_view.placeholder, name='dump-excel'),
-    path('', include('django.contrib.auth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

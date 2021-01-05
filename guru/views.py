@@ -6,7 +6,7 @@ from django.views.generic import View
 from helpers import active_semester, get_initial, form_value
 from .models import Guru
 from siswa.models import Siswa
-from sekolah.models import Sekolah
+from sekolah.models import Kelas, Sekolah
 from .forms import GuruEditForm, PasswordChangeForm
 from django.contrib.auth import authenticate
 from django.utils.decorators import method_decorator
@@ -35,12 +35,13 @@ class dashboard(View):
 class profil(View):
     def get(self, request):
         request.session['page'] = 'Profil Anda'
-        active_guru = Guru.objects.get(pk=request.user.pk)
+        guru = Guru.objects.get(pk=request.user.pk)
         context = {
-            'profile_form': GuruEditForm(initial=get_initial(active_guru)),
-            'password_form': PasswordChangeForm()
+            'profile_form': GuruEditForm(initial=get_initial(guru)),
+            'password_form': PasswordChangeForm(),
+            'guru': guru,
         }
-        return render(request, 'pages/profil.html', context)
+        return render(request, 'pages/guru/profil.html', context)
 
     def post(self, request):
         profile_form = GuruEditForm(request.POST)
@@ -67,3 +68,21 @@ class ganti_password(View):
             if ValidationError: messages.error(request, 'Konfirmasi password baru anda salah')
         
         return redirect('profil')
+
+@method_decorator(login_required, name='dispatch')
+class profil_lain(View):
+    def get(self, request, guru):
+        guru = Guru.objects.get(nip=guru)
+        request.session['page'] = f'Profil {guru.nama}'
+        try:
+            kelas = Kelas.objects.get(walikelas=guru, semester=active_semester())
+        except ObjectDoesNotExist:
+            kelas = None
+        if guru == request.user: return redirect('profil')
+        
+        context = {
+            'profile_form': GuruEditForm(initial=get_initial(guru)),
+            'guru': guru,
+            'kelas': kelas,
+        }
+        return render(request, 'pages/guru/profil.html', context)
