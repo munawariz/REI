@@ -11,10 +11,14 @@ from .models import Kelas, MataPelajaran, Sekolah, Semester
 from .forms import KelasForm, SekolahForm, SemesterForm
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
-from REI.decorators import staftu_required
+from REI.decorators import staftu_required, validdirs_required
 from helpers import active_semester, get_initial, form_value, get_validwalikelas, get_validsiswabaru, get_validpelajaran
 from helpers.nilai_helpers import zip_pelkkm
 from django.contrib import messages
+
+from weasyprint import HTML
+from django.template.loader import render_to_string
+from django.http import HttpResponse, FileResponse
 
 @method_decorator(login_required, name='dispatch')
 class detail_sekolah(View):
@@ -242,3 +246,33 @@ class hapus_pelajaran(View):
         kelas.matapelajaran.remove(matapelajaran)
         messages.success(request, f'{matapelajaran.nama} berhasil dihapus dari kelas {kelas.nama}')
         return redirect('pelajaran-kelas', kelas=kelas.nama)
+
+def export_pdf(siswa, pdf_dir, context):
+    html_string = render_to_string('pages/rapor.html', context)
+    html = HTML(string=html_string)
+    html.write_pdf(target=f'{pdf_dir}/{siswa.nama}.pdf')
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(validdirs_required, name='dispatch')
+class rapor_view(View):
+    def get(self, request, nis, **kwargs):
+        try:
+            siswa = Siswa.objects.get(nis=nis)
+        except ObjectDoesNotExist:
+            raise Http404
+        context = {
+            'siswa': siswa,
+        }
+        export_pdf(siswa, kwargs['pdf_dir'], context)
+        with open(f'{kwargs["pdf_dir"]}/{siswa.nama}.pdf', 'rb') as result:            
+            response = HttpResponse(result, content_type='application/pdf;')
+            if request.GET['action'] == 'unduh':
+                response['Content-Disposition'] = f'attachment; filename={siswa.nama}.pdf'
+                response['Content-Transfer-Encoding'] = 'binary'
+            elif request.GET['action'] == 'pratinjau':
+                response['Content-Disposition'] = f'inline; filename={siswa.nama}.pdf'
+                response['Content-Transfer-Encoding'] = 'binary'
+            else:
+                return redirect('dashboard')
+
+            return response

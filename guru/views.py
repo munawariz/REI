@@ -15,7 +15,7 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.contrib import messages
 
-def placeholder(request):
+def placeholder(request, *args, **kwargs):
     return render(request, 'base.html')
 
 def index(request):
