@@ -1,3 +1,4 @@
+from sekolah.models import KKM
 from siswa.models import MataPelajaran, Nilai, NilaiEkskul
 
 def pengetahuan(matapelajaran, siswa, semester):
@@ -35,3 +36,9 @@ def zip_eksnilai(siswa, semester):
     list_nilai = [obj.nilai for obj in nilai_ekskul]
 
     return zip(list_id_nilai, list_id_ekskul, list_ekskul, list_nilai)
+
+def zip_pelkkm(queryset_matapelajaran, semester):
+    list_matapelajaran = [MataPelajaran.objects.get(pk=matapelajaran.pk) for matapelajaran in queryset_matapelajaran]
+    list_kkm = [KKM.objects.get_or_create(matapelajaran=matapelajaran, semester=semester)[0] for matapelajaran in queryset_matapelajaran]
+
+    return zip(list_matapelajaran, list_kkm)

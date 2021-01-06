@@ -86,8 +86,8 @@ class MataPelajaran(models.Model):
 class KKM(models.Model):
     matapelajaran = models.ForeignKey(MataPelajaran, on_delete=models.CASCADE, related_name='kkm')
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, related_name='kkm')
-    pengetahuan = models.SmallIntegerField(verbose_name='KKM Pengetahuan')
-    keterampilan = models.SmallIntegerField(verbose_name='KKM Keterampilan')
+    pengetahuan = models.SmallIntegerField(verbose_name='KKM Pengetahuan', default=0)
+    keterampilan = models.SmallIntegerField(verbose_name='KKM Keterampilan', default=0)
 
     def __str__(self):
         return f'{self.matapelajaran}({self.semester})'

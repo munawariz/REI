@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.query_utils import Q
-from django.http import request
+from django.http.response import Http404
 from django.shortcuts import redirect, render
 from django.views.generic import View
 from helpers import active_semester, get_initial, form_value
@@ -72,12 +72,14 @@ class ganti_password(View):
 @method_decorator(login_required, name='dispatch')
 class profil_lain(View):
     def get(self, request, guru):
-        guru = Guru.objects.get(nip=guru)
-        request.session['page'] = f'Profil {guru.nama}'
         try:
+            guru = Guru.objects.get(nip=guru)
             kelas = Kelas.objects.get(walikelas=guru, semester=active_semester())
-        except ObjectDoesNotExist:
-            kelas = None
+        except Guru.DoesNotExist:
+            raise Http404
+        except Kelas.DoesNotExist:
+            kelas=None
+        request.session['page'] = f'Profil {guru.nama}'
         if guru == request.user: return redirect('profil')
         
         context = {

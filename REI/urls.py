@@ -16,7 +16,8 @@ urlpatterns = [
     path('dashboard/', guru_view.dashboard.as_view(), name='dashboard'),
     path('profil/', include([
         path('', guru_view.profil.as_view(), name='profil'),
-        path('profil/password/ganti/', guru_view.ganti_password.as_view(), name='ganti-password'),
+        path('<guru>/', guru_view.profil_lain.as_view(), name='profil-guru-lain'),
+        path('password/ganti/', guru_view.ganti_password.as_view(), name='ganti-password'),
     ])),
     path('siswa/', include([
         path('', siswa_view.list_siswa.as_view(), name='list-siswa'),

@@ -13,6 +13,7 @@ from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required
 from helpers import active_semester, get_initial, form_value, get_validwalikelas, get_validsiswabaru, get_validpelajaran
+from helpers.nilai_helpers import zip_pelkkm
 from django.contrib import messages
 
 @method_decorator(login_required, name='dispatch')
@@ -201,7 +202,7 @@ class tambah_anggota(View):
         siswa.kelas = kelas
         siswa.save()
         messages.success(request, f'{siswa.nama} berhasil menjadi anggota kelas {kelas.nama}')
-        return redirect('anggota-kelas', kelas=kelas)
+        return redirect('anggota-kelas', kelas=kelas.nama)
 
 @method_decorator(staftu_required, name='dispatch')
 class hapus_anggota(View):
@@ -219,8 +220,8 @@ class pelajaran_kelas(View):
         kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
         context = {
             'kelas': kelas,
-            'list_matapelajaran': MataPelajaran.objects.filter(kelas=kelas),
-            'matapelajaran_baru': get_validpelajaran(kelas.nama)
+            'list_matapelajaran': zip_pelkkm(MataPelajaran.objects.filter(kelas=kelas), active_semester()),
+            'matapelajaran_baru': zip_pelkkm(get_validpelajaran(kelas.nama), active_semester()),
         }
         return render(request, 'pages/kelas/pelajaran-kelas.html', context)
 
@@ -231,7 +232,7 @@ class tambah_pelajaran(View):
         kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
         kelas.matapelajaran.add(matapelajaran)
         messages.success(request, f'{matapelajaran.nama} berhasil ditambahkan ke kelas {kelas.nama}')
-        return redirect('pelajaran-kelas', kelas=kelas)
+        return redirect('pelajaran-kelas', kelas=kelas.nama)
 
 @method_decorator(staftu_required, name='dispatch')
 class hapus_pelajaran(View):
@@ -240,4 +241,4 @@ class hapus_pelajaran(View):
         kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
         kelas.matapelajaran.remove(matapelajaran)
         messages.success(request, f'{matapelajaran.nama} berhasil dihapus dari kelas {kelas.nama}')
-        return redirect('pelajaran-kelas', kelas=kelas)
+        return redirect('pelajaran-kelas', kelas=kelas.nama)
