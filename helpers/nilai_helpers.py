@@ -17,8 +17,12 @@ def keterampilan(matapelajaran, siswa, semester):
     else:
         return 0
 
+def get_kkm(matapelajaran, semester):
+    kkm, created = KKM.objects.get_or_create(matapelajaran=matapelajaran, semester=semester)
+    return kkm
+
 def zip_pelnilai(siswa, semester):        
-    matapelajaran = MataPelajaran.objects.filter(kelas=siswa.kelas)
+    matapelajaran = MataPelajaran.objects.filter(kelas=siswa.kelas).order_by('kelompok', 'nama')
         
     list_id = [matapelajaran.pk for matapelajaran in matapelajaran]
     list_pelajaran = [matapelajaran.nama for matapelajaran in matapelajaran]
@@ -26,6 +30,32 @@ def zip_pelnilai(siswa, semester):
     list_keterampilan = [keterampilan(matapelajaran, siswa, semester) for matapelajaran in matapelajaran]
 
     return zip(list_id, list_pelajaran, list_pengetahuan, list_keterampilan)
+
+def zip_nilrapor(siswa, semester):
+    matapelajaran = MataPelajaran.objects.filter(kelas=siswa.kelas).order_by('kelompok', 'nama')
+        
+    list_id = [matapelajaran.pk for matapelajaran in matapelajaran]
+    list_pelajaran = [matapelajaran.nama for matapelajaran in matapelajaran]
+    list_pengetahuan = [pengetahuan(matapelajaran, siswa, semester) for matapelajaran in matapelajaran]
+    list_kkmpeng = [get_kkm(matapelajaran, semester).pengetahuan for matapelajaran in matapelajaran]
+    list_kkmket = [get_kkm(matapelajaran, semester).keterampilan for matapelajaran in matapelajaran]
+    list_keterampilan = [keterampilan(matapelajaran, siswa, semester) for matapelajaran in matapelajaran]
+    list_nilaiakhir = [((pengetahuan(matapelajaran, siswa, semester) + keterampilan(matapelajaran, siswa, semester)) / 2) for matapelajaran in matapelajaran]
+    list_predikat = []
+    list_statuspeng = [True if (pengetahuan(matapelajaran, siswa, semester) < get_kkm(matapelajaran, semester).pengetahuan) else False for matapelajaran in matapelajaran]
+    list_statusket = [True if (keterampilan(matapelajaran, siswa, semester) < get_kkm(matapelajaran, semester).keterampilan) else False for matapelajaran in matapelajaran]
+
+    for nilai in list_nilaiakhir:
+        if nilai <= 100 and nilai >= 86:
+            list_predikat.append('A')
+        elif nilai <= 85 and nilai >= 71:
+            list_predikat.append('B')
+        elif nilai <= 70 and nilai >= 56:
+            list_predikat.append('C')
+        else:
+            list_predikat.append('D')
+
+    return zip(list_id, list_pelajaran, list_pengetahuan, list_kkmpeng, list_statuspeng, list_keterampilan, list_kkmket, list_statusket, list_nilaiakhir, list_predikat)
 
 def zip_eksnilai(siswa, semester):
     nilai_ekskul = NilaiEkskul.objects.filter(siswa=siswa, semester=semester)
@@ -35,7 +65,7 @@ def zip_eksnilai(siswa, semester):
     list_ekskul = [obj.ekskul for obj in nilai_ekskul]
     list_nilai = [obj.nilai for obj in nilai_ekskul]
 
-    return zip(list_id_nilai, list_id_ekskul, list_ekskul, list_nilai)
+    return zip(list_id_ekskul, list_id_nilai, list_ekskul, list_nilai)
 
 def zip_pelkkm(queryset_matapelajaran, semester):
     list_matapelajaran = [MataPelajaran.objects.get(pk=matapelajaran.pk) for matapelajaran in queryset_matapelajaran]

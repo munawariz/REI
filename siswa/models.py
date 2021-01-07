@@ -16,7 +16,6 @@ class Siswa(models.Model):
     tanggal_lahir = models.DateField()
     gender = models.CharField(verbose_name='Jenis Kelamin', max_length=1, choices=GENDER_CHOICE, default=GENDER_CHOICE[0][0])
     agama = models.CharField(max_length=255)
-    anak_ke = models.PositiveSmallIntegerField()
     alamat = models.CharField(max_length=255)
     sekolah_asal = models.CharField(max_length=255)
     diterima_di_tingkat = models.ForeignKey(Tingkat, on_delete=models.SET_NULL, null=True, related_name='siswa')
