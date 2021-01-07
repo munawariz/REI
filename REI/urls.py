@@ -28,6 +28,7 @@ urlpatterns = [
         path('<nis>/ekskul/', siswa_view.ekskul_siswa.as_view(), name='ekskul-siswa'),
         path('<nis>/ekskul/tambah/', siswa_view.tambah_ekskul.as_view(), name='tambah-ekskul'),
         path('<nis>/ekskul/hapus/<ekskul>', siswa_view.hapus_ekskul_siswa.as_view(), name='hapus-ekskul-siswa'),
+        path('<nis>/rapor/', sekolah_view.rapor_view.as_view(), name='rapor'),
     ])),
     path('sekolah/', sekolah_view.detail_sekolah.as_view(), name='detail-sekolah'),
     path('semester/', include([

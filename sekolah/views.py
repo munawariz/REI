@@ -1,5 +1,5 @@
 from guru.models import Guru
-from siswa.models import Siswa
+from siswa.models import Absensi, Siswa
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.query_utils import Q
 from django.http.response import Http404
@@ -11,10 +11,14 @@ from .models import Kelas, MataPelajaran, Sekolah, Semester
 from .forms import KelasForm, SekolahForm, SemesterForm
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
-from REI.decorators import staftu_required
-from helpers import active_semester, get_initial, form_value, get_validwalikelas, get_validsiswabaru, get_validpelajaran
-from helpers.nilai_helpers import zip_pelkkm
+from REI.decorators import staftu_required, validdirs_required
+from helpers import active_semester, get_initial, form_value, get_validwalikelas, get_validsiswabaru, get_validpelajaran, realkelas
+from helpers.nilai_helpers import zip_eksnilai, zip_pelkkm, zip_pelnilai, zip_nilrapor
 from django.contrib import messages
+
+from weasyprint import HTML
+from django.template.loader import render_to_string
+from django.http import HttpResponse, FileResponse
 
 @method_decorator(login_required, name='dispatch')
 class detail_sekolah(View):
@@ -242,3 +246,52 @@ class hapus_pelajaran(View):
         kelas.matapelajaran.remove(matapelajaran)
         messages.success(request, f'{matapelajaran.nama} berhasil dihapus dari kelas {kelas.nama}')
         return redirect('pelajaran-kelas', kelas=kelas.nama)
+
+def export_pdf(siswa, pdf_dir, context):
+    html_string = render_to_string('pages/rapor.html', context)
+    html = HTML(string=html_string)
+    html.write_pdf(target=f'{pdf_dir}/{siswa.nama}.pdf', stylesheets=['static/css/rapor.css'])
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(validdirs_required, name='dispatch')
+class rapor_view(View):
+    def get(self, request, nis, **kwargs):
+        try:
+            siswa = Siswa.objects.get(nis=nis)
+            if siswa.gender == 'P': jenkel_siswa = 'Pria'
+            else: jenkel_siswa = 'Wanita'
+        except ObjectDoesNotExist:
+            raise Http404
+        sekolah = Sekolah.objects.get()
+        if sekolah.tingkat == 'SMK': tingkat = 'Sekolah Menengah Kejuruan'
+        elif sekolah.tingkat == 'SMA': tingkat = 'Sekolah Menengah Atas'
+        elif sekolah.tingkat == 'SMP': tingkat = 'Sekolah Menengah Pertama'
+        elif sekolah.tingkat == 'SD': tingkat = 'Sekolah Dasar'
+        else:
+            messages.error(request, 'Lengkapi data sekolah terlebih dahulu')
+            return redirect('detail-sekolah')
+
+        context = {
+            'siswa': siswa,
+            'jenkel_siswa': jenkel_siswa,
+            'kelas': realkelas(siswa),
+            'matapelajaran': zip_nilrapor(siswa, active_semester()),
+            'ekskul': zip_eksnilai(siswa, active_semester()),
+            'absensi': Absensi.objects.get_or_create(siswa=siswa, semester=active_semester())[0],
+            'sekolah': sekolah,
+            'tingkat_sekolah': tingkat,
+        }
+        # return render(request, 'pages/rapor.html', context)
+        export_pdf(siswa, kwargs['pdf_dir'], context)
+        with open(f'{kwargs["pdf_dir"]}/{siswa.nama}.pdf', 'rb') as result:            
+            response = HttpResponse(result, content_type='application/pdf;')
+            if request.GET['action'] == 'unduh':
+                response['Content-Disposition'] = f'attachment; filename={siswa.nama}.pdf'
+                response['Content-Transfer-Encoding'] = 'binary'
+            elif request.GET['action'] == 'pratinjau':
+                response['Content-Disposition'] = f'inline; filename={siswa.nama}.pdf'
+                response['Content-Transfer-Encoding'] = 'binary'
+            else:
+                return redirect('dashboard')
+
+            return response

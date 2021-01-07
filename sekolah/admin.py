@@ -1,7 +1,9 @@
 from django.contrib import admin
 from solo.admin import SingletonModelAdmin
-from .models import Sekolah, Semester, Jurusan, MataPelajaran, KKM, Tingkat, Kelas, Ekskul
+from .models import Sekolah, Semester, Jurusan, MataPelajaran, KKM, Tingkat, Kelas, Ekskul, Rapor
+from django.contrib.auth.models import Group
 
+admin.site.unregister(Group)
 admin.site.register(Sekolah, SingletonModelAdmin)
 
 @admin.register(Semester)
@@ -45,3 +47,10 @@ class EkskulAdmin(admin.ModelAdmin):
     search_fields = ('nama', 'jenis')
     ordering = ('nama', 'jenis')
     list_filter = ('jenis',)
+
+@admin.register(Rapor)
+class RaporAdmin(admin.ModelAdmin):
+    list_display = ('siswa', 'semester')
+    list_filter = ('semester',)
+    search_fields = ('siswa',)
+    ordering = ('-semester', 'siswa')

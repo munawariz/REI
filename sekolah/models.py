@@ -156,3 +156,20 @@ class Ekskul(models.Model):
 
     def __str__(self):
         return self.nama
+
+
+class Rapor(models.Model):
+    siswa = models.ForeignKey('siswa.Siswa', related_name='rapor', on_delete=models.CASCADE)
+    semester = models.ForeignKey(Semester, related_name='rapor', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.siswa} - {self.semester}'
+
+@receiver(models.signals.pre_save, sender=Rapor)
+def unique_together_siswa_semester(sender, instance, **kwargs):
+    try:
+        rapor = Rapor.objects.filter(siswa=instance.siswa, semester=instance.semester)
+        if rapor and instance not in rapor:
+            raise ValidationError('That Siswa already have Rapor for this semester')
+    except ObjectDoesNotExist:
+        pass

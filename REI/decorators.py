@@ -1,4 +1,4 @@
-from helpers import get_validkelas
+from helpers import active_semester, get_validkelas
 from sekolah.models import Kelas
 from siswa.models import Siswa
 from django.core.exceptions import ObjectDoesNotExist
@@ -12,6 +12,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from urllib.parse import urlparse
 from . import settings
 from django.contrib import messages
+import os
 
 def login_redirect(request):
     path = request.build_absolute_uri()
@@ -65,5 +66,26 @@ def validkelas_required(function=None):
             return function(request, *args, **kwargs)
         else:
             return redirect('detail-siswa', nis=siswa.nis)
+
+    return wrapper
+
+def validdirs_required(function=None):
+    @wraps(function)
+    def wrapper(request, *args, **kwargs):
+        if kwargs['nis']:
+            siswa = Siswa.objects.get(nis=kwargs['nis'])
+            kelas = get_validkelas(siswa)
+        elif kwargs['kelas']:
+            kelas = Kelas.objects.get(nama=kwargs['kelas'], semester=active_semester())
+        else:
+            kelas = None
+            return redirect('dashboard')
+
+        dirs = f'{settings.MEDIA_ROOT}/rapor/{kelas.semester.tahun_mulai} - {kelas.semester.tahun_akhir} {kelas.semester.semester}/{kelas.jurusan}/{kelas.nama}'
+        if not os.path.isdir(dirs): 
+            os.makedirs(dirs)
+        kwargs['pdf_dir'] = dirs
+
+        return function(request, *args, **kwargs)
 
     return wrapper

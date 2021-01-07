@@ -12,7 +12,7 @@
                         <div class="col-12 col-md-8 mb-5">
                             <form method="post" class="mt-4">
                                 {% csrf_token %}
-                                {% for id_nil, id_eks, ekskul, nilai in data %}
+                                {% for id_eks, id_nil, ekskul, nilai in data %}
                                     <div class="row">
                                         <div class="col-11">
                                             <div class="field">
