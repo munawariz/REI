@@ -108,7 +108,7 @@ class buat_guru(View):
                     is_walikelas = True
                     is_walikelas = False
 
-                guru = Guru.objects.create(**form_value(guru_form), is_staftu=is_staftu, is_walikelas=is_walikelas)
+                guru = Guru.objects.create(**form_value(guru_form), is_staftu=is_staftu, is_walikelas=is_walikelas, is_active=True)
                 guru.set_password(guru_form.cleaned_data['password'])
                 guru.save()
                 messages.success(request, 'Akun berhasil dibuat')

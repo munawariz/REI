@@ -21,6 +21,7 @@
                                     <td>Jenis Kelamin</td>
                                     <td>Agama</td>
                                     <td>Kelas</td>
+                                    <td>Hapus</td>
                                 </tr>
                             </thead>
                             <tbody class="text-primary">
@@ -37,7 +38,8 @@
                                             <td>Wanita</td>
                                         {% endif %}                                            
                                         <td>{{siswa.agama}}</td>
-                                        <td>{{siswa.kelas.tingkat}} {{siswa.kelas.jurusan}} {{siswa.kelas.kelas}}</td>
+                                        <td>{% if siswa.kelas.semester == semester_aktif %}{{siswa.kelas.tingkat}} {{siswa.kelas.jurusan}} {{siswa.kelas.kelas}}{% endif %}</td>
+                                        <td><a href="{% url 'hapus-siswa' siswa.nis %}" class="btn main-btn right"><ion-icon name="trash"></ion-icon></a></td>
                                     </tr>
                                 {% endfor %}
                             </tbody>                                
@@ -48,14 +50,17 @@
             </center>                
         </div>
     </div>
-{% endblock content %}
 
-{% block script %}
-    <script>
-        $(document).ready(function() {
-            $(document.body).on("click", "tr[data-href]", function () {
-                window.location.href = this.dataset.href;
-            });
-        });
-    </script>
-{% endblock script %}
+    <div class="row mt-3">
+        <div class="col-md section-wrapper">
+            <center>
+                <div class="section-header">
+                    Buat Siswa
+                </div>
+            </center>
+            <div class="section-body">
+                {% include 'components/form.html' with form=siswa_form submit_button='Buat' action='buat/' col='three' %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

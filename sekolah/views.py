@@ -170,7 +170,10 @@ class walikelas_kelas(View):
     def get(self, request, kelas):
         request.session['page'] = f'Walikelas {kelas}'
         kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
-        active_walikelas = Guru.objects.get(kelas=kelas)
+        try:
+            active_walikelas = Guru.objects.get(kelas=kelas)
+        except ObjectDoesNotExist:
+            active_walikelas = None
         valid_walikelas = get_validwalikelas()
         context = {
             'kelas': kelas,

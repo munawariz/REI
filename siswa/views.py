@@ -1,3 +1,4 @@
+from django.views.generic.edit import CreateView
 from REI.decorators import staftu_required, walikelas_required, validkelas_required
 from django.http.response import Http404
 from sekolah.models import Ekskul, Kelas, MataPelajaran
@@ -37,8 +38,24 @@ class list_siswa(View):
             'list_siswa': page_obj,
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
+            'siswa_form': SiswaForm(),
+            'semester_aktif': active_semester(),
         }
         return render(request,  'pages/siswa/siswa.html', context)
+
+@method_decorator(staftu_required, name='dispatch')
+class buat_siswa(CreateView):
+    def post(self, request):
+        siswa_form = SiswaForm(request.POST)
+        try:
+            if siswa_form.is_valid():
+                siswa, created = Siswa.objects.get_or_create(**form_value(siswa_form))
+                if created:
+                    messages.success(request, f'Data siswa {siswa.nama} berhasil dibuat')
+        except ValidationError:
+            messages.error(request, 'Data gagal dibuat, periksa apakah NIS atau NISN sudah tersedia didata sebelumnya')
+        finally:
+            return redirect('list-siswa')
 
 @method_decorator(login_required, name='dispatch')
 class detail_siswa(View):
@@ -185,3 +202,10 @@ class hapus_ekskul_siswa(View):
         NilaiEkskul.objects.get(ekskul=ekskul, siswa=active_siswa, semester=active_semester()).delete()
         messages.success(request, f'Ekskul {ekskul.nama} sudah dihapus dari data {active_siswa.nama}')
         return redirect('ekskul-siswa', nis=nis)
+
+@method_decorator(staftu_required, name='dispatch')
+class hapus_siswa(View):
+    def get(self, request, nis):
+        Siswa.objects.get(nis=nis).delete()
+        messages.success(request, 'Data siswa berhasil dihapus')
+        return redirect('list-siswa')

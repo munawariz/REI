@@ -37,7 +37,7 @@ def get_validwalikelas():
     from guru.models import Guru
     from sekolah.models import Kelas
     valid_walikelas = []
-    all_walikelas = Guru.objects.filter(is_walikelas=True, is_superuser=False, is_staftu=False)
+    all_walikelas = Guru.objects.filter(is_walikelas=True, is_superuser=False, is_staftu=False, is_active=True)
     for walikelas in all_walikelas:
         if walikelas.kelas:
             list_kelas = [kelas.semester for kelas in Kelas.objects.filter(walikelas=walikelas)]

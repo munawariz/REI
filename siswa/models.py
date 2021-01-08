@@ -27,12 +27,6 @@ class Siswa(models.Model):
     def __str__(self):
         return f'{self.nisn}/{self.nis}-{self.nama}'
 
-@receiver(models.signals.post_save, sender=Siswa)
-def nilai_post_save(sender, instance, created, **kwargs):
-    if created:
-        instance.semester = instance.siswa.kelas.semester
-        instance.save()
-
 
 class Nilai(models.Model):
     siswa = models.ForeignKey(Siswa, on_delete=models.CASCADE, related_name='nilai')
