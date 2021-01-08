@@ -98,7 +98,8 @@ def realkelas(siswa):
 
 def get_validkelas(siswa):
     from sekolah.models import Kelas
-    try: 
+    try:
+        if not siswa.kelas: raise ObjectDoesNotExist
         kelas = Kelas.objects.get(nama=siswa.kelas.nama, semester=active_semester())
         if kelas == realkelas(siswa):
             return kelas

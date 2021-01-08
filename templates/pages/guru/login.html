@@ -2,6 +2,15 @@
 {% load static %}
 {% load widget_tweaks %}
 
+{% block stylesheet %}
+<style>
+    html{
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
+</style>
+{% endblock stylesheet %}
+
 {% block content %}
     <div class="container mt-5 position-absolute">
         <div class="mx-auto p-5" style="width: 400px;">
