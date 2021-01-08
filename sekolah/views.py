@@ -7,8 +7,8 @@ from django.shortcuts import redirect, render
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Jurusan, Kelas, MataPelajaran, Sekolah, Semester
-from .forms import JurusanForm, KelasForm, SekolahForm, SemesterForm
+from .models import Ekskul, Jurusan, Kelas, MataPelajaran, Sekolah, Semester
+from .forms import EkskulForm, JurusanForm, KelasForm, SekolahForm, SemesterForm
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required, validdirs_required
@@ -290,6 +290,43 @@ class hapus_jurusan(View):
             messages.error(request, f'{nama_jurusan} masih memiliki kelas aktif, tidak dapat dihapus')
         finally:
             return redirect('list-jurusan')
+
+
+@method_decorator(staftu_required, name='dispatch')
+class list_ekskul(View):
+    def get(self, request):
+        request.session['page'] = 'Daftar Ekskul'
+        context = {
+            'list_ekskul': Ekskul.objects.all().order_by('jenis'),
+            'ekskul_form': EkskulForm(),
+        }
+        return render(request, 'pages/ekskul/ekskul.html', context)
+
+@method_decorator(staftu_required, name='dispatch')
+class buat_ekskul(View):
+    def post(self, request):
+        ekskul_form = EkskulForm(request.POST)
+        try:
+            if ekskul_form.is_valid():
+                ekskul = Ekskul.objects.create(**form_value(ekskul_form))
+                messages.success(request, f'Ekstrakulikuler {ekskul.nama} berhasil dibuat')
+        except Exception as e:
+            messages.error(request, f'Terjadi kesalahan saat membuat ekskul ')
+        finally:
+            return redirect('list-ekskul')
+
+@method_decorator(staftu_required, name='dispatch')
+class hapus_ekskul(View):
+    def get(self, request, ekskul):
+        try:
+            ekskul = Ekskul.objects.get(pk=ekskul)
+            nama_ekskul = ekskul.nama
+            ekskul.delete()
+            messages.success(request, f'{nama_ekskul} berhasil dihapus dari daftar ekstrakuliker sekolah')
+        except Exception:
+            messages.error(request, f'Terjadi kesalahan saat mencoba menghapus {nama_ekskul}')
+        finally:
+            return redirect('list-ekskul')
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(validdirs_required, name='dispatch')

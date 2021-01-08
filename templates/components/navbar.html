@@ -37,11 +37,17 @@
         {% if sekolah.tingkat == 'SMK' %}
         <li class="nav-item">
             <a href="{% url 'list-jurusan' %}" class="nav-link">
-                <ion-icon name="people-outline" class="icon-nav"></ion-icon>
+                <ion-icon name="telescope-outline" class="icon-nav"></ion-icon>
                 <span class="link-text">Daftar Jurusan</span>
             </a>
         </li>
         {% endif %}
+        <li class="nav-item">
+            <a href="{% url 'list-ekskul' %}" class="nav-link">
+                <ion-icon name="american-football-outline" class="icon-nav"></ion-icon>
+                <span class="link-text">Daftar Ekskul</span>
+            </a>
+        </li>
 
         {% if user.is_superuser or user.is_staftu %}
         <li class="nav-item">

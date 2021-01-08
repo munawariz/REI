@@ -48,6 +48,11 @@ urlpatterns = [
         path('<jurusan>/', guru_view.placeholder, name='detail-jurusan'),
         path('<jurusan>/hapus/', sekolah_view.hapus_jurusan.as_view(), name='hapus-jurusan')
     ])),
+    path('ekskul/', include([
+        path('', sekolah_view.list_ekskul.as_view(), name='list-ekskul'),
+        path('buat/', sekolah_view.buat_ekskul.as_view(), name='buat-ekskul'),
+        path('<ekskul>/hapus/', sekolah_view.hapus_ekskul.as_view(), name='hapus-ekskul')
+    ])),
     path('kelas/', include([
         path('', sekolah_view.list_kelas.as_view(), name='list-kelas'),
         path('buat/', sekolah_view.buat_kelas.as_view(), name='buat-kelas'),
