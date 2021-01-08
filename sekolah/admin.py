@@ -1,6 +1,6 @@
 from django.contrib import admin
 from solo.admin import SingletonModelAdmin
-from .models import Sekolah, Semester, Jurusan, MataPelajaran, KKM, Tingkat, Kelas, Ekskul, Rapor
+from .models import Sekolah, Semester, Jurusan, MataPelajaran, KKM, Kelas, Ekskul, Rapor
 from django.contrib.auth.models import Group
 
 admin.site.unregister(Group)
@@ -29,11 +29,6 @@ class KKMAdmin(admin.ModelAdmin):
     list_display = ('matapelajaran', 'semester', 'pengetahuan', 'keterampilan')
     search_fields = ('matapelajaran', 'semester', 'pengetahuan', 'keterampilan')
     ordering = ('matapelajaran', 'semester')
-
-@admin.register(Tingkat)
-class TingkatAdmin(admin.ModelAdmin):
-    list_display = ('tingkat',)    
-    ordering = ('tingkat',)
 
 @admin.register(Kelas)
 class KelasAdmin(admin.ModelAdmin):

@@ -1,4 +1,5 @@
-from sekolah.models import Kelas
+from helpers.choice import tingkat_choice
+from sekolah.models import Kelas, Sekolah
 from django import forms
 from django.forms import fields
 from .models import Siswa, Nilai, Absensi, NilaiEkskul
@@ -10,6 +11,7 @@ class KelasSelect(forms.ModelChoiceField):
 
 class SiswaForm(forms.ModelForm):
     kelas = KelasSelect(queryset=Kelas.objects.filter(semester=active_semester()), required=False)
+    diterima_di_tingkat = forms.ChoiceField(choices=tingkat_choice(Sekolah.objects.get()))
     class Meta:
         model = Siswa
         fields = '__all__'

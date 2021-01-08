@@ -1,6 +1,7 @@
+from helpers import active_semester
+from helpers.choice import tingkat_choice
 from django import forms
 from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Semester, Sekolah
-
 class SekolahForm(forms.ModelForm):
     class Meta:
         model = Sekolah
@@ -12,6 +13,7 @@ class SemesterForm(forms.ModelForm):
         fields = ('tahun_mulai', 'tahun_akhir', 'semester')
 
 class KelasForm(forms.ModelForm):
+    tingkat = forms.ChoiceField(choices=tingkat_choice(Sekolah.objects.get()))
     class Meta:
         model = Kelas
         fields = ('tingkat', 'jurusan', 'kelas')

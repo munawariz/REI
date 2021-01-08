@@ -21,36 +21,35 @@ MATAPELAJARAN_CHOICE = [
     ('MULOK', 'Muatan Lokal')
 ]
 
-def tingkat_list_decide(tingkat_sekolah):
-    if tingkat_sekolah:
-        if tingkat_sekolah.tingkat == 'SMK':
-            return [
-                ('1', 'I'),
-                ('2', 'II'),
-                ('3', 'III'),
-                ('4', 'IV'),
-                ('5', 'V'),
-                ('6', 'VI'),
-            ]
-        elif tingkat_sekolah.tingkat == 'SMP':
-            return [
-                ('7', 'VII'),
-                ('8', 'VIII'),
-                ('9', 'IX'),            
-            ]
-        elif tingkat_sekolah.tingkat == 'SMA':
-            return [
-                ('10', 'X'),
-                ('11', 'XI'),
-                ('12', 'XII'),            
-            ]
-        elif tingkat_sekolah.tingkat == 'SMK':
-            return [
-                ('10', 'X'),
-                ('11', 'XI'),
-                ('12', 'XII'),
-                ('13', 'XIII'),
-            ]
+def tingkat_choice(sekolah):
+    if sekolah.tingkat == 'SD':
+        return [
+            ('1', '1'),
+            ('2', '2'),
+            ('3', '3'),
+            ('4', '4'),
+            ('5', '5'),
+            ('6', '6'),
+        ]
+    elif sekolah.tingkat == 'SMP':
+        return [
+            ('7', '7'),
+            ('8', '8'),
+            ('9', '9'),            
+        ]
+    elif sekolah.tingkat == 'SMA':
+        return [
+            ('10', '10'),
+            ('11', '11'),
+            ('12', '12'),            
+        ]
+    elif sekolah.tingkat == 'SMK':
+        return [
+            ('10', '10'),
+            ('11', '11'),
+            ('12', '12'),
+            ('13', '13'),
+        ]
     else:
         return [
             ('1', 'I'),
