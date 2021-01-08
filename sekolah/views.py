@@ -153,8 +153,13 @@ class detail_kelas(View):
             kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
         except ObjectDoesNotExist:
             raise Http404
+
+        if kelas.walikelas == request.user: auth_walikelas = True
+        else: auth_walikelas = False 
+
         context = {
             'kelas': kelas,
+            'auth_walikelas': auth_walikelas,
             'list_siswa': Siswa.objects.filter(kelas=kelas).order_by('nama'),
             'list_matapelajaran': MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama'),
         }

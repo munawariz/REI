@@ -92,4 +92,56 @@
             </div>
         </div>
     </div>
+
+    {% if auth_walikelas %}
+        <div class="row mt-3">
+            <div class="col-md section-wrapper">
+                <center>
+                    <div class="section-header">
+                        Rapor Siswa
+                    </div>
+                </center>
+                <div class="section-body">
+                    <div class="section-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover bg-transparent">
+                                <thead class="text-secondary">
+                                    <tr class='column-name'>
+                                        <td>NIS</td>
+                                        <td>NISN</td>
+                                        <td>Nama</td>
+                                        <td class="d-none d-md-table-cell">Email</td>
+                                        <td class="d-none d-md-table-cell">Tempat/Tanggal Lahir</td>
+                                        <td class="d-none d-md-table-cell">Jenis Kelamin</td>
+                                        <td class="d-none d-md-table-cell">Agama</td>
+                                        <td>Unduh</td>
+                                        <td>Pratinjau</td>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-primary">
+                                    {% for siswa in list_siswa %}
+                                        <tr data-href="{% url 'detail-siswa' siswa.nis %}">
+                                            <td>{{siswa.nis}}</td>
+                                            <td>{{siswa.nisn}}</td>
+                                            <td>{{siswa.nama}}</td>
+                                            <td class="d-none d-md-table-cell">{{siswa.email}}</td>
+                                            <td class="d-none d-md-table-cell">{{siswa.tempat_lahir}}/{{siswa.tanggal_lahir|date:'d-m-Y'}}</td>
+                                            {% if siswa.gender == 'P' %}
+                                                <td class="d-none d-md-table-cell">Pria</td>
+                                            {% else %}
+                                                <td class="d-none d-md-table-cell">Wanita</td>
+                                            {% endif %}                                            
+                                            <td class="d-none d-md-table-cell">{{siswa.agama}}</td>
+                                            <td><a href="{% url 'rapor' siswa.nis %}?action=unduh" class="btn main-btn fs-5 pt-2"><ion-icon name="cloud-download-outline"></ion-icon></a></td>
+                                            <td><a href="{% url 'rapor' siswa.nis %}?action=pratinjau" class="btn main-btn fs-5 pt-2" target="_blank"><ion-icon name="eye-outline"></ion-icon></a></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>                                
+                            </table>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock content %}
