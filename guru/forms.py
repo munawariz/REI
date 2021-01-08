@@ -1,6 +1,19 @@
 from django import forms
+from django.db.models import fields
+from django.forms import widgets
 from .models import Guru
 from helpers import input_type as type
+
+class GuruCreateForm(forms.ModelForm):
+    password = forms.CharField(max_length=18)
+    class Meta:
+        model = Guru
+        fields = ('nip', 'password', 'nama', 'email', 'gender', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat')
+        widgets = {
+            'tanggal_lahir': type.DateInput(),
+            'email': type.EmailInput(),
+            'password': type.PasswordInput(),
+        }
 
 class GuruEditForm(forms.ModelForm):    
     class Meta:

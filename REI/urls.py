@@ -14,9 +14,12 @@ urlpatterns = [
     path('', guru_view.index),
     # URL for both Walikelas and Staf TU
     path('dashboard/', guru_view.dashboard.as_view(), name='dashboard'),
-    path('profil/', include([
-        path('', guru_view.profil.as_view(), name='profil'),
-        path('<guru>/', guru_view.profil_lain.as_view(), name='profil-guru-lain'),
+    path('guru/', include([
+        path('', guru_view.list_guru.as_view(), name='list-guru'),
+        path('buat/', guru_view.buat_guru.as_view(), name='buat-guru'),
+        path('hapus/<guru>/', guru_view.hapus_guru.as_view(), name='hapus-guru'),
+        path('profil/', guru_view.profil.as_view(), name='profil'),
+        path('profil/<guru>/', guru_view.profil_lain.as_view(), name='profil-guru-lain'),
         path('password/ganti/', guru_view.ganti_password.as_view(), name='ganti-password'),
     ])),
     path('siswa/', include([

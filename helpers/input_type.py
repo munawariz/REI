@@ -8,3 +8,6 @@ class RadioInput(forms.RadioSelect):
 
 class EmailInput(forms.EmailInput):
     input_type = 'email'
+
+class PasswordInput(forms.PasswordInput):
+    input_type = 'password'
