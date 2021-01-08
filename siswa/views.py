@@ -60,11 +60,11 @@ class buat_siswa(CreateView):
 @method_decorator(login_required, name='dispatch')
 class detail_siswa(View):
     def get(self, request, nis):
-        request.session['page'] = 'Detail Siswa'
         try:
             siswa = Siswa.objects.get(nis=nis)
         except ObjectDoesNotExist:
             raise Http404
+        request.session['page'] = f'Detail {siswa.nama}'
         if not get_validkelas(siswa):
             messages.error(request, f'{siswa.nama} belum memiliki kelas di semester ini')
 

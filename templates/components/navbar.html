@@ -1,5 +1,7 @@
 {% load active_kelas from rei_tags %}
+{% load solo_tags %}
 {% active_kelas as active_kelas %}
+{% get_solo 'sekolah.Sekolah' as sekolah %}
 <nav class="navbar" id="navbar" style="z-index: 99;">
     <ul class="navbar-nav">
         <li class="logo">
@@ -32,6 +34,14 @@
                 <span class="link-text">Daftar Kelas</span>
             </a>
         </li>
+        {% if sekolah.tingkat == 'SMK' %}
+        <li class="nav-item">
+            <a href="{% url 'list-jurusan' %}" class="nav-link">
+                <ion-icon name="people-outline" class="icon-nav"></ion-icon>
+                <span class="link-text">Daftar Jurusan</span>
+            </a>
+        </li>
+        {% endif %}
 
         {% if user.is_superuser or user.is_staftu %}
         <li class="nav-item">

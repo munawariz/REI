@@ -7,14 +7,15 @@ from django.shortcuts import redirect, render
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Kelas, MataPelajaran, Sekolah, Semester
-from .forms import KelasForm, SekolahForm, SemesterForm
+from .models import Jurusan, Kelas, MataPelajaran, Sekolah, Semester
+from .forms import JurusanForm, KelasForm, SekolahForm, SemesterForm
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required, validdirs_required
 from helpers import active_semester, get_initial, form_value, get_validwalikelas, get_validsiswabaru, get_validpelajaran, realkelas
 from helpers.nilai_helpers import zip_eksnilai, zip_pelkkm, zip_pelnilai, zip_nilrapor
 from django.contrib import messages
+import traceback
 
 from helpers import generate_pdf
 from django.http import HttpResponse, FileResponse
@@ -253,6 +254,42 @@ class hapus_pelajaran(View):
         kelas.matapelajaran.remove(matapelajaran)
         messages.success(request, f'{matapelajaran.nama} berhasil dihapus dari kelas {kelas.nama}')
         return redirect('pelajaran-kelas', kelas=kelas.nama)
+
+@method_decorator(staftu_required, name='dispatch')
+class list_jurusan(View):
+    def get(self, request):
+        request.session['page'] = 'Daftar Jurusan'
+        context = {
+            'list_jurusan': Jurusan.objects.all(),
+            'jurusan_form': JurusanForm(),
+        }
+        return render(request, 'pages/jurusan/jurusan.html', context)
+
+@method_decorator(staftu_required, name='dispatch')
+class buat_jurusan(View):
+    def post(self, request):
+        jurusan_form = JurusanForm(request.POST)
+        try:
+            if jurusan_form.is_valid():
+                jurusan = Jurusan.objects.create(**form_value(jurusan_form))
+                messages.success(request, f'Jurusan {jurusan.nama} berhasil dibuat')
+        except Exception as e:
+            messages.error(request, f'Terjadi kesalahan saat membuat jurusan ')
+        finally:
+            return redirect('list-jurusan')
+
+@method_decorator(staftu_required, name='dispatch')
+class hapus_jurusan(View):
+    def get(self, request, jurusan):
+        try:
+            jurusan = Jurusan.objects.get(pk=jurusan)
+            nama_jurusan = jurusan.nama
+            jurusan.delete()
+            messages.success(request, f'{nama_jurusan} berhasil dihapus dari daftar jurusan sekolah')
+        except ProtectedError:
+            messages.error(request, f'{nama_jurusan} masih memiliki kelas aktif, tidak dapat dihapus')
+        finally:
+            return redirect('list-jurusan')
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(validdirs_required, name='dispatch')

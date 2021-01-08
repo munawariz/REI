@@ -64,7 +64,7 @@ def only_one_is_active_instance(sender, instance, **kwargs):
 
 class Jurusan(models.Model):
     nama = models.CharField(verbose_name='Nama Lengkap', max_length=255)
-    singkat = models.CharField(verbose_name='Nama Singkat', max_length=10)
+    singkat = models.CharField(verbose_name='Nama Singkat', max_length=10, null=True, blank=True)
 
     def __str__(self):
         return self.singkat
