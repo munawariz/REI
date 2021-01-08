@@ -95,7 +95,7 @@ class hapus_semester(View):
         finally:
             return redirect('list-semester')
 
-@method_decorator(staftu_required, name='dispatch')
+@method_decorator(login_required, name='dispatch')
 class list_kelas(View):
     def get(self, request):
         request.session['page'] = 'Daftar Kelas'
@@ -154,7 +154,7 @@ class detail_kelas(View):
         except ObjectDoesNotExist:
             raise Http404
 
-        if kelas.walikelas == request.user: auth_walikelas = True
+        if kelas.walikelas == request.user or request.user.is_superuser: auth_walikelas = True
         else: auth_walikelas = False 
 
         context = {

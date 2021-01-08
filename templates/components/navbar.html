@@ -1,3 +1,5 @@
+{% load active_kelas from rei_tags %}
+{% active_kelas as active_kelas %}
 <nav class="navbar" id="navbar" style="z-index: 99;">
     <ul class="navbar-nav">
         <li class="logo">
@@ -18,6 +20,12 @@
                 <span class="link-text">Daftar Siswa</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{% url 'list-kelas' %}" class="nav-link">
+                <ion-icon name="people-outline" class="icon-nav"></ion-icon>
+                <span class="link-text">Daftar Kelas</span>
+            </a>
+        </li>
 
         {% if user.is_superuser or user.is_staftu %}
         <li class="nav-item">
@@ -29,12 +37,14 @@
         {% endif %}
 
         {% if user.is_superuser or user.is_walikelas %}
-        <li class="nav-item">
-            <a href="{% url 'list-kelas' %}" class="nav-link">
-                <ion-icon name="people-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">Daftar Kelas</span>
-            </a>
-        </li>
+            {% if active_kelas %}
+                <li class="nav-item">
+                    <a href="{% url 'detail-kelas' active_kelas.nama %}" class="nav-link">
+                        <ion-icon name="archive-outline" class="icon-nav"></ion-icon>
+                        <span class="link-text">Kelas Anda</span>
+                    </a>
+                </li>
+            {% endif %}
         {% endif %}
     </ul>
 </nav>
