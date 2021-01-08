@@ -48,10 +48,7 @@
                 </tr>
             </table>
         </div>
-        <footer>
-            <i>Rapor {{sekolah.nama}}</i>
-            <small><i class="right"><b>REI Alpha</b></i></small>
-        </footer>
+        {% include 'pages/rapor/footer.html' %}
         <p style="page-break-before: always" ></p>
 
         <!-- Info Siswa (Page 2) -->
@@ -99,10 +96,7 @@
                 </tr>
             </table>
         </div>
-        <footer>
-            <i>Rapor {{sekolah.nama}}</i>
-            <small><i class="right"><b>REI Alpha</b></i></small>
-        </footer>
+        {% include 'pages/rapor/footer.html' %}
         <p style="page-break-before: always" ></p>
 
         <!-- Rapor Kompetensi Siswa (Page 3+) -->
@@ -173,11 +167,7 @@
                     <th>Tanpa Keterangan</th><td>{{absensi.bolos}}</td>
                 </tr>
             </table>
-
         </div>
-        <footer>
-            <i>Rapor {{sekolah.nama}}</i>
-            <small><i class="right"><b>REI Alpha</b></i></small>
-        </footer>
+        {% include 'pages/rapor/footer.html' %}
     </body>
 </html>

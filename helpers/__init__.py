@@ -2,7 +2,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import date
 from django import forms
 from django.forms.models import model_to_dict
-from django.contrib import messages 
+from django.contrib import messages
+from weasyprint import HTML
+from django.template.loader import render_to_string
   
 def calculate_age(birthDate):
     days_in_year = 365    
@@ -104,3 +106,8 @@ def get_validkelas(siswa):
             raise ObjectDoesNotExist
     except ObjectDoesNotExist:
         return None
+
+def generate_pdf(siswa, pdf_dir, context):
+    html_string = render_to_string('pages/rapor/rapor.html', context)
+    html = HTML(string=html_string)
+    html.write_pdf(target=f'{pdf_dir}/{siswa.nama}.pdf', stylesheets=['static/css/rapor.css'])

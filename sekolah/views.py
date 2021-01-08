@@ -16,8 +16,7 @@ from helpers import active_semester, get_initial, form_value, get_validwalikelas
 from helpers.nilai_helpers import zip_eksnilai, zip_pelkkm, zip_pelnilai, zip_nilrapor
 from django.contrib import messages
 
-from weasyprint import HTML
-from django.template.loader import render_to_string
+from helpers import generate_pdf
 from django.http import HttpResponse, FileResponse
 
 @method_decorator(login_required, name='dispatch')
@@ -247,11 +246,6 @@ class hapus_pelajaran(View):
         messages.success(request, f'{matapelajaran.nama} berhasil dihapus dari kelas {kelas.nama}')
         return redirect('pelajaran-kelas', kelas=kelas.nama)
 
-def export_pdf(siswa, pdf_dir, context):
-    html_string = render_to_string('pages/rapor.html', context)
-    html = HTML(string=html_string)
-    html.write_pdf(target=f'{pdf_dir}/{siswa.nama}.pdf', stylesheets=['static/css/rapor.css'])
-
 @method_decorator(login_required, name='dispatch')
 @method_decorator(validdirs_required, name='dispatch')
 class rapor_view(View):
@@ -281,8 +275,8 @@ class rapor_view(View):
             'sekolah': sekolah,
             'tingkat_sekolah': tingkat,
         }
-        # return render(request, 'pages/rapor.html', context)
-        export_pdf(siswa, kwargs['pdf_dir'], context)
+
+        generate_pdf(siswa, kwargs['pdf_dir'], context)
         with open(f'{kwargs["pdf_dir"]}/{siswa.nama}.pdf', 'rb') as result:            
             response = HttpResponse(result, content_type='application/pdf;')
             if request.GET['action'] == 'unduh':
