@@ -1,5 +1,5 @@
 from django import forms
-from .models import Ekskul, Jurusan, Kelas, Semester, Sekolah
+from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Semester, Sekolah
 
 class SekolahForm(forms.ModelForm):
     class Meta:
@@ -25,3 +25,13 @@ class EkskulForm(forms.ModelForm):
     class Meta:
         model = Ekskul
         fields = '__all__'
+
+class MatapelajaranForm(forms.ModelForm):
+    class Meta:
+        model = MataPelajaran
+        fields = '__all__'
+
+class KKMForm(forms.ModelForm):
+    class Meta:
+        model = KKM
+        fields = ('pengetahuan', 'keterampilan')

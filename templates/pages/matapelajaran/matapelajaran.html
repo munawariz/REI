@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row mt-3">
+        <div class="col-md-8 section-wrapper">
+            <center>
+                <div class="section-header">
+                    Daftar Matapelajaran
+                </div>
+            </center>
+            <div class="section-body">
+                <div class="table-responsive">
+                    <table class="table table-hover bg-transparent">
+                        <thead class="text-secondary">
+                            <tr class='column-name'>
+                                <td>Nama Pelajaran</td>
+                                <td>Singkat</td>
+                                <td>Kelompok</td>
+                                <td>KKM Pengetahuan</td>
+                                <td>KKM Keterampilan</td>
+                                <td>Hapus</td>
+                            </tr>
+                        </thead>
+                        <tbody class="text-primary">
+                            {% for matapelajaran, kkm in data %}
+                                <tr data-href="{% url 'detail-matapelajaran' matapelajaran.pk %}">
+                                    <td>{{matapelajaran.nama}}</td>
+                                    <td>{{matapelajaran.singkat}}</td>
+                                    <td>{{matapelajaran.kelompok}}</td>
+                                    <td>{{kkm.pengetahuan|default:0}}</td>
+                                    <td>{{kkm.keterampilan|default:0}}</td>
+                                    <td><a href="{% url 'hapus-matapelajaran' matapelajaran.pk %}" class="btn main-btn right"><ion-icon name="trash"></ion-icon></a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>                                
+                    </table>
+                </div>                        
+            </div>
+        </div>
+        <div class="col-md-3 section-wrapper">
+            <center>
+                <div class="section-header">
+                    Buat Matapelajaran
+                </div>
+            </center>
+            <div class="section-body">
+                {% include 'components/form.html' with form=matapelajaran_form submit_button='Buat' action='buat/' col='one' %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

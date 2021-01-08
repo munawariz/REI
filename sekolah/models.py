@@ -72,7 +72,7 @@ class Jurusan(models.Model):
 
 class MataPelajaran(models.Model):
     nama = models.CharField(verbose_name='Nama Mata Pelajaran', max_length=255)
-    singkat = models.CharField(verbose_name='Nama Singkat Mata Pelajaran', max_length=20)
+    singkat = models.CharField(verbose_name='Nama Singkat Mata Pelajaran', max_length=20, null=True, blank=True)
     kelompok = models.CharField(verbose_name='Kelompok Mata Pelajaran', max_length=5, choices=MATAPELAJARAN_CHOICE)
 
     def __str__(self):

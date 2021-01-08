@@ -7,8 +7,8 @@ from django.shortcuts import redirect, render
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Ekskul, Jurusan, Kelas, MataPelajaran, Sekolah, Semester
-from .forms import EkskulForm, JurusanForm, KelasForm, SekolahForm, SemesterForm
+from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Sekolah, Semester
+from .forms import EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required, validdirs_required
@@ -327,6 +327,89 @@ class hapus_ekskul(View):
             messages.error(request, f'Terjadi kesalahan saat mencoba menghapus {nama_ekskul}')
         finally:
             return redirect('list-ekskul')
+
+@method_decorator(staftu_required, name='dispatch')
+class list_matapelajaran(View):
+    def get(self, request):
+        request.session['page'] = 'Daftar Matapelajaran'
+        list_matapelajaran = MataPelajaran.objects.all().order_by('kelompok')
+        context = {
+            'data': zip_pelkkm(list_matapelajaran, active_semester()),
+            'list_matapelajaran': list_matapelajaran,
+            'matapelajaran_form': MatapelajaranForm(),
+        }
+        return render(request, 'pages/matapelajaran/matapelajaran.html', context)
+
+@method_decorator(staftu_required, name='dispatch')
+class buat_matapelajaran(View):
+    def post(self, request):
+        matapelajaran_form = MatapelajaranForm(request.POST)
+        try:
+            if matapelajaran_form.is_valid():
+                mapel = MataPelajaran.objects.create(**form_value(matapelajaran_form))
+                messages.success(request, f'{mapel.nama} berhasil dibuat')
+        except Exception as e:
+            messages.error(request, 'Terjadi kesalahan saat mencoba membuat Matapelajaran')
+        finally:
+            return redirect('list-matapelajaran')
+
+@method_decorator(staftu_required, name='dispatch')
+class detail_matapelajaran(View):
+    def get(self, request, matapelajaran):
+        try:
+            matapelajaran = MataPelajaran.objects.get(pk=matapelajaran)
+        except ObjectDoesNotExist:
+            raise Http404
+        kkm, created = KKM.objects.get_or_create(matapelajaran=matapelajaran, semester=active_semester())
+        context = {
+            'matapelajaran': matapelajaran,
+            'kkm': kkm,
+            'matapelajaran_form': MatapelajaranForm(initial=get_initial(matapelajaran)),
+            'kkm_form': KKMForm(initial=get_initial(kkm)),
+        }
+        return render(request, 'pages/matapelajaran/detail-matapelajaran.html', context)
+
+@method_decorator(staftu_required, name='dispatch')
+class ubah_matapelajaran(View):
+    def post(self, request, matapelajaran):
+        matapelajaran_form = MatapelajaranForm(request.POST)
+        try:
+            if matapelajaran_form.is_valid():
+                MataPelajaran.objects.filter(pk=matapelajaran).update(**form_value(matapelajaran_form))
+                nama_mapel = MataPelajaran.objects.get(pk=matapelajaran).nama
+                messages.success(request, f'Data Matapelajaran {nama_mapel} berhasil diubah')
+        except Exception as e:
+            messages.error(request, f'Terjadi kesalahan saat mencoba mengubah data Matapelajaran')
+        finally:
+            return redirect('detail-matapelajaran', matapelajaran=matapelajaran)
+
+@method_decorator(staftu_required, name='dispatch')
+class ubah_kkm(View):
+    def post(self, request, matapelajaran):
+        kkm_form = KKMForm(request.POST)
+        mapel = MataPelajaran.objects.get(pk=matapelajaran)
+        try:
+            if kkm_form.is_valid():
+                kkm = KKM.objects.filter(matapelajaran=mapel, semester=active_semester())
+                kkm.update(**form_value(kkm_form))
+                messages.success(request, f'Data KKM untuk Matapelajaran {mapel.nama} berhasil diubah')
+        except Exception as e:
+            messages.error(request, f'Terjadi kesalahan saat mencoba mengubah data KKM untuk Matapelajaran {mapel.nama}')
+        finally:
+            return redirect('detail-matapelajaran', matapelajaran=matapelajaran)
+
+@method_decorator(staftu_required, name='dispatch')
+class hapus_matapelajaran(View):
+    def get(self, request, matapelajaran):
+        try:
+            mapel = MataPelajaran.objects.get(pk=matapelajaran)
+            nama_mapel = mapel.nama
+            mapel.delete()
+            messages.success(request, f'{nama_mapel} telah berhasil dihapus')
+        except Exception as e:
+            messages.error(request, 'Terjadi kesalahan saat mencoba menghapus Matapelajaran')
+        finally:
+            return redirect('list-matapelajaran')
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(validdirs_required, name='dispatch')

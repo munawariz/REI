@@ -53,6 +53,19 @@ urlpatterns = [
         path('buat/', sekolah_view.buat_ekskul.as_view(), name='buat-ekskul'),
         path('<ekskul>/hapus/', sekolah_view.hapus_ekskul.as_view(), name='hapus-ekskul')
     ])),
+    path('ekskul/', include([
+        path('', sekolah_view.list_ekskul.as_view(), name='list-ekskul'),
+        path('buat/', sekolah_view.buat_ekskul.as_view(), name='buat-ekskul'),
+        path('<ekskul>/hapus/', sekolah_view.hapus_ekskul.as_view(), name='hapus-ekskul')
+    ])),
+    path('matapelajaran/', include([
+        path('', sekolah_view.list_matapelajaran.as_view(), name='list-matapelajaran'),
+        path('buat/', sekolah_view.buat_matapelajaran.as_view(), name='buat-matapelajaran'),
+        path('<matapelajaran>/', sekolah_view.detail_matapelajaran.as_view(), name='detail-matapelajaran'),
+        path('<matapelajaran>/ubah/matapelajaran/', sekolah_view.ubah_matapelajaran.as_view(), name='ubah-matapelajaran'),
+        path('<matapelajaran>/ubah/kkm/', sekolah_view.ubah_kkm.as_view(), name='ubah-kkm'),
+        path('<matapelajaran>/hapus/', sekolah_view.hapus_matapelajaran.as_view(), name='hapus-matapelajaran')
+    ])),
     path('kelas/', include([
         path('', sekolah_view.list_kelas.as_view(), name='list-kelas'),
         path('buat/', sekolah_view.buat_kelas.as_view(), name='buat-kelas'),
