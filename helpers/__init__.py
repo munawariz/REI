@@ -117,6 +117,6 @@ def generate_pdf(siswa, pdf_dir, context):
 def get_sekolah():
     from sekolah.models import Sekolah
     try:
-        return Sekolah.objects.get()
+        return Sekolah.objects.get_or_create()[0]
     except ObjectDoesNotExist:
         return None
