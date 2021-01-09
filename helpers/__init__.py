@@ -109,6 +109,8 @@ def get_validkelas(siswa):
         return None
 
 def generate_pdf(siswa, pdf_dir, context):
+    from sekolah.models import Rapor
     html_string = render_to_string('pages/rapor/rapor.html', context)
     html = HTML(string=html_string)
     html.write_pdf(target=f'{pdf_dir}/{siswa.nama}.pdf', stylesheets=['static/css/rapor.css'])
+    rapor, created = Rapor.objects.update_or_create(siswa=siswa, semester=active_semester(), defaults={'rapor': f'{pdf_dir}/{siswa.nama}.pdf'})

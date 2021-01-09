@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Sekolah, Semester
+from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Rapor, Sekolah, Semester
 from .forms import EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
@@ -15,7 +15,6 @@ from REI.decorators import staftu_required, validdirs_required
 from helpers import active_semester, get_initial, form_value, get_validwalikelas, get_validsiswabaru, get_validpelajaran, realkelas
 from helpers.nilai_helpers import zip_eksnilai, zip_pelkkm, zip_pelnilai, zip_nilrapor
 from django.contrib import messages
-import traceback
 
 from helpers import generate_pdf
 from django.http import HttpResponse, FileResponse
@@ -442,7 +441,8 @@ class rapor_view(View):
         }
 
         generate_pdf(siswa, kwargs['pdf_dir'], context)
-        with open(f'{kwargs["pdf_dir"]}/{siswa.nama}.pdf', 'rb') as result:            
+        rapor = Rapor.objects.get(siswa=siswa, semester=active_semester())
+        with open(rapor.rapor, 'rb') as result:            
             response = HttpResponse(result, content_type='application/pdf;')
             if request.GET['action'] == 'unduh':
                 response['Content-Disposition'] = f'attachment; filename={siswa.nama}.pdf'
