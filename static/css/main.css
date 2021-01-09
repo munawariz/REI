@@ -452,6 +452,31 @@ ul.one-columns{
     grid-template-columns: repeat(1, 1fr);
 }
 
+.float{
+    position:fixed;
+	width:60px;
+	height:60px;
+	bottom:40px;
+    right:40px;
+	background: linear-gradient(60deg, #7b1fa2, #913f9e);
+	color:var(--text-secondary);
+	border-radius:100%;
+    text-align:center;
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.3);
+    z-index: 99!important;
+    margin: 2rem;
+    margin-right: -2rem;
+    transition: transform 600ms;
+    transform: scale(0.8);
+}
+
+.float:hover{
+    transform: scale(0.9);
+    background: linear-gradient(60deg, #913db4, #a350af);
+    color: var(--text-secondary);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
+}
+
 @media only screen and (max-width: 768px){
     main{
         margin: 0;

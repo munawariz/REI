@@ -24,6 +24,9 @@
                     {% endblock content %}
                 </div>
         </main>
+        <a href="{% url 'dashboard' %}" class="d-md-none d-sm-block float">
+            <ion-icon name="home-outline" class="fs-4 pt-3"></ion-icon>
+        </a>
 
         {% include 'include/js.html' %}
         {% block script %}
