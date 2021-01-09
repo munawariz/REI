@@ -2,9 +2,10 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from solo.models import SingletonModel
 from django.dispatch import receiver
-from helpers.choice import JENIS_EKSKUL, TINGKAT_SEKOLAH, SEMESTER_CHOICE, MATAPELAJARAN_CHOICE, KELAS_CHOICE, tingkat_choice
+from helpers.choice import JENIS_EKSKUL, TINGKAT_SEKOLAH, SEMESTER_CHOICE, MATAPELAJARAN_CHOICE, KELAS_CHOICE, TINGKAT_KELAS_CHOICE, tingkat_choice
 from guru.models import Guru
 import os
+from helpers import get_sekolah
 
 class Sekolah(SingletonModel):    
     nama = models.CharField(max_length=255)
@@ -109,9 +110,8 @@ def unique_together_tp_mapel(sender, instance, **kwargs):
     except ObjectDoesNotExist:
         pass
 
-
 class Kelas(models.Model):
-    tingkat = models.CharField(max_length=3, choices=tingkat_choice(Sekolah.objects.get()))
+    tingkat = models.CharField(max_length=3, choices=tingkat_choice(get_sekolah()))
     jurusan = models.ForeignKey(Jurusan, on_delete=models.PROTECT, related_name='kelas', null=True, blank=True)
     kelas = models.CharField(max_length=1, choices=KELAS_CHOICE)
     matapelajaran = models.ManyToManyField(MataPelajaran, related_name='kelas', blank=True)
@@ -149,7 +149,8 @@ class Ekskul(models.Model):
 
 
 class Rapor(models.Model):
-    siswa = models.ForeignKey('siswa.Siswa', related_name='rapor', on_delete=models.CASCADE)
+    from siswa.models import Siswa
+    siswa = models.ForeignKey(Siswa, related_name='rapor', on_delete=models.CASCADE, null=True)
     semester = models.ForeignKey(Semester, related_name='rapor', on_delete=models.CASCADE)
     rapor = models.TextField(verbose_name='Lokasi PDF Rapor', null=True)
 

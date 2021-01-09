@@ -70,14 +70,26 @@ WSGI_APPLICATION = 'REI.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+from pymongo.mongo_client import MongoClient
+MongoClient.HOST = 'mongodb://admin-munawar:L1GvzLE7C8VuCsUA@rei-database-shard-00-00.94yhc.mongodb.net:27017,rei-database-shard-00-01.94yhc.mongodb.net:27017,rei-database-shard-00-02.94yhc.mongodb.net:27017/REIMongo?ssl=true&replicaSet=atlas-770ftc-shard-0&authSource=admin&retryWrites=true&w=majority'
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'NAME': 'REIMongo',
+        "CLIENT": {
+            "host": 'mongodb://admin-munawar:L1GvzLE7C8VuCsUA@rei-database-shard-00-00.94yhc.mongodb.net:27017,rei-database-shard-00-01.94yhc.mongodb.net:27017,rei-database-shard-00-02.94yhc.mongodb.net:27017/REIMongo?ssl=true&replicaSet=atlas-770ftc-shard-0&authSource=admin&retryWrites=true&w=majority',
+            "username": 'admin-munawar',
+            "password": 'L1GvzLE7C8VuCsUA',
+            "authMechanism": "SCRAM-SHA-1",
+        }, 
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

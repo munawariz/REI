@@ -4,7 +4,7 @@ from django.db.models.query_utils import Q
 from django.http.response import Http404
 from django.shortcuts import redirect, render
 from django.views.generic import View
-from helpers import active_semester, get_initial, form_value
+from helpers import active_semester, get_initial, form_value, get_sekolah
 from .models import Guru
 from siswa.models import Siswa
 from sekolah.models import Kelas, Sekolah
@@ -27,7 +27,7 @@ class dashboard(View):
     def get(self, request):
         request.session['page'] = 'Dashboard'
         context = {
-            'sekolah': Sekolah.objects.get(),
+            'sekolah': get_sekolah(),
             'semester': active_semester(),
         }
         return render(request, 'pages/dashboard.html', context)
