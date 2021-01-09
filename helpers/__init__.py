@@ -2,7 +2,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import date
 from django import forms
 from django.forms.models import model_to_dict
-from django.contrib import messages
 from weasyprint import HTML
 from django.template.loader import render_to_string
   
@@ -114,3 +113,10 @@ def generate_pdf(siswa, pdf_dir, context):
     html = HTML(string=html_string)
     html.write_pdf(target=f'{pdf_dir}/{siswa.nama}.pdf', stylesheets=['static/css/rapor.css'])
     rapor, created = Rapor.objects.update_or_create(siswa=siswa, semester=active_semester(), defaults={'rapor': f'{pdf_dir}/{siswa.nama}.pdf'})
+
+def get_sekolah():
+    from sekolah.models import Sekolah
+    try:
+        return Sekolah.objects.get_or_create()[0]
+    except ObjectDoesNotExist:
+        return None

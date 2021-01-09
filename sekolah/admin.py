@@ -49,4 +49,3 @@ class RaporAdmin(admin.ModelAdmin):
     list_filter = ('semester',)
     search_fields = ('siswa',)
     ordering = ('-semester', 'siswa')
-    readonly_fields = ('rapor',)

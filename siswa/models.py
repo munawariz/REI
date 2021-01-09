@@ -1,4 +1,4 @@
-import helpers
+from helpers import get_sekolah
 from django.db import models
 from django.db.models import signals
 from sekolah.models import Kelas, MataPelajaran, Sekolah, Semester
@@ -18,7 +18,7 @@ class Siswa(models.Model):
     agama = models.CharField(max_length=255)
     alamat = models.CharField(max_length=255)
     sekolah_asal = models.CharField(max_length=255)
-    diterima_di_tingkat = models.CharField(max_length=3, choices=tingkat_choice(Sekolah.objects.get()))
+    diterima_di_tingkat = models.CharField(max_length=3, choices=tingkat_choice(get_sekolah()))
     nama_ayah = models.CharField(max_length=255)
     nama_ibu = models.CharField(max_length=255)
     nama_wali = models.CharField(max_length=255, null=True, blank=True)
