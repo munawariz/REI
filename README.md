@@ -111,6 +111,11 @@ In the root directory of this project
 ```
 manage.py runserver
 ```
+This will run the server using the default SQlite as DBMS.
+```
+manage.py runserver --settings=REI.mongo
+```
+To run this project using MongoDB as DBMS.
 Default port is 8000, so access the [server](127.0.0.1:8000) there
 
 ### Admin Site
