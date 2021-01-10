@@ -2,10 +2,9 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from solo.models import SingletonModel
 from django.dispatch import receiver
-from helpers.choice import JENIS_EKSKUL, TINGKAT_SEKOLAH, SEMESTER_CHOICE, MATAPELAJARAN_CHOICE, KELAS_CHOICE, TINGKAT_KELAS_CHOICE, tingkat_choice
+from helpers.choice import JENIS_EKSKUL, TINGKAT_SEKOLAH, SEMESTER_CHOICE, MATAPELAJARAN_CHOICE, KELAS_CHOICE, TINGKAT_KELAS_CHOICE
 from guru.models import Guru
 import os
-from helpers import get_sekolah
 
 class Sekolah(SingletonModel):    
     nama = models.CharField(max_length=255)
@@ -111,7 +110,7 @@ def unique_together_tp_mapel(sender, instance, **kwargs):
         pass
 
 class Kelas(models.Model):
-    tingkat = models.CharField(max_length=3, choices=tingkat_choice(get_sekolah()))
+    tingkat = models.CharField(max_length=3, choices=TINGKAT_KELAS_CHOICE)
     jurusan = models.ForeignKey(Jurusan, on_delete=models.PROTECT, related_name='kelas', null=True, blank=True)
     kelas = models.CharField(max_length=1, choices=KELAS_CHOICE)
     matapelajaran = models.ManyToManyField(MataPelajaran, related_name='kelas', blank=True)
