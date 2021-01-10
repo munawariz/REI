@@ -2,7 +2,7 @@ from helpers import get_sekolah
 from django.db import models
 from django.db.models import signals
 from sekolah.models import Kelas, MataPelajaran, Sekolah, Semester
-from helpers.choice import GENDER_CHOICE, NILAI_EKSKUL, tingkat_choice
+from helpers.choice import GENDER_CHOICE, NILAI_EKSKUL, TINGKAT_KELAS_CHOICE
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.dispatch import receiver
 from sekolah.models import Ekskul
@@ -18,7 +18,7 @@ class Siswa(models.Model):
     agama = models.CharField(max_length=255)
     alamat = models.CharField(max_length=255)
     sekolah_asal = models.CharField(max_length=255)
-    diterima_di_tingkat = models.CharField(max_length=3, choices=tingkat_choice(get_sekolah()))
+    diterima_di_tingkat = models.CharField(max_length=3, choices=TINGKAT_KELAS_CHOICE)
     nama_ayah = models.CharField(max_length=255)
     nama_ibu = models.CharField(max_length=255)
     nama_wali = models.CharField(max_length=255, null=True, blank=True)
