@@ -1,4 +1,6 @@
 from pathlib import Path
+import os
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,7 +15,7 @@ SECRET_KEY = 'o23cgzqp0=^d!7(!j#y$f=-$^or*=je4y)w-0y(__egg(lht)#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://rei-pw.herokuapp.com/', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -139,3 +141,5 @@ LOGIN_URL = 'login'
 
 # Stuff
 DATE_FORMAT = '%d-%m-%y'
+
+django_heroku.settings(locals())
