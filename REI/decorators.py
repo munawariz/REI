@@ -89,3 +89,14 @@ def validdirs_required(function=None):
         return function(request, *args, **kwargs)
 
     return wrapper
+
+def activesemester_required(function=None):
+    @wraps(function)
+    def wrapper(request, *args, **kwargs):
+        if active_semester():
+            return function(request, *args, **kwargs)
+        else:
+            messages.error(request, 'Halaman itu tidak bisa diakses sebelum ada semester yang diaktifkan')
+            return redirect('dashboard')
+
+    return wrapper

@@ -1,6 +1,6 @@
 from helpers.choice import tingkat_choice
 from django.views.generic.edit import CreateView
-from REI.decorators import staftu_required, walikelas_required, validkelas_required
+from REI.decorators import staftu_required, walikelas_required, validkelas_required, activesemester_required
 from django.http.response import Http404
 from sekolah.models import Ekskul, Kelas, MataPelajaran
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -18,6 +18,7 @@ from helpers import calculate_age, active_semester, get_initial, form_value, get
 from django.contrib import messages
 
 @method_decorator(login_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class list_siswa(View):
     def get(self, request):
         request.session['page'] = 'Daftar Siswa'
@@ -47,6 +48,7 @@ class list_siswa(View):
         return render(request,  'pages/siswa/siswa.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class buat_siswa(CreateView):
     def post(self, request):
         siswa_form = SiswaForm(request.POST)
@@ -61,6 +63,7 @@ class buat_siswa(CreateView):
             return redirect('list-siswa')
 
 @method_decorator(login_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class detail_siswa(View):
     def get(self, request, nis):
         try:
@@ -85,6 +88,7 @@ class detail_siswa(View):
         return render(request, 'pages/siswa/detail-siswa.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class profil_siswa(UpdateView):
     model = Siswa
     template_name = 'pages/siswa/profil-siswa.html'
@@ -105,6 +109,7 @@ class profil_siswa(UpdateView):
 
 @method_decorator(walikelas_required, name='dispatch')
 @method_decorator(validkelas_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class nilai_siswa(View):
     def get(self, request, nis):
         request.session['page'] = 'Nilai Siswa'
@@ -135,6 +140,7 @@ class nilai_siswa(View):
 
 @method_decorator(walikelas_required, name='dispatch')
 @method_decorator(validkelas_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class absen_siswa(View):
     def get(self, request, nis):
         request.session['page'] = 'Absensi Siswa'
@@ -159,6 +165,7 @@ class absen_siswa(View):
 
 @method_decorator(walikelas_required, name='dispatch')
 @method_decorator(validkelas_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class ekskul_siswa(View):
     def get(self, request, nis):
         request.session['page'] = 'Ekskul Siswa'
@@ -183,6 +190,7 @@ class ekskul_siswa(View):
 
 @method_decorator(walikelas_required, name='dispatch')
 @method_decorator(validkelas_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class tambah_ekskul(View):
     def post(self, request, nis):
         absen_form = NilaiEkskulForm(request.POST)
@@ -198,6 +206,7 @@ class tambah_ekskul(View):
     
 @method_decorator(walikelas_required, name='dispatch')
 @method_decorator(validkelas_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class hapus_ekskul_siswa(View):
     def get(self, request, nis, ekskul):
         active_siswa = Siswa.objects.get(nis=nis)
@@ -207,6 +216,7 @@ class hapus_ekskul_siswa(View):
         return redirect('ekskul-siswa', nis=nis)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class hapus_siswa(View):
     def get(self, request, nis):
         Siswa.objects.get(nis=nis).delete()

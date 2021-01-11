@@ -12,7 +12,7 @@ from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Rapor, Sekolah, 
 from .forms import EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
-from REI.decorators import staftu_required, validdirs_required
+from REI.decorators import staftu_required, validdirs_required, activesemester_required
 from helpers import active_semester, get_initial, form_value, get_sekolah, get_validwalikelas, get_validsiswabaru, get_validpelajaran, realkelas
 from helpers.nilai_helpers import zip_eksnilai, zip_pelkkm, zip_pelnilai, zip_nilrapor
 from django.contrib import messages
@@ -97,6 +97,7 @@ class hapus_semester(View):
             return redirect('list-semester')
 
 @method_decorator(login_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class list_kelas(View):
     def get(self, request):
         request.session['page'] = 'Daftar Kelas'
@@ -124,6 +125,7 @@ class list_kelas(View):
         return render(request, 'pages/kelas/kelas.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class buat_kelas(View):
     def post(self, request):
         kelas_form = KelasForm(request.POST)
@@ -137,6 +139,7 @@ class buat_kelas(View):
             return redirect('list-kelas')
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class hapus_kelas(View):
     def get(self, request, kelas):
         try:
@@ -148,6 +151,7 @@ class hapus_kelas(View):
             return redirect('list-kelas')
 
 @method_decorator(login_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class detail_kelas(View):
     def get(self, request, kelas):
         request.session['page'] = f'Detail {kelas}'
@@ -168,6 +172,7 @@ class detail_kelas(View):
         return render(request, 'pages/kelas/detail-kelas.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class walikelas_kelas(View):
     def get(self, request, kelas):
         request.session['page'] = f'Walikelas {kelas}'
@@ -185,6 +190,7 @@ class walikelas_kelas(View):
         return render(request, 'pages/kelas/ubah-walikelas.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class ganti_walikelas(View):
     def post(self, request, kelas):
         kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
@@ -196,6 +202,7 @@ class ganti_walikelas(View):
         return redirect('walikelas-kelas', kelas=kelas.nama)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class anggota_kelas(View):
     def get(self, request, kelas):
         request.session['page'] = f'Anggota Kelas {kelas}'
@@ -208,6 +215,7 @@ class anggota_kelas(View):
         return render(request, 'pages/kelas/anggota-kelas.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class tambah_anggota(View):
     def get(self, request, kelas, siswa):
         siswa = Siswa.objects.get(nis=siswa)
@@ -218,6 +226,7 @@ class tambah_anggota(View):
         return redirect('anggota-kelas', kelas=kelas.nama)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class hapus_anggota(View):
     def get(self, request, kelas, siswa):
         siswa = Siswa.objects.get(nis=siswa)
@@ -227,6 +236,7 @@ class hapus_anggota(View):
         return redirect('anggota-kelas', kelas=kelas)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class pelajaran_kelas(View):
     def get(self, request, kelas):
         request.session['page'] = f'Matapelajaran {kelas}'
@@ -239,6 +249,7 @@ class pelajaran_kelas(View):
         return render(request, 'pages/kelas/pelajaran-kelas.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class tambah_pelajaran(View):
     def get(self, request, kelas, pelajaran):
         matapelajaran = MataPelajaran.objects.get(pk=pelajaran)
@@ -248,6 +259,7 @@ class tambah_pelajaran(View):
         return redirect('pelajaran-kelas', kelas=kelas.nama)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class hapus_pelajaran(View):
     def get(self, request, kelas, pelajaran):
         matapelajaran = MataPelajaran.objects.get(pk=pelajaran)
@@ -330,6 +342,7 @@ class hapus_ekskul(View):
             return redirect('list-ekskul')
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class list_matapelajaran(View):
     def get(self, request):
         request.session['page'] = 'Daftar Matapelajaran'
@@ -342,6 +355,7 @@ class list_matapelajaran(View):
         return render(request, 'pages/matapelajaran/matapelajaran.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class buat_matapelajaran(View):
     def post(self, request):
         matapelajaran_form = MatapelajaranForm(request.POST)
@@ -355,6 +369,7 @@ class buat_matapelajaran(View):
             return redirect('list-matapelajaran')
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class detail_matapelajaran(View):
     def get(self, request, matapelajaran):
         try:
@@ -371,6 +386,7 @@ class detail_matapelajaran(View):
         return render(request, 'pages/matapelajaran/detail-matapelajaran.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class ubah_matapelajaran(View):
     def post(self, request, matapelajaran):
         matapelajaran_form = MatapelajaranForm(request.POST)
@@ -385,6 +401,7 @@ class ubah_matapelajaran(View):
             return redirect('detail-matapelajaran', matapelajaran=matapelajaran)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class ubah_kkm(View):
     def post(self, request, matapelajaran):
         kkm_form = KKMForm(request.POST)
@@ -400,6 +417,7 @@ class ubah_kkm(View):
             return redirect('detail-matapelajaran', matapelajaran=matapelajaran)
 
 @method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class hapus_matapelajaran(View):
     def get(self, request, matapelajaran):
         try:
@@ -414,6 +432,7 @@ class hapus_matapelajaran(View):
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(validdirs_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
 class rapor_view(View):
     def get(self, request, nis, **kwargs):
         try:
