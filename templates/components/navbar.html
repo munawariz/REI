@@ -1,5 +1,7 @@
 {% load rei_tags %}
 {% load solo_tags %}
+{% active_kelas as active_kelas %}
+{% semester_is_active as active_semester%}
 {% get_solo 'sekolah.Sekolah' as sekolah %}
 <nav class="navbar" id="navbar" style="z-index: 99;">
     <ul class="navbar-nav">
@@ -16,7 +18,7 @@
             </a>
         </li>
 
-        {% if semester_is_active %}
+        {% if active_semester %}
             <li class="nav-item">
                 <a href="{% url 'list-siswa' %}" class="nav-link">
                     <ion-icon name="list-outline" class="icon-nav"></ion-icon>
@@ -35,26 +37,27 @@
                     <span class="link-text">Daftar Kelas</span>
                 </a>
             </li>
-            {% if sekolah.tingkat == 'SMK' %}
-            <li class="nav-item">
-                <a href="{% url 'list-jurusan' %}" class="nav-link">
-                    <ion-icon name="telescope-outline" class="icon-nav"></ion-icon>
-                    <span class="link-text">Daftar Jurusan</span>
-                </a>
-            </li>
-            {% endif %}
             <li class="nav-item">
                 <a href="{% url 'list-matapelajaran' %}" class="nav-link">
                     <ion-icon name="book-outline" class="icon-nav"></ion-icon>
                     <span class="link-text">Daftar Matapelajaran</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="{% url 'list-ekskul' %}" class="nav-link">
-                    <ion-icon name="american-football-outline" class="icon-nav"></ion-icon>
-                    <span class="link-text">Daftar Ekskul</span>
-                </a>
-            </li>
+        {% endif %}
+
+        <li class="nav-item">
+            <a href="{% url 'list-ekskul' %}" class="nav-link">
+                <ion-icon name="american-football-outline" class="icon-nav"></ion-icon>
+                <span class="link-text">Daftar Ekskul</span>
+            </a>
+        </li>
+        {% if sekolah.tingkat == 'SMK' %}
+        <li class="nav-item">
+            <a href="{% url 'list-jurusan' %}" class="nav-link">
+                <ion-icon name="telescope-outline" class="icon-nav"></ion-icon>
+                <span class="link-text">Daftar Jurusan</span>
+            </a>
+        </li>
         {% endif %}
 
         {% if user.is_superuser or user.is_staftu %}
