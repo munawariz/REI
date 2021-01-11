@@ -1,6 +1,4 @@
 from django import forms
-from django.db.models import fields
-from django.forms import widgets
 from .models import Guru
 from helpers import input_type as type
 

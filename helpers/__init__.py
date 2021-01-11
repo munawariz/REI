@@ -4,6 +4,7 @@ from django import forms
 from django.forms.models import model_to_dict
 from weasyprint import HTML
 from django.template.loader import render_to_string
+from django.db.utils import OperationalError
   
 def calculate_age(birthDate):
     days_in_year = 365    
@@ -13,8 +14,10 @@ def calculate_age(birthDate):
 def active_semester():    
     try:
         from sekolah.models import Semester
-        return Semester.objects.get(is_active=True)        
+        return Semester.objects.get(is_active=True)
     except ObjectDoesNotExist:
+        return None
+    except OperationalError:
         return None
 
 def get_initial(object):
@@ -119,4 +122,6 @@ def get_sekolah():
     try:
         return Sekolah.objects.get_or_create()[0]
     except ObjectDoesNotExist:
+        return None
+    except OperationalError:
         return None

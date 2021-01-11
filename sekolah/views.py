@@ -1,3 +1,4 @@
+from helpers.choice import tingkat_choice
 from guru.models import Guru
 from siswa.models import Absensi, Siswa
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -12,7 +13,7 @@ from .forms import EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranFor
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required, validdirs_required
-from helpers import active_semester, get_initial, form_value, get_validwalikelas, get_validsiswabaru, get_validpelajaran, realkelas
+from helpers import active_semester, get_initial, form_value, get_sekolah, get_validwalikelas, get_validsiswabaru, get_validpelajaran, realkelas
 from helpers.nilai_helpers import zip_eksnilai, zip_pelkkm, zip_pelnilai, zip_nilrapor
 from django.contrib import messages
 
@@ -109,6 +110,7 @@ class list_kelas(View):
             list_kelas = Kelas.objects.filter(semester=active_semester()).order_by('jurusan', 'tingkat', 'kelas')
         
         kelas_form = KelasForm()
+        kelas_form.fields['tingkat'].choices = tingkat_choice(get_sekolah())
         paginator = Paginator(list_kelas, 5)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)

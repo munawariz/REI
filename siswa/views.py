@@ -1,3 +1,4 @@
+from helpers.choice import tingkat_choice
 from django.views.generic.edit import CreateView
 from REI.decorators import staftu_required, walikelas_required, validkelas_required
 from django.http.response import Http404
@@ -13,7 +14,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from helpers.nilai_helpers import zip_eksnilai, zip_pelnilai
-from helpers import calculate_age, active_semester, get_initial, form_value, get_validkelas
+from helpers import calculate_age, active_semester, get_initial, form_value, get_sekolah, get_validkelas
 from django.contrib import messages
 
 @method_decorator(login_required, name='dispatch')
@@ -34,11 +35,13 @@ class list_siswa(View):
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         number_of_pages = [(number+1) for number in range(page_obj.paginator.num_pages)]
+        siswa_form = SiswaForm()
+        siswa_form.fields['diterima_di_tingkat'].choices = tingkat_choice(get_sekolah())
         context = {
             'list_siswa': page_obj,
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
-            'siswa_form': SiswaForm(),
+            'siswa_form': siswa_form,
             'semester_aktif': active_semester(),
         }
         return render(request,  'pages/siswa/siswa.html', context)
