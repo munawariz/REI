@@ -1,9 +1,10 @@
+from django.db.utils import IntegrityError
 from REI.decorators import staftu_required, activesemester_required
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.query_utils import Q
 from django.http.response import Http404
 from django.shortcuts import redirect, render
-from django.views.generic import View
+from django.views.generic import View, CreateView
 from helpers import active_semester, get_initial, form_value, get_sekolah
 from .models import Guru
 from siswa.models import Siswa
@@ -102,14 +103,14 @@ class buat_guru(View):
                     is_walikelas = False
                 if request.GET['level'] == 'walikelas': 
                     is_walikelas = True
-                    is_walikelas = False
+                    is_staftu = False
 
                 guru = Guru.objects.create(**form_value(guru_form), is_staftu=is_staftu, is_walikelas=is_walikelas, is_active=True)
                 guru.set_password(guru_form.cleaned_data['password'])
                 guru.save()
                 messages.success(request, 'Akun berhasil dibuat')
-        except ValueError:
-            messages.error(request, f'Akun dengan NIP itu sudah ada')
+        except IntegrityError:
+            messages.error(request, 'Akun dengan NIP itu sudah ada')
         finally:
             return redirect('list-guru')
 

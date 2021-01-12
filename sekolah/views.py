@@ -110,8 +110,6 @@ class list_kelas(View):
         else:
             list_kelas = Kelas.objects.filter(semester=active_semester()).order_by('jurusan', 'tingkat', 'kelas')
         
-        kelas_form = KelasForm()
-        kelas_form.fields['tingkat'].choices = tingkat_choice(get_sekolah())
         paginator = Paginator(list_kelas, 5)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -120,7 +118,7 @@ class list_kelas(View):
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
             'list_kelas': list_kelas,
-            'kelas_form': kelas_form,
+            'kelas_form': KelasForm(),
         }
         return render(request, 'pages/kelas/kelas.html', context)
 

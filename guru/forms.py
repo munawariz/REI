@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import Guru
 from helpers import input_type as type
 
@@ -12,6 +13,11 @@ class GuruCreateForm(forms.ModelForm):
             'email': type.EmailInput(),
             'password': type.PasswordInput(),
         }
+
+    def clean(self):
+        if 'nip' in self.cleaned_data:
+            if self.cleaned_data['nip'] in Guru.objects.all().values('nip'):
+                raise forms.ValidationError('Guru dengan NIP itu sudah terdaftar')
 
 class GuruEditForm(forms.ModelForm):    
     class Meta:

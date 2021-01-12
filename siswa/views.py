@@ -36,13 +36,11 @@ class list_siswa(View):
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         number_of_pages = [(number+1) for number in range(page_obj.paginator.num_pages)]
-        siswa_form = SiswaForm()
-        siswa_form.fields['diterima_di_tingkat'].choices = tingkat_choice(get_sekolah())
         context = {
             'list_siswa': page_obj,
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
-            'siswa_form': siswa_form,
+            'siswa_form': SiswaForm(),
             'semester_aktif': active_semester(),
         }
         return render(request,  'pages/siswa/siswa.html', context)
