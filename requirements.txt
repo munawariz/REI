@@ -13,14 +13,11 @@ dataclasses==0.6
 defusedxml==0.6.0
 distlib==0.3.0
 distro==1.4.0
-dj-database-url==0.5.0
 Django==3.0.5
-django-heroku==0.3.1
 django-solo==1.1.5
 django-widget-tweaks==1.4.8
 git+https://github.com/harizMunawar/djongo@e8e8f6dab3657086b2b665fae8f5e6f27786a336#egg=djongo
 dnspython==2.0.0
-gunicorn==20.0.4
 html5lib==1.0.1
 idna==2.8
 ipaddr==2.2.0
@@ -30,7 +27,6 @@ packaging==20.3
 pep517==0.8.2
 Pillow==8.1.0
 progress==1.5
-psycopg2==2.8.6
 pycparser==2.20
 pymongo==3.7.2
 pyparsing==2.4.6
