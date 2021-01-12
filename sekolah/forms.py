@@ -1,7 +1,8 @@
-from helpers import active_semester, get_sekolah
-from helpers.choice import tingkat_choice
 from django import forms
+from django.db.utils import OperationalError
 from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Semester, Sekolah
+from helpers.choice import tingkat_choice
+from helpers import get_sekolah
 class SekolahForm(forms.ModelForm):
     class Meta:
         model = Sekolah
@@ -13,7 +14,10 @@ class SemesterForm(forms.ModelForm):
         fields = ('tahun_mulai', 'tahun_akhir', 'semester')
 
 class KelasForm(forms.ModelForm):
-    tingkat = forms.ChoiceField(choices=tingkat_choice(get_sekolah()))
+    try:
+        tingkat = forms.ChoiceField(choices=tingkat_choice(get_sekolah()))
+    except OperationalError:
+        pass
     class Meta:
         model = Kelas
         fields = ('tingkat', 'jurusan', 'kelas')

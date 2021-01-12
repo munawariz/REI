@@ -5,7 +5,6 @@ from django.dispatch import receiver
 from helpers.choice import JENIS_EKSKUL, TINGKAT_SEKOLAH, SEMESTER_CHOICE, MATAPELAJARAN_CHOICE, KELAS_CHOICE, TINGKAT_KELAS_CHOICE
 from guru.models import Guru
 import os
-from helpers import get_sekolah
 
 class Sekolah(SingletonModel):    
     nama = models.CharField(max_length=255)
@@ -69,19 +68,20 @@ class Jurusan(models.Model):
     singkat = models.CharField(verbose_name='Nama Singkat', max_length=10, null=True, blank=True)
 
     def __str__(self):
-        return self.singkat
+        return self.singkat or self.nama
 
 
 class MataPelajaran(models.Model):
     nama = models.CharField(verbose_name='Nama Mata Pelajaran', max_length=255)
-    singkat = models.CharField(verbose_name='Nama Singkat Mata Pelajaran', max_length=20, null=True, blank=True)
+    singkat = models.CharField(verbose_name='Nama Singkat Mata Pelajaran', max_length=20, null=True, blank=True, default=None)
     kelompok = models.CharField(verbose_name='Kelompok Mata Pelajaran', max_length=5, choices=MATAPELAJARAN_CHOICE)
 
     def __str__(self):
-        return f'{self.singkat}/{self.kelompok}'
+        if self.singkat: return f'{self.singkat}/{self.kelompok}'
+        else: return f'{self.nama}/{self.kelompok}'
 
     def save(self, *args, **kwargs):
-        self.singkat = str(self.singkat).upper()
+        if self.singkat: self.singkat = str(self.singkat).upper()
         super(MataPelajaran, self).save(*args, **kwargs)
 
 

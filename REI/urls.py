@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve
 from guru import views as guru_view
 from siswa import views as siswa_view
 from sekolah import views as sekolah_view
@@ -45,7 +46,7 @@ urlpatterns = [
     path('jurusan/', include([
         path('', sekolah_view.list_jurusan.as_view(), name='list-jurusan'),
         path('buat/', sekolah_view.buat_jurusan.as_view(), name='buat-jurusan'),
-        path('<jurusan>/', guru_view.placeholder, name='detail-jurusan'),
+        # path('<jurusan>/', guru_view.placeholder, name='detail-jurusan'),
         path('<jurusan>/hapus/', sekolah_view.hapus_jurusan.as_view(), name='hapus-jurusan')
     ])),
     path('ekskul/', include([
@@ -80,31 +81,4 @@ urlpatterns = [
         path('<kelas>/pelajaran/hapus/<pelajaran>/', sekolah_view.hapus_pelajaran.as_view(), name='hapus-pelajaran'),
         path('<kelas>/hapus/', sekolah_view.hapus_kelas.as_view(), name='hapus-kelas'),
     ])),
-    path('export-rapor/', guru_view.placeholder, name='export-rapor'),
-    
-    #URL for Staf TU
-    path('create-siswa/', guru_view.placeholder, name='create-siswa'),
-    path('edit-siswa/<nis>/', guru_view.placeholder, name='edit-siswa'),
-    path('delete-siswa/<nis>/', guru_view.placeholder, name='delete-siswa'),
-    path('create-guru/', guru_view.placeholder, name='create-guru'),
-    path('edit-guru/<nip>/', guru_view.placeholder, name='edit-guru'),
-    path('delete-guru/<nip>/', guru_view.placeholder, name='delete-guru'),
-    path('create-matapelajaran/', guru_view.placeholder, name='create-matapelajaran'),
-    path('edit-matapelajaran/<id>', guru_view.placeholder, name='edit-matapelajaran'),
-    path('delete-matapelajaran/<id>', guru_view.placeholder, name='delete-matapelajaran'),
-    path('create-kelas/', guru_view.placeholder, name='create-kelas'),
-    path('edit-kelas/<id>', guru_view.placeholder, name='edit-kelas'),
-    path('delete-kelas/<id>', guru_view.placeholder, name='delete-kelas'),
-    path('create-jurusan/', guru_view.placeholder, name='create-jurusan'),
-    path('edit-jurusan/<id>', guru_view.placeholder, name='edit-jurusan'),
-    path('delete-jurusan/<id>', guru_view.placeholder, name='delete-jurusan'),
-    path('create-ekskul/', guru_view.placeholder, name='create-ekskul'),
-    path('edit-ekskul/<id>', guru_view.placeholder, name='edit-ekskul'),
-    path('delete-ekskul/<id>', guru_view.placeholder, name='delete-ekskul'),
-    path('create-ekskul/', guru_view.placeholder, name='create-ekskul'),
-    path('edit-ekskul/<id>', guru_view.placeholder, name='edit-ekskul'),
-    path('delete-ekskul/<id>', guru_view.placeholder, name='delete-ekskul'),
-    path('set-walikelas/', guru_view.placeholder, name='set-walikelas'),
-    path('insert-informasi-sekolah/', guru_view.placeholder, name='insert-informasi-sekolah'),
-    path('dump-excel', guru_view.placeholder, name='dump-excel'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

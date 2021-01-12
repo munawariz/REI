@@ -1,9 +1,10 @@
-from helpers.choice import tingkat_choice
+from django.db.utils import OperationalError
 from sekolah.models import Kelas
 from django import forms
 from django.forms import fields
 from .models import Siswa, Nilai, Absensi, NilaiEkskul
-from helpers import active_semester, get_sekolah, input_type as type
+from helpers import active_semester, input_type as type, get_sekolah
+from helpers.choice import tingkat_choice
 
 class KelasSelect(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -11,7 +12,10 @@ class KelasSelect(forms.ModelChoiceField):
 
 class SiswaForm(forms.ModelForm):
     kelas = KelasSelect(queryset=Kelas.objects.filter(semester=active_semester()), required=False)
-    diterima_di_tingkat = forms.ChoiceField(choices=tingkat_choice(get_sekolah()))
+    try:
+        diterima_di_tingkat = forms.ChoiceField(choices = tingkat_choice(get_sekolah()))
+    except OperationalError:
+        pass
     class Meta:
         model = Siswa
         fields = '__all__'

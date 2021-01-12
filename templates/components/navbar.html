@@ -1,6 +1,7 @@
-{% load active_kelas from rei_tags %}
+{% load rei_tags %}
 {% load solo_tags %}
 {% active_kelas as active_kelas %}
+{% semester_is_active as active_semester%}
 {% get_solo 'sekolah.Sekolah' as sekolah %}
 <nav class="navbar" id="navbar" style="z-index: 99;">
     <ul class="navbar-nav">
@@ -16,22 +17,38 @@
                 <span class="link-text">Dashboard</span>
             </a>
         </li>
+
+        {% if active_semester %}
+            <li class="nav-item">
+                <a href="{% url 'list-siswa' %}" class="nav-link">
+                    <ion-icon name="list-outline" class="icon-nav"></ion-icon>
+                    <span class="link-text">Daftar Siswa</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'list-guru' %}" class="nav-link">
+                    <ion-icon name="person-outline" class="icon-nav"></ion-icon>
+                    <span class="link-text">Daftar Guru</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'list-kelas' %}" class="nav-link">
+                    <ion-icon name="people-outline" class="icon-nav"></ion-icon>
+                    <span class="link-text">Daftar Kelas</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'list-matapelajaran' %}" class="nav-link">
+                    <ion-icon name="book-outline" class="icon-nav"></ion-icon>
+                    <span class="link-text">Daftar Matapelajaran</span>
+                </a>
+            </li>
+        {% endif %}
+
         <li class="nav-item">
-            <a href="{% url 'list-siswa' %}" class="nav-link">
-                <ion-icon name="list-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">Daftar Siswa</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{% url 'list-guru' %}" class="nav-link">
-                <ion-icon name="person-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">Daftar Guru</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{% url 'list-kelas' %}" class="nav-link">
-                <ion-icon name="people-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">Daftar Kelas</span>
+            <a href="{% url 'list-ekskul' %}" class="nav-link">
+                <ion-icon name="american-football-outline" class="icon-nav"></ion-icon>
+                <span class="link-text">Daftar Ekskul</span>
             </a>
         </li>
         {% if sekolah.tingkat == 'SMK' %}
@@ -42,18 +59,6 @@
             </a>
         </li>
         {% endif %}
-        <li class="nav-item">
-            <a href="{% url 'list-matapelajaran' %}" class="nav-link">
-                <ion-icon name="book-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">Daftar Matapelajaran</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{% url 'list-ekskul' %}" class="nav-link">
-                <ion-icon name="american-football-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">Daftar Ekskul</span>
-            </a>
-        </li>
 
         {% if user.is_superuser or user.is_staftu %}
         <li class="nav-item">

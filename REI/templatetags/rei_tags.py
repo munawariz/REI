@@ -1,3 +1,4 @@
+from helpers import active_semester
 from django import template
 from django.core.exceptions import ObjectDoesNotExist
 register = template.Library()
@@ -16,3 +17,7 @@ def active_kelas(context):
             return None
     else:
         return None
+
+@register.simple_tag
+def semester_is_active():
+    return active_semester()

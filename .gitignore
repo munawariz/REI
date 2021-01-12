@@ -1,8 +1,10 @@
 #VS Code stuff
 .vscode/
+dev-env/
 
 #Non Code Stuff
 media/
+staticfiles/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

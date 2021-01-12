@@ -1,3 +1,5 @@
+{% load rei_tags %}
+{% semester_is_active as active_semester %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -18,15 +20,24 @@
             {% if not request.path == '/login/' %}
                 {% include 'components/appbar.html' %}
                 <div class="content">
+                    {% if not active_semester %}
+                    <div class="alert error-alert alert-dismissible fade show" role="alert">
+                        Belum ada semester yang aktif!<br>
+                        Beberapa fungsi belum bisa dijalankan kecuali sudah ada semester yang diaktifkan
+                    </div>
+                    {% endif %}
             {% endif %}
                     {% include 'components/alert-messages.html' %}
                     {% block content %}
                     {% endblock content %}
                 </div>
         </main>
-        <a href="{% url 'dashboard' %}" class="d-md-none d-sm-block float">
-            <ion-icon name="home-outline" class="fs-4 pt-3"></ion-icon>
-        </a>
+        {% if not request.path == '/login/' %}
+            <a href="{% url 'dashboard' %}" class="d-md-none d-sm-block float">
+                <ion-icon name="home-outline" class="fs-4 pt-3"></ion-icon>
+            </a>
+        {% endif %}
+        
 
         {% include 'include/js.html' %}
         {% block script %}
