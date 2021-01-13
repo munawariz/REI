@@ -7,6 +7,7 @@ from guru import views as guru_view
 from siswa import views as siswa_view
 from sekolah import views as sekolah_view
 from django.contrib.auth import views as auth_views
+import debug_toolbar
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='pages/guru/login.html'), name='login'),
@@ -81,4 +82,5 @@ urlpatterns = [
         path('<kelas>/pelajaran/hapus/<pelajaran>/', sekolah_view.hapus_pelajaran.as_view(), name='hapus-pelajaran'),
         path('<kelas>/hapus/', sekolah_view.hapus_kelas.as_view(), name='hapus-kelas'),
     ])),
+    path('debug/', include(debug_toolbar.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

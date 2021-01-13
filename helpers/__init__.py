@@ -7,8 +7,7 @@ from django.template.loader import render_to_string
 from django.db.utils import OperationalError
   
 def calculate_age(birthDate):
-    days_in_year = 365    
-    age = int((date.today() - birthDate).days / days_in_year) 
+    age = int((date.today() - birthDate).days / 365) 
     return age 
 
 def active_semester():    
@@ -39,13 +38,13 @@ def get_validwalikelas():
     from guru.models import Guru
     from sekolah.models import Kelas
     valid_walikelas = []
-    all_walikelas = Guru.objects.filter(is_walikelas=True, is_superuser=False, is_staftu=False, is_active=True)
+    all_walikelas = Guru.objects.filter(is_walikelas=True, is_active=True)
     for walikelas in all_walikelas:
-        if walikelas.kelas:
-            list_kelas = [kelas.semester for kelas in Kelas.objects.filter(walikelas=walikelas)]
+        try:
+            list_kelas = [kelas.semester for kelas in Kelas.objects.select_related('semester').filter(walikelas=walikelas)]
             if not active_semester() in list_kelas:
-                valid_walikelas.append(walikelas)
-        else:
+                raise ObjectDoesNotExist
+        except ObjectDoesNotExist:
             valid_walikelas.append(walikelas)
 
     return valid_walikelas
@@ -56,11 +55,11 @@ def get_validsiswabaru():
     valid_siswa = []
     all_siswa = Siswa.objects.all()
     for siswa in all_siswa:
-        if siswa.kelas:
-            list_kelas = [kelas.semester for kelas in Kelas.objects.filter(siswa=siswa)]
+        try:
+            list_kelas = [kelas.semester for kelas in Kelas.objects.select_related('semester').filter(siswa=siswa)]
             if not active_semester() in list_kelas:
-                valid_siswa.append(siswa)
-        else:
+                raise ObjectDoesNotExist
+        except ObjectDoesNotExist:
             valid_siswa.append(siswa)
 
     return valid_siswa
@@ -69,41 +68,26 @@ def get_validpelajaran(kelas):
     from sekolah.models import MataPelajaran
     from sekolah.models import Kelas
     valid_pelajaran = []
-    all_pelajaran = MataPelajaran.objects.all()
+    all_pelajaran = MataPelajaran.objects.prefetch_related('kelas')
     kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
     for pelajaran in all_pelajaran:
-        if pelajaran.kelas.all():
+        try:
             list_kelas = [kelas for kelas in pelajaran.kelas.all()]
             if not kelas in list_kelas:
-                valid_pelajaran.append(pelajaran)
-        else:
+                raise ObjectDoesNotExist
+        except ObjectDoesNotExist:
             valid_pelajaran.append(pelajaran)
             
     return valid_pelajaran
 
-def realkelas(siswa):
-    from sekolah.models import Kelas
-    from siswa.models import Siswa
-    siswa = Siswa.objects.get(nis=siswa.nis)
-    try:
-        if siswa.kelas:
-            kelas = Kelas.objects.get(nama=siswa.kelas.nama, semester=active_semester())
-            anggota_kelas = [siswa for siswa in Siswa.objects.filter(kelas=kelas)]
-            if siswa in anggota_kelas:
-                return kelas
-            else:
-                raise ObjectDoesNotExist
-        else:
-            raise ObjectDoesNotExist
-    except ObjectDoesNotExist:
-        return None
-
 def get_validkelas(siswa):
     from sekolah.models import Kelas
+    from siswa.models import Siswa
     try:
         if not siswa.kelas: raise ObjectDoesNotExist
         kelas = Kelas.objects.get(nama=siswa.kelas.nama, semester=active_semester())
-        if kelas == realkelas(siswa):
+        anggota_kelas = [siswa for siswa in Siswa.objects.filter(kelas=kelas)]
+        if siswa in anggota_kelas:
             return kelas
         else:
             raise ObjectDoesNotExist

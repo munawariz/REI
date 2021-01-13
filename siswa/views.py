@@ -1,4 +1,3 @@
-from helpers.choice import tingkat_choice
 from django.views.generic.edit import CreateView
 from REI.decorators import staftu_required, walikelas_required, validkelas_required, activesemester_required
 from django.http.response import Http404
@@ -9,12 +8,12 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import View, UpdateView
 from .models import Absensi, NilaiEkskul, Siswa, Nilai
-from .forms import NilaiForm, SiswaForm, AbsenForm, NilaiEkskulForm
+from .forms import SiswaForm, AbsenForm, NilaiEkskulForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from helpers.nilai_helpers import zip_eksnilai, zip_pelnilai
-from helpers import calculate_age, active_semester, get_initial, form_value, get_sekolah, get_validkelas
+from helpers import calculate_age, active_semester, get_initial, form_value, get_validkelas
 from django.contrib import messages
 
 @method_decorator(login_required, name='dispatch')
@@ -69,19 +68,18 @@ class detail_siswa(View):
         except ObjectDoesNotExist:
             raise Http404
         request.session['page'] = f'Detail {siswa.nama}'
-        if not get_validkelas(siswa):
+        kelas = get_validkelas(siswa)
+        if not kelas:
             messages.error(request, f'{siswa.nama} belum memiliki kelas di semester ini')
 
-        absen, created = Absensi.objects.get_or_create(siswa=siswa, semester=active_semester())
-        
         context = {
             'siswa': siswa,
             'usia': calculate_age(siswa.tanggal_lahir),
             'siswa_form': SiswaForm(initial=get_initial(siswa)),
-            'absensi': absen,
+            'absensi': Absensi.objects.get_or_create(siswa=siswa, semester=active_semester())[0],
             'data_akademik': zip_pelnilai(siswa, active_semester()),
             'data_ekskul': zip_eksnilai(siswa, active_semester()),
-            'kelas': get_validkelas(siswa),
+            'kelas': kelas,
         }
         return render(request, 'pages/siswa/detail-siswa.html', context)
 
@@ -127,7 +125,7 @@ class nilai_siswa(View):
                 matapelajaran = MataPelajaran.objects.get(id=id_)
                 nilai_pengetahuan = int(request.POST[f'pengetahuan-{id_}'])
                 nilai_keterampilan = int(request.POST[f'keterampilan-{id_}'])
-                obj, created = Nilai.objects.update_or_create(
+                Nilai.objects.update_or_create(
                     siswa=active_siswa, matapelajaran=matapelajaran, semester=active_semester(),
                     defaults={'pengetahuan': nilai_pengetahuan, 'keterampilan': nilai_keterampilan}
                 )

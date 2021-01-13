@@ -18,8 +18,7 @@ def keterampilan(matapelajaran, siswa, semester):
         return 0
 
 def get_kkm(matapelajaran, semester):
-    kkm, created = KKM.objects.get_or_create(matapelajaran=matapelajaran, semester=semester)
-    return kkm
+    return KKM.objects.get_or_create(matapelajaran=matapelajaran, semester=semester)[0]
 
 def zip_pelnilai(siswa, semester):        
     matapelajaran = MataPelajaran.objects.filter(kelas=siswa.kelas).order_by('kelompok', 'nama')
@@ -58,7 +57,7 @@ def zip_nilrapor(siswa, semester):
     return zip(list_id, list_pelajaran, list_pengetahuan, list_kkmpeng, list_statuspeng, list_keterampilan, list_kkmket, list_statusket, list_nilaiakhir, list_predikat)
 
 def zip_eksnilai(siswa, semester):
-    nilai_ekskul = NilaiEkskul.objects.filter(siswa=siswa, semester=semester)
+    nilai_ekskul = NilaiEkskul.objects.select_related('ekskul').filter(siswa=siswa, semester=semester)
     
     list_id_nilai = [obj.pk for obj in nilai_ekskul]
     list_id_ekskul = [obj.ekskul.pk for obj in nilai_ekskul]

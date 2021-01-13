@@ -1,4 +1,3 @@
-from helpers.choice import tingkat_choice
 from guru.models import Guru
 from siswa.models import Absensi, Siswa
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -13,8 +12,8 @@ from .forms import EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranFor
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required, validdirs_required, activesemester_required
-from helpers import active_semester, get_initial, form_value, get_sekolah, get_validwalikelas, get_validsiswabaru, get_validpelajaran, realkelas
-from helpers.nilai_helpers import zip_eksnilai, zip_pelkkm, zip_pelnilai, zip_nilrapor
+from helpers import active_semester, get_initial, form_value, get_validkelas, get_validwalikelas, get_validsiswabaru, get_validpelajaran
+from helpers.nilai_helpers import zip_eksnilai, zip_pelkkm, zip_nilrapor
 from django.contrib import messages
 
 from helpers import generate_pdf
@@ -451,7 +450,7 @@ class rapor_view(View):
         context = {
             'siswa': siswa,
             'jenkel_siswa': jenkel_siswa,
-            'kelas': realkelas(siswa),
+            'kelas': get_validkelas(siswa),
             'matapelajaran': zip_nilrapor(siswa, active_semester()),
             'ekskul': zip_eksnilai(siswa, active_semester()),
             'absensi': Absensi.objects.get_or_create(siswa=siswa, semester=active_semester())[0],
