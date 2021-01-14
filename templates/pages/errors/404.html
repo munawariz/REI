@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row mt-3">
+        <div class="col-md mx-auto p-5 text-center">
+            <h2>Error 404</h2>
+            <h5 class="mb-3">Halaman Yang Anda Tuju Salah Atau Tidak Tersedia</h5>
+            Jika anda yakin ini halaman yang benar silahkan hubungi admin.
+            Untuk sementara silahkan kembali ke halaman yang tersedia.
+            <br><a href="{% url 'dashboard' %}" class="btn main-btn mt-3">Dashboard</a>
+        </div>
+    </div>
+{% endblock content %}

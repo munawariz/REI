@@ -7,7 +7,9 @@ from guru import views as guru_view
 from siswa import views as siswa_view
 from sekolah import views as sekolah_view
 from django.contrib.auth import views as auth_views
+from django.conf.urls import handler404
 import debug_toolbar
+from . import views as rei_views
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='pages/guru/login.html'), name='login'),
@@ -84,3 +86,5 @@ urlpatterns = [
     ])),
     path('debug/', include(debug_toolbar.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+handler404 = 'REI.views.error_404'
