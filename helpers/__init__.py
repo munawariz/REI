@@ -94,6 +94,22 @@ def get_validkelas(siswa):
     except ObjectDoesNotExist:
         return None
 
+def generate_rapor_context(sekolah, semester, siswa):
+    from siswa.models import Absensi
+    from helpers.nilai_helpers import zip_eksnilai, zip_nilrapor
+        
+    if siswa.gender == 'P': jenkel_siswa = 'Pria'
+    else: jenkel_siswa = 'Wanita'
+    return {
+            'siswa': siswa,
+            'jenkel_siswa': jenkel_siswa,
+            'kelas': get_validkelas(siswa),
+            'matapelajaran': zip_nilrapor(siswa, semester),
+            'ekskul': zip_eksnilai(siswa, semester),
+            'absensi': Absensi.objects.get_or_create(siswa=siswa, semester=semester)[0],
+            'sekolah': sekolah,
+        }
+
 def generate_pdf(siswa, pdf_dir, context):
     from sekolah.models import Rapor
     html_string = render_to_string('pages/rapor/rapor.html', context)

@@ -72,14 +72,17 @@ def validkelas_required(function=None):
 def validdirs_required(function=None):
     @wraps(function)
     def wrapper(request, *args, **kwargs):
-        if kwargs['nis']:
-            siswa = Siswa.objects.get(nis=kwargs['nis'])
-            kelas = get_validkelas(siswa)
-        elif kwargs['kelas']:
-            kelas = Kelas.objects.get(nama=kwargs['kelas'], semester=active_semester())
-        else:
-            kelas = None
-            return redirect('dashboard')
+        try:
+            if kwargs['nis']:
+                siswa = Siswa.objects.get(nis=kwargs['nis'])
+                kelas = get_validkelas(siswa)
+        except KeyError:
+            try:
+                if kwargs['kelas']:
+                    kelas = Kelas.objects.get(nama=kwargs['kelas'], semester=active_semester())
+            except KeyError:
+                kelas = None
+                return redirect('dashboard')
 
         dirs = f'{settings.MEDIA_ROOT}/rapor/{kelas.semester.tahun_mulai} - {kelas.semester.tahun_akhir} {kelas.semester.semester}/{kelas.jurusan}/{kelas.nama}'
         if not os.path.isdir(dirs): 

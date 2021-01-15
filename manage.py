@@ -8,6 +8,8 @@ def main():
     """Run administrative tasks."""
     if os.environ.get('MONGO'):
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'REI.mongo')
+    elif os.environ.get('DEBUG'):
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'REI.local_settings')
     else:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'REI.settings')
     try:

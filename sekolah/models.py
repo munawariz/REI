@@ -9,6 +9,7 @@ import os
 class Sekolah(SingletonModel):    
     nama = models.CharField(max_length=255)
     tingkat = models.CharField(verbose_name='Tingkat Sekolah', max_length=3, choices=TINGKAT_SEKOLAH)
+    tingkat_verbose = models.CharField(max_length=255, null=True, blank=True, verbose_name='Tingkat Sekolah (Lengkap)')
     npsn = models.CharField(max_length=8)
     alamat = models.CharField(max_length=255)
     kode_pos = models.CharField(max_length=5)
@@ -21,6 +22,13 @@ class Sekolah(SingletonModel):
     email = models.EmailField()
     kepsek = models.CharField(max_length=255, null=True, verbose_name='Kepala Sekolah')
     nip_kepsek = models.CharField(max_length=18, verbose_name='Nomor Induk', null=True)
+
+    def save(self, *args, **kwargs):
+        if self.tingkat == 'SMK': self.tingkat_verbose = 'Sekolah Menengah Kejuruan'
+        elif self.tingkat == 'SMA': self.tingkat_verbose = 'Sekolah Menengah Atas'
+        elif self.tingkat == 'SMP': self.tingkat_verbose = 'Sekolah Menengah Pertama'
+        elif self.tingkat == 'SD': self.tingkat_verbose = 'Sekolah Dasar'
+        super(Sekolah, self).save(*args, **kwargs)
 
     def __str__(self):
         return "Informasi Sekolah"

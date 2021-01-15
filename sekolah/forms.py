@@ -6,7 +6,7 @@ from helpers import get_sekolah
 class SekolahForm(forms.ModelForm):
     class Meta:
         model = Sekolah
-        fields = '__all__'
+        exclude = ('tingkat_verbose',)
 
 class SemesterForm(forms.ModelForm):
     class Meta:
@@ -16,8 +16,8 @@ class SemesterForm(forms.ModelForm):
 class KelasForm(forms.ModelForm):
     try:
         tingkat = forms.ChoiceField(choices=tingkat_choice(get_sekolah()))
-    except OperationalError:
-        pass
+    except Exception as e:
+        print(e)
     class Meta:
         model = Kelas
         fields = ('tingkat', 'jurusan', 'kelas')

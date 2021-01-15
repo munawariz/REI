@@ -16,7 +16,6 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='pages/guru/login.html'), name='logout'),
     path('admin/', admin.site.urls),
     path('', guru_view.index),
-    # URL for both Walikelas and Staf TU
     path('dashboard/', guru_view.dashboard.as_view(), name='dashboard'),
     path('guru/', include([
         path('', guru_view.list_guru.as_view(), name='list-guru'),
@@ -35,8 +34,7 @@ urlpatterns = [
         path('<nis>/absen/', siswa_view.absen_siswa.as_view(), name='absen-siswa'),
         path('<nis>/ekskul/', siswa_view.ekskul_siswa.as_view(), name='ekskul-siswa'),
         path('<nis>/ekskul/tambah/', siswa_view.tambah_ekskul.as_view(), name='tambah-ekskul'),
-        path('<nis>/ekskul/hapus/<ekskul>', siswa_view.hapus_ekskul_siswa.as_view(), name='hapus-ekskul-siswa'),
-        path('<nis>/rapor/', sekolah_view.rapor_view.as_view(), name='rapor'),
+        path('<nis>/ekskul/hapus/<ekskul>', siswa_view.hapus_ekskul_siswa.as_view(), name='hapus-ekskul-siswa'),        
         path('<nis>/hapus/', siswa_view.hapus_siswa.as_view(), name='hapus-siswa'),
     ])),
     path('sekolah/', sekolah_view.detail_sekolah.as_view(), name='detail-sekolah'),
@@ -83,6 +81,10 @@ urlpatterns = [
         path('<kelas>/pelajaran/tambah/<pelajaran>/', sekolah_view.tambah_pelajaran.as_view(), name='tambah-pelajaran'),
         path('<kelas>/pelajaran/hapus/<pelajaran>/', sekolah_view.hapus_pelajaran.as_view(), name='hapus-pelajaran'),
         path('<kelas>/hapus/', sekolah_view.hapus_kelas.as_view(), name='hapus-kelas'),
+    ])),
+    path('rapor/', include([
+        path('<nis>/', sekolah_view.rapor_view.as_view(), name='rapor'),
+        path('bundle/<kelas>/', sekolah_view.bundle_rapor_view.as_view(), name='rapor-bundle')
     ])),
     path('debug/', include(debug_toolbar.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

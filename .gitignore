@@ -5,6 +5,7 @@ dev-env/
 #Non Code Stuff
 media/
 staticfiles/
+REI/local_settings.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

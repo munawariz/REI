@@ -10,7 +10,7 @@
         <!-- Info Sekolah (Page 1) -->
         <div class="text-center">
             <h3 class="title">
-                RAPOR SISWA<br>{{tingkat_sekolah}}<br>({{sekolah.tingkat}})
+                RAPOR SISWA<br>{{sekolah.tingkat_verbose}}<br>({{sekolah.tingkat}})
             </h3>
             <table class="info-sekolah table mt-5">
                 <tr>
@@ -92,7 +92,7 @@
                     <td></td><td>Ibu</td><td>: {{siswa.nama_ibu}}</td>
                 </tr>
                 <tr>
-                    <td></td><td>Wali</td><td>: {{siswa.nama_wali}}</td>
+                    <td></td><td>Wali</td><td>: {{siswa.nama_wali|default:' '}}</td>
                 </tr>
             </table>
         </div>

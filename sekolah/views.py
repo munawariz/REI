@@ -12,9 +12,11 @@ from .forms import EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranFor
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required, validdirs_required, activesemester_required
-from helpers import active_semester, get_initial, form_value, get_validkelas, get_validwalikelas, get_validsiswabaru, get_validpelajaran
+from helpers import active_semester, generate_rapor_context, get_initial, form_value, get_validkelas, get_validwalikelas, get_validsiswabaru, get_validpelajaran
 from helpers.nilai_helpers import zip_eksnilai, zip_pelkkm, zip_nilrapor
 from django.contrib import messages
+from REI import settings
+import os, shutil
 
 from helpers import generate_pdf
 from django.http import HttpResponse, FileResponse
@@ -334,7 +336,7 @@ class hapus_ekskul(View):
             ekskul.delete()
             messages.success(request, f'{nama_ekskul} berhasil dihapus dari daftar ekstrakuliker sekolah')
         except Exception:
-            messages.error(request, f'Terjadi kesalahan saat mencoba menghapus {nama_ekskul}')
+            messages.error(request, f'Terjadi kesalahan saat mencoba menghapus ekstrakulikuler')
         finally:
             return redirect('list-ekskul')
 
@@ -434,32 +436,13 @@ class rapor_view(View):
     def get(self, request, nis, **kwargs):
         try:
             siswa = Siswa.objects.get(nis=nis)
-            if siswa.gender == 'P': jenkel_siswa = 'Pria'
-            else: jenkel_siswa = 'Wanita'
         except ObjectDoesNotExist:
             raise Http404
         sekolah = Sekolah.objects.get()
-        if sekolah.tingkat == 'SMK': tingkat = 'Sekolah Menengah Kejuruan'
-        elif sekolah.tingkat == 'SMA': tingkat = 'Sekolah Menengah Atas'
-        elif sekolah.tingkat == 'SMP': tingkat = 'Sekolah Menengah Pertama'
-        elif sekolah.tingkat == 'SD': tingkat = 'Sekolah Dasar'
-        else:
-            messages.error(request, 'Lengkapi data sekolah terlebih dahulu')
-            return redirect('detail-sekolah')
-
-        context = {
-            'siswa': siswa,
-            'jenkel_siswa': jenkel_siswa,
-            'kelas': get_validkelas(siswa),
-            'matapelajaran': zip_nilrapor(siswa, active_semester()),
-            'ekskul': zip_eksnilai(siswa, active_semester()),
-            'absensi': Absensi.objects.get_or_create(siswa=siswa, semester=active_semester())[0],
-            'sekolah': sekolah,
-            'tingkat_sekolah': tingkat,
-        }
-
+        semester = active_semester()
+        context = generate_rapor_context(sekolah, semester, siswa)
         generate_pdf(siswa, kwargs['pdf_dir'], context)
-        rapor = Rapor.objects.get(siswa=siswa, semester=active_semester())
+        rapor = Rapor.objects.get(siswa=siswa, semester=semester)
         with open(rapor.rapor, 'rb') as result:            
             response = HttpResponse(result, content_type='application/pdf;')
             if request.GET['action'] == 'unduh':
@@ -472,3 +455,31 @@ class rapor_view(View):
                 return redirect('dashboard')
 
             return response
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(validdirs_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
+class bundle_rapor_view(View):
+    def get(self, request, kelas, **kwargs):
+        try:
+            sekolah = Sekolah.objects.get()
+            semester = active_semester()
+            kelas = Kelas.objects.get(nama=kelas, semester=semester)
+            siswa = Siswa.objects.filter(kelas=kelas)
+        except ObjectDoesNotExist:
+            raise Http404
+
+        for siswa in siswa:
+            context = generate_rapor_context(sekolah, semester, siswa)
+            generate_pdf(siswa, kwargs['pdf_dir'], context)
+
+        bundle_dir = f'{settings.MEDIA_ROOT}/rapor/{kelas.semester.tahun_mulai} - {kelas.semester.tahun_akhir} {kelas.semester.semester}/bundel/{kelas.jurusan}'
+        if not os.path.isdir(bundle_dir): 
+            os.makedirs(bundle_dir)
+        
+        shutil.make_archive(f'{bundle_dir}/Rapor-{kelas.nama}', 'zip', kwargs['pdf_dir'])
+        zip_file = open(f'{bundle_dir}/Rapor-{kelas.nama}.zip', 'rb')
+        response = FileResponse(zip_file, content_type='application/force-download')
+        response['Content-Disposition'] = f'attachment; filename=Rapor-{kelas.nama}.zip'
+
+        return response

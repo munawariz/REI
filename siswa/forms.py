@@ -14,8 +14,8 @@ class SiswaForm(forms.ModelForm):
     kelas = KelasSelect(queryset=Kelas.objects.filter(semester=active_semester()), required=False)
     try:
         diterima_di_tingkat = forms.ChoiceField(choices = tingkat_choice(get_sekolah()))
-    except OperationalError:
-        pass
+    except Exception as e:
+        print(e)
     class Meta:
         model = Siswa
         fields = '__all__'

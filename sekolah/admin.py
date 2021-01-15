@@ -4,7 +4,10 @@ from .models import Sekolah, Semester, Jurusan, MataPelajaran, KKM, Kelas, Eksku
 from django.contrib.auth.models import Group
 
 admin.site.unregister(Group)
-admin.site.register(Sekolah, SingletonModelAdmin)
+
+@admin.register(Sekolah)
+class SekolahAdmin(SingletonModelAdmin):
+    readonly_fields = ('tingkat_verbose',)
 
 @admin.register(Semester)
 class TPAdmin(admin.ModelAdmin):
