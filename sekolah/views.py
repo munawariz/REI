@@ -285,8 +285,10 @@ class buat_jurusan(View):
             if jurusan_form.is_valid():
                 jurusan = Jurusan.objects.create(**form_value(jurusan_form))
                 messages.success(request, f'Jurusan {jurusan.nama} berhasil dibuat')
+        except ValidationError:
+            messages.error(request, f'Jurusan itu sudah tersedia')
         except Exception as e:
-            messages.error(request, f'Terjadi kesalahan saat membuat jurusan ')
+            messages.error(request, f'Terjadi kesalahan saat membuat jurusan')
         finally:
             return redirect('list-jurusan')
 
@@ -375,6 +377,7 @@ class detail_matapelajaran(View):
             matapelajaran = MataPelajaran.objects.get(pk=matapelajaran)
         except ObjectDoesNotExist:
             raise Http404
+        request.session['page'] = f'Detail {matapelajaran.nama}'
         kkm, created = KKM.objects.get_or_create(matapelajaran=matapelajaran, semester=active_semester())
         context = {
             'matapelajaran': matapelajaran,

@@ -1,19 +1,22 @@
+from REI import settings
 from django.views.generic.edit import CreateView
 from REI.decorators import staftu_required, walikelas_required, validkelas_required, activesemester_required
-from django.http.response import Http404
-from sekolah.models import Ekskul, Kelas, MataPelajaran
+from django.http.response import FileResponse, Http404
+from sekolah.models import Ekskul, MataPelajaran
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.utils import Error, IntegrityError
 from django.db.models.query_utils import Q
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import View, UpdateView
 from .models import Absensi, NilaiEkskul, Siswa, Nilai
-from .forms import SiswaForm, AbsenForm, NilaiEkskulForm
+from .forms import SiswaForm, AbsenForm, NilaiEkskulForm, UploadExcelForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from helpers.nilai_helpers import zip_eksnilai, zip_pelnilai
 from helpers import calculate_age, active_semester, get_initial, form_value, get_validkelas
+from helpers.excel_handlers import extract_and_clean_siswa
 from django.contrib import messages
 
 @method_decorator(login_required, name='dispatch')
@@ -40,6 +43,7 @@ class list_siswa(View):
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
             'siswa_form': SiswaForm(),
+            'excel_form': UploadExcelForm(),
             'semester_aktif': active_semester(),
         }
         return render(request,  'pages/siswa/siswa.html', context)
@@ -218,3 +222,40 @@ class hapus_siswa(View):
         Siswa.objects.get(nis=nis).delete()
         messages.success(request, 'Data siswa berhasil dihapus')
         return redirect('list-siswa')
+
+@method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
+class import_excel_siswa(View):
+    def post(self, request):
+        excel_form = UploadExcelForm(request.POST, request.FILES)
+        created_count = 0
+        exists_count = 0
+        error_count = 0
+        if excel_form.is_valid():
+            try:
+                cleaned_json = extract_and_clean_siswa(request.FILES['file'])
+                for siswa in cleaned_json:
+                    try:
+                        for key, value in siswa.items():
+                            if key not in ['nama_wali', 'kelas']:
+                                if not value: raise Error
+                        obj, created = Siswa.objects.get_or_create(**siswa)
+                        if created: created_count += 1
+                    except IntegrityError:
+                        exists_count += 1
+                    except Error:
+                        error_count += 1
+            except ValueError:
+                messages.error(request, 'File yang diunggah tidak didukung atau bukan sebuah file spreadsheet')
+            finally:
+                messages.success(request, 'Proses impor data dari berkas spreadsheet telah berhasil')
+                messages.info(request, f'{created_count} data siswa baru, {exists_count} data siswa dengan NIS atau NISN yang sudah terdaftar sebelumnya, {error_count} data siswa yang gagal diinput')  
+                return redirect('list-siswa')
+
+@method_decorator(staftu_required, name='dispatch')
+class download_template_siswa(View):
+    def get(self, request):
+        file = open(f'{settings.MEDIA_ROOT}/excel_template/Siswa.xlsx', 'rb')
+        response = FileResponse(file, content_type='application/force-download')
+        response['Content-Disposition'] = f'attachment; filename=Tabel Siswa.xlsx'
+        return response

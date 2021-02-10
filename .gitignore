@@ -3,9 +3,10 @@
 dev-env/
 
 #Non Code Stuff
-media/
+media/rapor/
 staticfiles/
 REI/local_settings.py
+Makefile
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

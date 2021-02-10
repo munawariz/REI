@@ -78,6 +78,15 @@ class Jurusan(models.Model):
     def __str__(self):
         return self.singkat or self.nama
 
+@receiver(models.signals.pre_save, sender=Jurusan)
+def unique_together_nama_singkat(sender, instance, **kwargs):
+    try:
+        jurusan = Jurusan.objects.filter(nama=instance.nama, singkat=instance.singkat)
+        if jurusan and instance not in jurusan:
+            raise ValidationError('That Jurusan already exists')
+    except ObjectDoesNotExist:
+        pass
+
 
 class MataPelajaran(models.Model):
     nama = models.CharField(verbose_name='Nama Mata Pelajaran', max_length=255)
@@ -92,6 +101,15 @@ class MataPelajaran(models.Model):
         if self.singkat: self.singkat = str(self.singkat).upper()
         super(MataPelajaran, self).save(*args, **kwargs)
 
+@receiver(models.signals.pre_save, sender=MataPelajaran)
+def unique_together_all_mapel(sender, instance, **kwargs):
+    try:
+        mapel = MataPelajaran.objects.filter(nama=instance.nama, singkat=instance.singkat, kelompok=instance.kelompok)
+        if mapel and instance not in mapel:
+            raise ValidationError('That Mata Pelajaran already exists')
+    except ObjectDoesNotExist:
+        pass
+
 
 class KKM(models.Model):
     matapelajaran = models.ForeignKey(MataPelajaran, on_delete=models.CASCADE, related_name='kkm')
@@ -103,10 +121,10 @@ class KKM(models.Model):
         return f'{self.matapelajaran}({self.semester})'
 
     def save(self, *args, **kwargs):
-        if self.pengetahuan < 0: self.pengetahuan = 0
-        if self.pengetahuan > 100: self.pengetahuan = 100
-        if self.keterampilan < 0: self.keterampilan = 0
-        if self.keterampilan > 100: self.keterampilan = 100
+        if int(self.pengetahuan) < 0: self.pengetahuan = 0
+        if int(self.pengetahuan) > 100: self.pengetahuan = 100
+        if int(self.keterampilan) < 0: self.keterampilan = 0
+        if int(self.keterampilan) > 100: self.keterampilan = 100
         super(KKM, self).save(*args, **kwargs)
 
 @receiver(models.signals.pre_save, sender=KKM)
@@ -117,6 +135,7 @@ def unique_together_tp_mapel(sender, instance, **kwargs):
             raise ValidationError('Nilai for that Mata Pelajaran in that Tanggal Pendidikan already exists')
     except ObjectDoesNotExist:
         pass
+
 
 class Kelas(models.Model):
     tingkat = models.CharField(max_length=3, choices=TINGKAT_KELAS_CHOICE)

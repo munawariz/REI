@@ -28,6 +28,8 @@ urlpatterns = [
     path('siswa/', include([
         path('', siswa_view.list_siswa.as_view(), name='list-siswa'),
         path('buat/', siswa_view.buat_siswa.as_view(), name='buat-siswa'),
+        path('download-template-excel/', siswa_view.download_template_siswa.as_view(), name='download-template-siswa'),
+        path('import-from-excel/', siswa_view.import_excel_siswa.as_view(), name='import-excel-siswa'),
         path('<nis>/', siswa_view.detail_siswa.as_view(), name='detail-siswa'),
         path('<nis>/profil/', siswa_view.profil_siswa.as_view(), name='profil-siswa'),
         path('<nis>/nilai/', siswa_view.nilai_siswa.as_view(), name='nilai-siswa'),
@@ -49,11 +51,6 @@ urlpatterns = [
         path('buat/', sekolah_view.buat_jurusan.as_view(), name='buat-jurusan'),
         # path('<jurusan>/', guru_view.placeholder, name='detail-jurusan'),
         path('<jurusan>/hapus/', sekolah_view.hapus_jurusan.as_view(), name='hapus-jurusan')
-    ])),
-    path('ekskul/', include([
-        path('', sekolah_view.list_ekskul.as_view(), name='list-ekskul'),
-        path('buat/', sekolah_view.buat_ekskul.as_view(), name='buat-ekskul'),
-        path('<ekskul>/hapus/', sekolah_view.hapus_ekskul.as_view(), name='hapus-ekskul')
     ])),
     path('ekskul/', include([
         path('', sekolah_view.list_ekskul.as_view(), name='list-ekskul'),

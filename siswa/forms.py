@@ -38,3 +38,6 @@ class NilaiEkskulForm(forms.ModelForm):
     class Meta:
         model = NilaiEkskul
         fields = ('ekskul', 'nilai')
+
+class UploadExcelForm(forms.Form):
+    file = forms.FileField()
