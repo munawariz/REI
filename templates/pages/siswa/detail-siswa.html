@@ -5,7 +5,7 @@
         <div class="col-md section-wrapper">
             <center>
                 <div class="section-header">
-                Detail Siswa
+                    Detail Siswa
                 </div>
             </center>
             <div class="row mt-5 flex-center">
@@ -42,7 +42,7 @@
                         </li>
                     </ul>
                     <a href="{% url 'profil-siswa' siswa.nis %}" class="btn main-btn right">Ubah</a>
-                    {% include 'components/modal-form.html' with target='profilSiswa' title='Profil Lengkap Siswa' modal_form=siswa_form %}
+                    {% include 'components/modal-form.html' with button_text='Selengkapnya' target='profilSiswa' title='Profil Lengkap Siswa' modal_form=siswa_form disabled=True %}
                 </div>
                 
                 {% if kelas %}

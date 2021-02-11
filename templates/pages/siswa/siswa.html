@@ -9,7 +9,27 @@
                     List Siswa
                 </div>
                 <div class="section-body">
-                    {% include 'components/searchbar.html' %}
+                    <div class="d-flex flex-row">
+                        <div class="me-3">
+                            {% include 'components/modal-form.html' with target='formSiswa' button_text='Tambah Siswa' title='Form Penambahan Siswa' modal_form=siswa_form submit_button='Buat' action='buat/' col='three' %}
+                        </div>
+                        <div class="me-3">
+                            <form action="{% url 'import-excel-siswa' %}" method="post" enctype="multipart/form-data" name="excelForm" class="float-right">
+                                {% csrf_token %}
+                                <div id="uploadButton" class="btn main-btn" onclick=getFile()>Import</div>
+                                <div style='height: 0px;width: 0px; overflow:hidden;'>
+                                    {% render_field excel_form.file|add_class:"input" onchange="sub(this)" id="upfile" value="upload" accept=".xlsx, .xls, .ods" %}
+                                </div>
+                            </form>
+                        </div>
+                        <div>
+                            <a href="{% url 'download-template-siswa' %}" class="btn main-btn left">Spreadsheet Template</a>
+                        </div>
+                        <div class="ms-auto">
+                            {% include 'components/searchbar.html' %}
+                        </div>
+                    </div>
+                    
                     <div class="table-responsive">
                         <table class="table table-hover bg-transparent">
                             <thead class="text-secondary">
@@ -49,39 +69,6 @@
                 </div>
                 {% include "components/pagination.html" with extra_param='search' extra_value=request.GET.search %}
             </center>                
-        </div>
-    </div>
-
-    <div class="row mt-3">
-        <div class="col-md section-wrapper">
-            <center>
-                <div class="section-header">
-                    Buat Siswa
-                </div>
-            </center>
-            <div class="section-body">
-                {% include 'components/form.html' with form=siswa_form submit_button='Buat' action='buat/' col='three' %}
-            </div>
-        </div>
-    </div>
-
-    <div class="row mt-3">
-        <div class="col-md section-wrapper">
-            <center>
-                <div class="section-header">
-                    Import Excel
-                </div>
-            </center>
-            <div class="section-body">
-                <a href="{% url 'download-template-siswa' %}" class="btn main-btn mb-3">Download Excel Template</a>
-                <form action="{% url 'import-excel-siswa' %}" method="post" enctype="multipart/form-data" name="excelForm">
-                    {% csrf_token %}
-                    <div id="uploadButton" class="btn main-btn" onclick=getFile()>Import</div>
-                    <div style='height: 0px;width: 0px; overflow:hidden;'>
-                        {% render_field excel_form.file|add_class:"input" onchange="sub(this)" id="upfile" value="upload" accept=".xlsx, .xls, .ods" %}
-                    </div>
-                </form>
-            </div>
         </div>
     </div>
 {% endblock content %}

@@ -19,7 +19,9 @@
             <small>{{form.non_field_errors.as_text}}</small>  
         {% endif %}
 
+    {% if disabled %}
+        </fieldset>
+    {% else %}
         <input class="btn main-btn float-end" type="submit" value="{{submit_button}}">
-
-    {% if disabled %}</fieldset>{% endif %}
+    {% endif %}
 </form>

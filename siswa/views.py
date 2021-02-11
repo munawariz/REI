@@ -245,11 +245,11 @@ class import_excel_siswa(View):
                         exists_count += 1
                     except Error:
                         error_count += 1
+                messages.success(request, 'Proses impor data dari berkas spreadsheet telah berhasil')
+                messages.info(request, f'{created_count} data siswa baru, {exists_count} data siswa dengan NIS atau NISN yang sudah terdaftar sebelumnya, {error_count} data siswa yang gagal diinput')
             except ValueError:
                 messages.error(request, 'File yang diunggah tidak didukung atau bukan sebuah file spreadsheet')
             finally:
-                messages.success(request, 'Proses impor data dari berkas spreadsheet telah berhasil')
-                messages.info(request, f'{created_count} data siswa baru, {exists_count} data siswa dengan NIS atau NISN yang sudah terdaftar sebelumnya, {error_count} data siswa yang gagal diinput')  
                 return redirect('list-siswa')
 
 @method_decorator(staftu_required, name='dispatch')
@@ -257,5 +257,5 @@ class download_template_siswa(View):
     def get(self, request):
         file = open(f'{settings.MEDIA_ROOT}/excel_template/Siswa.xlsx', 'rb')
         response = FileResponse(file, content_type='application/force-download')
-        response['Content-Disposition'] = f'attachment; filename=Tabel Siswa.xlsx'
+        response['Content-Disposition'] = 'attachment; filename=Tabel Siswa.xlsx'
         return response

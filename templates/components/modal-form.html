@@ -1,5 +1,5 @@
 <button type="button" class="btn main-btn" data-bs-toggle="modal" data-bs-target="#{{target}}">
-    Selengkapnya
+    {{button_text}}
 </button>
 <center>
     <div class="modal fade" id="{{target}}" tabindex="-1" aria-hidden="true">
@@ -12,7 +12,7 @@
                     <button type="button" class="btn text-white" data-bs-dismiss="modal" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
                 </div>
                 <div class="modal-body">
-                    {% include 'components/form.html' with form=modal_form disabled=True %}
+                    {% include 'components/form.html' with form=modal_form disabled=disabled submit_button=submit_button action=action col=col %}
                 </div>
             </div>
         </div>

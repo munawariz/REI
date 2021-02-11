@@ -454,9 +454,9 @@ ul.one-columns{
 
 .float{
     position:fixed;
-	width:60px;
+    width:60px;
 	height:60px;
-	bottom:40px;
+	bottom: -1rem;
     right:40px;
 	background: linear-gradient(60deg, #7b1fa2, #913f9e);
 	color:var(--text-secondary);
@@ -472,6 +472,18 @@ ul.one-columns{
 
 .float:hover{
     transform: scale(0.9);
+    background: linear-gradient(60deg, #913db4, #a350af);
+    color: var(--text-secondary);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
+}
+
+.grey-float{
+    background: linear-gradient(60deg, #202c3c, #2d3f55);
+    color:var(--text-secondary);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.3);
+}
+
+.grey-float:hover{
     background: linear-gradient(60deg, #913db4, #a350af);
     color: var(--text-secondary);
     box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
