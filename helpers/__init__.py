@@ -4,7 +4,7 @@ from django import forms
 from django.forms.models import model_to_dict
 from weasyprint import HTML
 from django.template.loader import render_to_string
-from django.db.utils import OperationalError
+from django.db.utils import OperationalError, ProgrammingError
   
 def calculate_age(birthDate):
     age = int((date.today() - birthDate).days / 365) 
@@ -18,6 +18,12 @@ def active_semester():
         return None
     except OperationalError:
         return None
+    except ProgrammingError:
+        return None
+    except Exception as e:
+        print(e)
+        return None
+
 
 def get_initial(object):
     object_dict = model_to_dict(object)
