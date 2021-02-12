@@ -477,7 +477,7 @@ class bundle_rapor_view(View):
             generate_pdf(siswa, kwargs['pdf_dir'], context)
 
         bundle_dir = f'{settings.MEDIA_ROOT}/rapor/{kelas.semester.tahun_mulai} - {kelas.semester.tahun_akhir} {kelas.semester.semester}/bundel/{kelas.jurusan}'
-        if not os.path.isdir(bundle_dir): 
+        if not os.path.isdir(bundle_dir):
             os.makedirs(bundle_dir)
         
         shutil.make_archive(f'{bundle_dir}/Rapor-{kelas.nama}', 'zip', kwargs['pdf_dir'])

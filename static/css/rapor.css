@@ -52,7 +52,8 @@ html{
 
 .table-border, .table-border th, .table-border td{
     border: 1px solid black;
-    padding: 10px;
+    padding: 1.5px;
+    text-align: center;
     border-collapse: collapse;
 }
 

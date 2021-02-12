@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from solo.models import SingletonModel
@@ -180,9 +181,14 @@ class Rapor(models.Model):
     siswa = models.ForeignKey(Siswa, related_name='rapor', on_delete=models.CASCADE, null=True)
     semester = models.ForeignKey(Semester, related_name='rapor', on_delete=models.CASCADE)
     rapor = models.TextField(verbose_name='Lokasi PDF Rapor', null=True)
+    last_updated = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f'{self.siswa} - {self.semester}'
+
+    def save(self, *args, **kwargs):
+        self.last_updated = datetime.now()
+        super(Rapor, self).save(*args, **kwargs)
 
 @receiver(models.signals.pre_save, sender=Rapor)
 def rapor_pre_save(sender, instance, **kwargs):
@@ -203,7 +209,7 @@ def rapor_pre_save(sender, instance, **kwargs):
             os.remove(old_file)
 
 @receiver(models.signals.post_delete, sender=Rapor)
-def auto_delete_image_on_delete(sender, instance, **kwargs):
+def auto_delete_rapor_on_delete(sender, instance, **kwargs):
     if instance.rapor:
         if os.path.isfile(instance.rapor):
             os.remove(instance.rapor)
