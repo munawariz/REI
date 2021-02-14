@@ -7,9 +7,6 @@ def extract_and_clean_siswa(file):
     excel = pd.read_excel(file, dtype={'NIS':str, 'NISN':str})
     json_string = json.loads(excel.to_json(orient='records', date_format='iso'))
 
-    models_cols = ['nis', 'nisn', 'nama', 'email', 'tempat_lahir', 'tanggal_lahir', 
-    'gender', 'agama', 'alamat', 'sekolah_asal', 'diterima_di_tingkat', 
-    'nama_ayah', 'nama_ibu', 'nama_wali', 'kelas']
     semester = active_semester()
     cleaned_json = []
     for data in json_string:
@@ -28,9 +25,9 @@ def extract_and_clean_siswa(file):
         except Kelas.DoesNotExist:
             data['Kelas'] = None
 
-        values = data.values()
         siswa = {}
-        for key, value in zip(models_cols, values):
+        for key, value in data.items():
+            key = str(key).lower().replace(' ', '_')
             siswa[key] = value
         cleaned_json.append(siswa)
 
