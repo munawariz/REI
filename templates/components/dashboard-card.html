@@ -1,0 +1,16 @@
+<div class="dashboard-card card-{{color}} mb-4">
+    <div class="row dashboard-card-content">
+        <div class="col-lg-4 col-12 d-flex justify-content-center">
+            <div class="dashboard-card-icon">
+                <div class="dashboard-card-icon-bg">
+                    <ion-icon name="{{icon}}"></ion-icon>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="dashboard-card-title">{{title|title}}</div>
+            <div class="dashboard-card-value">{{value|title}}</div>
+        </div>
+    </div>
+    <a href="{% url url %}" class="btn main-btn dashboard-card-footer">{{button_text|title}}</a>
+</div>

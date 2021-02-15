@@ -1,0 +1,51 @@
+<div class="row mt-4">
+                        <div class="section-wrapper col-md-3 col pb-1">
+                            <div class="section-header fs-6">
+                                Semester Aktif
+                            </div>
+                            <button class="btn btn-md help-icon right mt-n3">
+                                <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa melakukan buat, aktivasi, dan hapus semester"></ion-icon>
+                            </button>
+                            <div class="section-body fs-6">
+                                <div class="pb-3">
+                                    {% if semester %}
+                                        {{semester.nama}}
+                                    {% else %}
+                                        Belum ada semester yang aktif
+                                    {% endif %}<br>
+
+                                    {% if user.is_staftu or user.is_superuser or user.is_walikelas %}
+                                        <a class="btn main-btn right m-3" href="{% url 'list-semester' %}">
+                                            Ganti
+                                        </a>
+                                    {% endif %}
+                                </div>                                
+                            </div>
+                        </div>
+                        <div class="section-wrapper col-md-4 col pb-1">
+                            <div class="section-header fs-6">
+                                Informasi Sekolah
+                            </div>               
+                            <div class="section-body fs-6">
+                                <div class="pb-3">                                        
+                                    {{sekolah.nama}}<br>
+                                    <a href="{% url 'detail-sekolah' %}" class="btn main-btn right m-3">
+                                        Detail
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-wrapper col-md-4 col pb-1">
+                            <div class="section-header fs-6">
+                                Informasi Sekolah
+                            </div>               
+                            <div class="section-body fs-6">
+                                <div class="pb-3">                                        
+                                    {{sekolah.nama}}<br>
+                                    <a href="{% url 'detail-sekolah' %}" class="btn main-btn right m-3">
+                                        Detail
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>

@@ -8,7 +8,7 @@ from django.views.generic import View, CreateView
 from helpers import active_semester, get_initial, form_value, get_sekolah
 from .models import Guru
 from siswa.models import Siswa
-from sekolah.models import Kelas, Sekolah
+from sekolah.models import Jurusan, Kelas, Sekolah
 from .forms import GuruEditForm, PasswordChangeForm, GuruCreateForm
 from django.contrib.auth import authenticate
 from django.utils.decorators import method_decorator
@@ -23,9 +23,14 @@ def index(request):
 class dashboard(View):
     def get(self, request):
         request.session['page'] = 'Dashboard'
+        semester = active_semester()
         context = {
             'sekolah': get_sekolah(),
-            'semester': active_semester(),
+            'semester': semester,
+            'siswa_berkelas': Siswa.objects.exclude(kelas=None).filter(kelas__semester=semester).count(),
+            'siswa_nokelas': Siswa.objects.exclude(kelas__semester=semester).filter(kelas=None).count(),
+            'jumlah_kelas': Kelas.objects.filter(semester=semester).count(),
+            'jumlah_jurusan': Jurusan.objects.count(),
         }
         return render(request, 'pages/dashboard.html', context)
 

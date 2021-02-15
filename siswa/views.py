@@ -1,8 +1,11 @@
+import json
+
+import pandas
 from REI import settings
 from django.views.generic.edit import CreateView
 from REI.decorators import staftu_required, walikelas_required, validkelas_required, activesemester_required
 from django.http.response import FileResponse, Http404
-from sekolah.models import Ekskul, MataPelajaran
+from sekolah.models import Ekskul, Kelas, MataPelajaran
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.utils import Error, IntegrityError
 from django.db.models.query_utils import Q
@@ -16,7 +19,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from helpers.nilai_helpers import zip_eksnilai, zip_pelnilai
 from helpers import calculate_age, active_semester, get_initial, form_value, get_validkelas
-from helpers.excel_handlers import extract_and_clean_siswa
+from helpers.excel_handlers import append_df_to_excel, extract_and_clean_siswa
 from django.contrib import messages
 
 @method_decorator(login_required, name='dispatch')
@@ -249,13 +252,52 @@ class import_excel_siswa(View):
                 messages.info(request, f'{created_count} data siswa baru, {exists_count} data siswa dengan NIS atau NISN yang sudah terdaftar sebelumnya, {error_count} data siswa yang gagal diinput')
             except ValueError:
                 messages.error(request, 'File yang diunggah tidak didukung atau bukan sebuah file spreadsheet')
+            except Exception as e:
+                print(e)
             finally:
                 return redirect('list-siswa')
 
 @method_decorator(staftu_required, name='dispatch')
 class download_template_siswa(View):
     def get(self, request):
-        file = open(f'{settings.MEDIA_ROOT}/excel_template/Siswa.xlsx', 'rb')
+        file = open(f'{settings.MEDIA_ROOT}/excel/Siswa.xlsx', 'rb')
         response = FileResponse(file, content_type='application/force-download')
         response['Content-Disposition'] = 'attachment; filename=Tabel Siswa.xlsx'
+        return response
+
+@method_decorator(staftu_required, name='dispatch')
+@method_decorator(activesemester_required, name='dispatch')
+class export_excel_siswa(View):
+    def get(self, request):
+        semester = active_semester()
+        qs = list(Siswa.objects.select_related('kelas').all().values())
+        cols = []
+
+        for col in [field.name for field in Siswa._meta.fields]:
+            if col in ['id']: continue
+            if col in ['nis', 'nisn']:
+                col = col.upper()
+            else:
+                col = col.title()
+            col = col.replace('_', ' ')
+            cols.append(col)
+
+        for siswa in qs:
+            try:
+                siswa['kelas_id'] = Kelas.objects.get(pk=siswa['kelas_id'], semester=semester).nama.replace('-', ' ')
+            except Kelas.DoesNotExist:
+                siswa['kelas_id'] = None
+            siswa['tanggal_lahir'] = siswa['tanggal_lahir'].strftime('%Y-%m-%d')
+
+        file = settings.MEDIA_ROOT/'excel/Export Siswa.xlsx'
+        json_string = json.dumps(qs)
+        df = pandas.read_json(json_string, dtype={'nis':str, 'nisn':str})
+        df = df.drop(columns='id')
+        df.columns = cols
+
+        append_df_to_excel(file, df)
+
+        file = open(file, 'rb')
+        response = FileResponse(file, content_type='application/force-download')
+        response['Content-Disposition'] = f'attachment; filename=Siswa {semester}.xlsx'
         return response
