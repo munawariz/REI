@@ -30,6 +30,7 @@ urlpatterns = [
         path('buat/', siswa_view.buat_siswa.as_view(), name='buat-siswa'),
         path('download-template-excel/', siswa_view.download_template_siswa.as_view(), name='download-template-siswa'),
         path('import-from-excel/', siswa_view.import_excel_siswa.as_view(), name='import-excel-siswa'),
+        path('export-to-excel/', siswa_view.export_excel_siswa.as_view(), name='export-excel-siswa'),
         path('<nis>/', siswa_view.detail_siswa.as_view(), name='detail-siswa'),
         path('<nis>/profil/', siswa_view.profil_siswa.as_view(), name='profil-siswa'),
         path('<nis>/nilai/', siswa_view.nilai_siswa.as_view(), name='nilai-siswa'),

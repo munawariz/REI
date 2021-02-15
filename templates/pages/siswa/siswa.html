@@ -22,8 +22,11 @@
                                 </div>
                             </form>
                         </div>
-                        <div>
+                        <div class="me-3">
                             <a href="{% url 'download-template-siswa' %}" class="btn main-btn left">Spreadsheet Template</a>
+                        </div>
+                        <div>
+                            <a href="{% url 'export-excel-siswa' %}" class="btn main-btn left">Export</a>
                         </div>
                         <div class="ms-auto">
                             {% include 'components/searchbar.html' %}
