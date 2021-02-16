@@ -456,7 +456,7 @@ ul.one-columns{
     position:fixed;
     width:60px;
 	height:60px;
-	bottom: -1rem;
+	bottom: 2rem;
     right:40px;
 	background: linear-gradient(60deg, #7b1fa2, #913f9e);
 	color:var(--text-secondary);
@@ -477,16 +477,138 @@ ul.one-columns{
     box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
 }
 
-.grey-float{
-    background: linear-gradient(60deg, #202c3c, #2d3f55);
-    color:var(--text-secondary);
+.dashboard-card{
+    background-color: var(--bg-primary);
+    margin: 0.5rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
+    font-style: bold;
+    padding: 1rem;
+    width: fit-content;
+}
+
+.dashboard-card-icon{
+    font-size: 2rem;
+    margin-top: -2.5rem;
+}
+
+.dashboard-card-icon-bg{
+    border-radius: 0.25rem;
+    width: 3.25rem;
+    height: 3.25rem;
+    padding-top: 0.3rem;
+}
+
+.dashboard-card-title{
+    font-size: 0.7rem;
+    width: max-content;
+    float: right;
+    margin-top: -0.6rem;
+    position: sticky;
+    text-align: end;
+}
+
+.dashboard-card-value{
+    font-size: 1.3rem;
+    font-weight: bold;
+    width: 100%;
+    float: right;
+    text-align: end;
+}
+
+.dashboard-card-info{
+    font-size: 0.6rem;
+    width: 100%;
+    float: left;
+    text-align: start;
+}
+
+.dashboard-card-content::after{
+    content: '';
+    position: relative;
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: rgb(61, 61, 61);
+    margin-top: 0.5rem;
+}
+
+.dashboard-card-footer{
+    text-decoration: none;
+    font-size: small;
+    margin-top: 1rem;
+    color: white;
+    max-width: max-content;
+    float: left;
+}
+
+.card-purple .dashboard-card-icon-bg{
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
     box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.3);
 }
 
-.grey-float:hover{
-    background: linear-gradient(60deg, #913db4, #a350af);
-    color: var(--text-secondary);
-    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
+.card-purple .dashboard-card-title{
+    color: #913f9e;
+}
+
+.card-green .dashboard-card-icon-bg,
+.card-green .main-btn{
+    background: linear-gradient(60deg,#288c6c,#4ea752);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(76,175,80,0.3);
+}
+
+.card-green .main-btn:hover{
+    background: linear-gradient(60deg,#37af89,#5ebe63);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(76,175,80,0.6);
+}
+
+.card-green .dashboard-card-title{
+    color: #288c6c;
+}
+
+.card-blue .dashboard-card-icon-bg,
+.card-blue .main-btn{
+    background: linear-gradient(60deg,#1f83a2,#1f9aaa);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(0,188,212,0.3);
+}
+
+.card-blue .main-btn:hover{
+    background: linear-gradient(60deg,#01a1b6,#21a3b4);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(0,188,212,0.6);
+}
+
+.card-blue .dashboard-card-title{
+    color: #1f83a2;
+}
+
+.card-orange .dashboard-card-icon-bg,
+.card-orange .main-btn{
+    background: linear-gradient(60deg,#f5700c,#e98c02);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(255,152,0,0.3);
+}
+
+.card-orange .main-btn:hover{
+    background: linear-gradient(60deg,#f57a1c,#e7900d);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(255,152,0,0.6);
+}
+
+.card-orange .dashboard-card-title{
+    color: #e98c02;
+}
+
+.card-red .dashboard-card-icon-bg,
+.card-red .main-btn{
+    background: linear-gradient(60deg,#d22824,#da3a36);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(244,67,54,0.3);
+}
+
+.card-red .main-btn:hover{
+    background: linear-gradient(60deg,#cc3230,#dd4b48);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(244,67,54,0.6);
+}
+
+.card-red .dashboard-card-title{
+    color: #d22824;
 }
 
 @media only screen and (max-width: 768px){
@@ -517,6 +639,21 @@ ul.one-columns{
     ul.two-columns{
         display: grid;
         grid-template-columns: repeat(1, 1fr);
+    }
+
+    .dashboard-card-icon{
+        margin: 0;
+    }
+
+    .dashboard-card-title{
+        float: none;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .dashboard-card-value{
+        float: none;
+        text-align: center;
     }
 }
 

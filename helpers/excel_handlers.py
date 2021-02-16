@@ -3,34 +3,46 @@ import json
 from sekolah.models import Kelas
 from helpers import active_semester
 
+def append_df_to_excel(filename, df, sheet_name='Sheet1', startrow=None,
+                       truncate_sheet=False, 
+                       **to_excel_kwargs):
+    # ignore [engine] parameter if it was passed
+    if 'engine' in to_excel_kwargs:
+        to_excel_kwargs.pop('engine')
+
+    with pd.ExcelWriter(filename, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name=sheet_name, index=False)
+        writer.save()
+
 def extract_and_clean_siswa(file):
     excel = pd.read_excel(file, dtype={'NIS':str, 'NISN':str})
     json_string = json.loads(excel.to_json(orient='records', date_format='iso'))
 
-    models_cols = ['nis', 'nisn', 'nama', 'email', 'tempat_lahir', 'tanggal_lahir', 
-    'gender', 'agama', 'alamat', 'sekolah_asal', 'diterima_di_tingkat', 
-    'nama_ayah', 'nama_ibu', 'nama_wali', 'kelas']
     semester = active_semester()
     cleaned_json = []
     for data in json_string:
-        if data['NISN']: 
-            data['NISN'] = data['NISN'][0:10]
-        if data['NIS']:
-            data['NIS'] = data['NIS'][0:9]
+        if not data['NISN'].startswith('00'):
+            data['NISN'] = '00'+data['NISN']
+        data['NISN'] = data['NISN'][0:10]
+        data['NIS'] = data['NIS'][0:9]
+        
         data['Tanggal Lahir'] = data['Tanggal Lahir'][0:10]
-        if str(data['Gender']).lower() == 'pria' or str(data['Gender']).lower() == 'laki-laki':
+        if data['Gender'].lower() == 'pria' or data['Gender'].lower() == 'laki-laki':
             data['Gender'] = 'P'
         else:
             data['Gender'] = 'W'
-        data['Kelas'] = str(data['Kelas']).replace(' ', '-')
+        
         try:
+            data['Kelas'] = data['Kelas'].replace(' ', '-')
             data['Kelas'] = Kelas.objects.get(nama=data['Kelas'], semester=semester)
         except Kelas.DoesNotExist:
             data['Kelas'] = None
-
-        values = data.values()
+        except AttributeError:
+            data['Kelas'] = None
+            
         siswa = {}
-        for key, value in zip(models_cols, values):
+        for key, value in data.items():
+            key = str(key).lower().replace(' ', '_')
             siswa[key] = value
         cleaned_json.append(siswa)
 
