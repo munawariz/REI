@@ -288,6 +288,8 @@ class export_excel_siswa(View):
             except Kelas.DoesNotExist:
                 siswa['kelas_id'] = None
             siswa['tanggal_lahir'] = siswa['tanggal_lahir'].strftime('%Y-%m-%d')
+            if siswa['gender'] == 'P': siswa['gender'] = 'Pria'
+            else: siswa['gender'] = 'Wanita'
 
         file = settings.MEDIA_ROOT/'excel/Export Siswa.xlsx'
         json_string = json.dumps(qs)
