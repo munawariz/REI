@@ -4,7 +4,7 @@ import pandas
 from REI import settings
 from django.views.generic.edit import CreateView
 from REI.decorators import staftu_required, walikelas_required, validkelas_required, activesemester_required
-from django.http.response import FileResponse, Http404
+from django.http.response import FileResponse, Http404, JsonResponse
 from sekolah.models import Ekskul, Kelas, MataPelajaran
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.utils import Error, IntegrityError
@@ -17,10 +17,11 @@ from .forms import SiswaForm, AbsenForm, NilaiEkskulForm, UploadExcelForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from helpers.nilai_helpers import zip_eksnilai, zip_pelnilai
+from helpers.nilai_helpers import has_ekskul, zip_eksnilai, zip_pelnilai
 from helpers import calculate_age, active_semester, get_initial, form_value, get_validkelas
 from helpers.excel_handlers import append_df_to_excel, extract_and_clean_siswa
 from django.contrib import messages
+from django.template.loader import render_to_string
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
@@ -71,24 +72,64 @@ class buat_siswa(CreateView):
 class detail_siswa(View):
     def get(self, request, nis):
         try:
-            siswa = Siswa.objects.get(nis=nis)
+            siswa = Siswa.objects.select_related('kelas').get(nis=nis)
         except ObjectDoesNotExist:
             raise Http404
         request.session['page'] = f'Detail {siswa.nama}'
-        kelas = get_validkelas(siswa)
-        if not kelas:
+        semester = active_semester()
+        if siswa.kelas:
+            nama_kelas = f'{siswa.kelas.tingkat} {siswa.kelas.jurusan} {siswa.kelas.kelas}'
+        else:
+            nama_kelas = ''
             messages.error(request, f'{siswa.nama} belum memiliki kelas di semester ini')
 
+        data_mapel = zip_pelnilai(siswa, semester)
+        _idMapel, mapel, peng, ket = zip(*data_mapel)
+        cols_mapel = ['Mata Pelajaran', 'Nilai Pengetahuan', 'Nilai Keterampilan']
+        
+        if has_ekskul(siswa, semester):
+            data_ekskul = zip_eksnilai(siswa, semester)
+            _idEkskul, _idNilai, ekskul, nilai, jenis = zip(*data_ekskul)
+            data_ekskul = zip(ekskul, jenis, nilai)
+        else:
+            data_ekskul = None
+        cols_ekskul = ['Ekskul', 'Jenis Ekskul', 'Nilai']
+
+        data_absen = Absensi.objects.get(siswa=siswa, semester=semester)
+        data_absen = zip(str(data_absen.sakit), str(data_absen.izin), str(data_absen.bolos))
+        cols_absen = ['Sakit', 'Izin', 'Tanpa Keterangan']
         context = {
             'siswa': siswa,
+            'nama_kelas': nama_kelas,
+            'semester': semester,
             'usia': calculate_age(siswa.tanggal_lahir),
-            'siswa_form': SiswaForm(initial=get_initial(siswa)),
-            'absensi': Absensi.objects.get_or_create(siswa=siswa, semester=active_semester())[0],
-            'data_akademik': zip_pelnilai(siswa, active_semester()),
-            'data_ekskul': zip_eksnilai(siswa, active_semester()),
-            'kelas': kelas,
+            'table_data': zip(mapel, peng, ket),
+            'table_cols': cols_mapel,
+            'link': 'nilai/',
         }
-        return render(request, 'pages/siswa/detail-siswa.html', context)
+
+        if self.request.is_ajax():
+            if self.request.GET['type'] == 'mapel':
+                context['table_data'] = zip(mapel, peng, ket)
+                context['table_cols'] = cols_mapel
+                context['link'] = 'nilai/'
+            elif self.request.GET['type'] == 'ekskul':
+                context['table_data'] = data_ekskul
+                context['table_cols'] = cols_ekskul
+                context['link'] = 'ekskul/'
+            elif self.request.GET['type'] == 'absen':
+                context['table_data'] = data_absen
+                context['table_cols'] = cols_absen
+                context['link'] = 'absen/'
+
+            html = render_to_string(
+                template_name="pages/siswa/realtime-table.html", 
+                context = context
+            )
+            data_dict = {"html_from_view": html}
+            return JsonResponse(data=data_dict, safe=False)
+        else:
+            return render(request, 'pages/siswa/detail-siswa.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
@@ -183,7 +224,7 @@ class ekskul_siswa(View):
     def post(self, request, nis):
         active_siswa = Siswa.objects.get(nis=nis)
         data = zip_eksnilai(active_siswa, active_semester())
-        for id_nil, id_eks, ekskul, nilai in data:
+        for id_nil, id_eks, ekskul, nilai, jenis in data:
             nilai_form = request.POST[f'nilai-{id_eks}']
             if nilai != nilai_form:
                 ekskul = Ekskul.objects.get(pk=id_eks)
@@ -288,6 +329,8 @@ class export_excel_siswa(View):
             except Kelas.DoesNotExist:
                 siswa['kelas_id'] = None
             siswa['tanggal_lahir'] = siswa['tanggal_lahir'].strftime('%Y-%m-%d')
+            if siswa['gender'] == 'P': siswa['gender'] = 'Pria'
+            else: siswa['gender'] = 'Wanita'
 
         file = settings.MEDIA_ROOT/'excel/Export Siswa.xlsx'
         json_string = json.dumps(qs)

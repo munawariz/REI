@@ -436,7 +436,7 @@ class hapus_matapelajaran(View):
 @method_decorator(validdirs_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class rapor_view(View):
-    def get(self, request, nis, **kwargs):
+    def get(self, request, nis, action, **kwargs):
         try:
             siswa = Siswa.objects.get(nis=nis)
         except ObjectDoesNotExist:
@@ -448,10 +448,10 @@ class rapor_view(View):
         rapor = Rapor.objects.get(siswa=siswa, semester=semester)
         with open(rapor.rapor, 'rb') as result:            
             response = HttpResponse(result, content_type='application/pdf;')
-            if request.GET['action'] == 'unduh':
+            if action == 'unduh':
                 response['Content-Disposition'] = f'attachment; filename={siswa.nama}.pdf'
                 response['Content-Transfer-Encoding'] = 'binary'
-            elif request.GET['action'] == 'pratinjau':
+            elif action == 'pratinjau':
                 response['Content-Disposition'] = f'inline; filename={siswa.nama}.pdf'
                 response['Content-Transfer-Encoding'] = 'binary'
             else:

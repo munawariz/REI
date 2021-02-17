@@ -1,4 +1,4 @@
-from sekolah.models import KKM
+from sekolah.models import Ekskul, KKM
 from siswa.models import MataPelajaran, Nilai, NilaiEkskul
 
 def pengetahuan(matapelajaran, siswa, semester):
@@ -63,11 +63,19 @@ def zip_eksnilai(siswa, semester):
     list_id_ekskul = [obj.ekskul.pk for obj in nilai_ekskul]
     list_ekskul = [obj.ekskul for obj in nilai_ekskul]
     list_nilai = [obj.nilai for obj in nilai_ekskul]
+    list_jenis = [obj.ekskul.jenis for obj in nilai_ekskul]
 
-    return zip(list_id_ekskul, list_id_nilai, list_ekskul, list_nilai)
+    return zip(list_id_ekskul, list_id_nilai, list_ekskul, list_nilai, list_jenis)
 
 def zip_pelkkm(queryset_matapelajaran, semester):
     list_matapelajaran = [MataPelajaran.objects.get(pk=matapelajaran.pk) for matapelajaran in queryset_matapelajaran]
     list_kkm = [KKM.objects.get_or_create(matapelajaran=matapelajaran, semester=semester)[0] for matapelajaran in queryset_matapelajaran]
 
     return zip(list_matapelajaran, list_kkm)
+
+def has_ekskul(siswa, semester):
+    nilai_ekskul = NilaiEkskul.objects.select_related('ekskul').filter(siswa=siswa, semester=semester)
+    if nilai_ekskul:
+        return True
+    else:
+        return False

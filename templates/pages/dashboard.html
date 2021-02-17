@@ -9,7 +9,7 @@
                     Dashboard
                 </div>
                 <div class="section-body">
-                    <div class="row mt-4 d-flex justify-content-lg-start justify-content-center">
+                    <div class="row mt-4 d-flex justify-content-center">
                         {% include 'components/dashboard-card.html' with color='purple' icon='calendar' title='Semester Aktif' value=semester button_text='Lihat Daftar Semester' url='list-semester' %}
                         {% include 'components/dashboard-card.html' with color='green' icon='list' title='Siswa Yang Mempunyai Kelas' value=siswa_berkelas button_text='Lihat Daftar Siswa' url='list-siswa' %}
                         {% include 'components/dashboard-card.html' with color='red' icon='list' title='Belum Mempunyai Kelas' value=siswa_nokelas button_text='Lihat Daftar Siswa' url='list-siswa' %}
