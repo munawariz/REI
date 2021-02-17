@@ -196,6 +196,7 @@ class absen_siswa(View):
         context = {
             'siswa': active_siswa,
             'absen_form': absen_form,
+            'usia': calculate_age(active_siswa.tanggal_lahir),
         }
         return render(request, 'pages/siswa/absen-siswa.html', context)
 
