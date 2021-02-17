@@ -326,7 +326,7 @@ class export_excel_siswa(View):
 
         for siswa in qs:
             try:
-                siswa['kelas_id'] = Kelas.objects.get(pk=siswa['kelas_id'], semester=semester).nama.replace('-', ' ')
+                siswa['kelas_id'] = Kelas.objects.get(pk=siswa['kelas_id'], tahun_pelajaran=semester.tahun_pelajaran).nama.replace('-', ' ')
             except Kelas.DoesNotExist:
                 siswa['kelas_id'] = None
             siswa['tanggal_lahir'] = siswa['tanggal_lahir'].strftime('%Y-%m-%d')

@@ -1,6 +1,6 @@
 from django import forms
 from django.db.utils import OperationalError
-from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Semester, Sekolah
+from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Semester, Sekolah, TahunPelajaran
 from helpers.choice import tingkat_choice
 from helpers import get_sekolah
 class SekolahForm(forms.ModelForm):
@@ -10,8 +10,8 @@ class SekolahForm(forms.ModelForm):
 
 class SemesterForm(forms.ModelForm):
     class Meta:
-        model = Semester
-        fields = ('tahun_mulai', 'tahun_akhir', 'semester')
+        model = TahunPelajaran
+        fields = ('mulai', 'akhir')
 
 class KelasForm(forms.ModelForm):
     try:

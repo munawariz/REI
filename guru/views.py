@@ -5,7 +5,7 @@ from django.db.models.query_utils import Q
 from django.http.response import Http404
 from django.shortcuts import redirect, render
 from django.views.generic import View, CreateView
-from helpers import active_semester, get_initial, form_value, get_sekolah
+from helpers import active_semester, active_tp, get_initial, form_value, get_sekolah
 from .models import Guru
 from siswa.models import Siswa
 from sekolah.models import Jurusan, Kelas, Sekolah
@@ -27,9 +27,9 @@ class dashboard(View):
         context = {
             'sekolah': get_sekolah(),
             'semester': semester,
-            'siswa_berkelas': Siswa.objects.exclude(kelas=None).filter(kelas__semester=semester).count(),
-            'siswa_nokelas': Siswa.objects.exclude(kelas__semester=semester).filter(kelas=None).count(),
-            'jumlah_kelas': Kelas.objects.filter(semester=semester).count(),
+            'siswa_berkelas': Siswa.objects.exclude(kelas=None).filter(kelas__tahun_pelajaran=semester.tahun_pelajaran).count(),
+            'siswa_nokelas': Siswa.objects.exclude(kelas__tahun_pelajaran=semester.tahun_pelajaran).filter(kelas=None).count(),
+            'jumlah_kelas': Kelas.objects.filter(tahun_pelajaran=semester.tahun_pelajaran).count(),
             'jumlah_jurusan': Jurusan.objects.count(),
         }
         return render(request, 'pages/dashboard.html', context)
@@ -125,7 +125,7 @@ class profil_lain(View):
     def get(self, request, guru):
         try:
             guru = Guru.objects.get(nip=guru)
-            kelas = Kelas.objects.get(walikelas=guru, semester=active_semester())
+            kelas = Kelas.objects.get(walikelas=guru, tahun_pelajaran=active_tp())
         except Guru.DoesNotExist:
             raise Http404
         except Kelas.DoesNotExist:

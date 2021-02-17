@@ -312,6 +312,7 @@ form{
     color: var(--text-secondary);
     border-radius: 0.25rem !important;
     box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.3);
+    width: fit-content !important;
 }
 
 .main-btn:hover{

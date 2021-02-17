@@ -1,6 +1,6 @@
 from django.contrib import admin
 from solo.admin import SingletonModelAdmin
-from .models import Sekolah, Semester, Jurusan, MataPelajaran, KKM, Kelas, Ekskul, Rapor
+from .models import Sekolah, Semester, Jurusan, MataPelajaran, KKM, Kelas, Ekskul, Rapor, TahunPelajaran
 from django.contrib.auth.models import Group
 
 admin.site.unregister(Group)
@@ -9,11 +9,16 @@ admin.site.unregister(Group)
 class SekolahAdmin(SingletonModelAdmin):
     readonly_fields = ('tingkat_verbose',)
 
-@admin.register(Semester)
+@admin.register(TahunPelajaran)
 class TPAdmin(admin.ModelAdmin):
-    list_display = ('tahun_mulai', 'tahun_akhir', 'semester', 'is_active')
-    search_fields = ('tahun_mulai', 'tahun_akhir')
-    ordering = ('-tahun_mulai', '-tahun_akhir', '-semester')
+    list_display = ('mulai', 'akhir', 'is_active')
+    search_fields = ('mulai', 'akhir')
+    ordering = ('-mulai', '-akhir')
+
+@admin.register(Semester)
+class SemesterAdmin(admin.ModelAdmin):
+    list_display = ('tahun_pelajaran', 'semester', 'is_active')
+    ordering = ('-tahun_pelajaran', '-semester')
 
 @admin.register(Jurusan)
 class JurusanAdmin(admin.ModelAdmin):
@@ -29,14 +34,14 @@ class MataPelajaranAdmin(admin.ModelAdmin):
 
 @admin.register(KKM)
 class KKMAdmin(admin.ModelAdmin):
-    list_display = ('matapelajaran', 'semester', 'pengetahuan', 'keterampilan')
-    search_fields = ('matapelajaran', 'semester', 'pengetahuan', 'keterampilan')
-    ordering = ('matapelajaran', 'semester')
+    list_display = ('matapelajaran', 'tahun_pelajaran', 'pengetahuan', 'keterampilan')
+    search_fields = ('matapelajaran', 'tahun_pelajaran', 'pengetahuan', 'keterampilan')
+    ordering = ('matapelajaran', 'tahun_pelajaran')
 
 @admin.register(Kelas)
 class KelasAdmin(admin.ModelAdmin):
-    list_display = ('nama', 'tingkat', 'jurusan', 'kelas', 'walikelas', 'semester')
-    search_fields = ('tingkat', 'jurusan', 'kelas', 'walikelas', 'semester')
+    list_display = ('nama', 'tingkat', 'jurusan', 'kelas', 'walikelas', 'tahun_pelajaran')
+    search_fields = ('tingkat', 'jurusan', 'kelas', 'walikelas', 'tahun_pelajaran')
     ordering = ('tingkat', 'jurusan', 'kelas')
 
 @admin.register(Ekskul)

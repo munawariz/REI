@@ -1,4 +1,4 @@
-from helpers import active_semester, get_validkelas
+from helpers import active_semester, active_tp, get_validkelas
 from sekolah.models import Kelas
 from siswa.models import Siswa
 from django.core.exceptions import ObjectDoesNotExist
@@ -79,12 +79,12 @@ def validdirs_required(function=None):
         except KeyError:
             try:
                 if kwargs['kelas']:
-                    kelas = Kelas.objects.get(nama=kwargs['kelas'], semester=active_semester())
+                    kelas = Kelas.objects.get(nama=kwargs['kelas'], tahun_pelajaran=active_tp())
             except KeyError:
                 kelas = None
                 return redirect('dashboard')
 
-        dirs = f'{settings.MEDIA_ROOT}/rapor/{kelas.semester.tahun_mulai} - {kelas.semester.tahun_akhir} {kelas.semester.semester}/{kelas.jurusan}/{kelas.nama}'
+        dirs = f'{settings.MEDIA_ROOT}/rapor/{kelas.tahun_pelajaran.mulai} - {kelas.tahun_pelajaran.akhir} {kelas.tahun_pelajaran.semester.semester}/{kelas.jurusan}/{kelas.nama}'
         if not os.path.isdir(dirs): 
             os.makedirs(dirs)
         kwargs['pdf_dir'] = dirs
