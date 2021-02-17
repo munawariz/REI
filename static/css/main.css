@@ -8,6 +8,10 @@
     --transition-speed: 600ms;
 }
 
+html{
+    scroll-behavior: smooth;
+}
+
 body{
     color: var(--text-secondary);
     background-color: var(--bg-primary);
@@ -552,7 +556,8 @@ ul.one-columns{
 }
 
 .card-green .dashboard-card-icon-bg,
-.card-green .main-btn{
+.card-green .main-btn,
+.card-green .section-header{
     background: linear-gradient(60deg,#288c6c,#4ea752);
     box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(76,175,80,0.3);
 }
@@ -567,7 +572,8 @@ ul.one-columns{
 }
 
 .card-blue .dashboard-card-icon-bg,
-.card-blue .main-btn{
+.card-blue .main-btn,
+.card-blue .section-header{
     background: linear-gradient(60deg,#1f83a2,#1f9aaa);
     box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(0,188,212,0.3);
 }
@@ -582,7 +588,8 @@ ul.one-columns{
 }
 
 .card-orange .dashboard-card-icon-bg,
-.card-orange .main-btn{
+.card-orange .main-btn,
+.card-orange .section-header{
     background: linear-gradient(60deg,#f5700c,#e98c02);
     box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(255,152,0,0.3);
 }
@@ -597,7 +604,8 @@ ul.one-columns{
 }
 
 .card-red .dashboard-card-icon-bg,
-.card-red .main-btn{
+.card-red .main-btn,
+.card-red .section-header{
     background: linear-gradient(60deg,#d22824,#da3a36);
     box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(244,67,54,0.3);
 }
@@ -609,6 +617,16 @@ ul.one-columns{
 
 .card-red .dashboard-card-title{
     color: #d22824;
+}
+
+.bg-none{
+    background: none !important;
+    background-color: transparent;
+}
+
+.bg-none:hover,
+.bg-active{
+    background: rgba(255, 255, 255, 0.4) !important;
 }
 
 @media only screen and (max-width: 768px){

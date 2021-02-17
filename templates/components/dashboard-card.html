@@ -9,8 +9,26 @@
         </div>
         <div class="col">
             <div class="dashboard-card-title">{{title|title}}</div>
-            <div class="dashboard-card-value">{{value|title}}</div>
+            {% if value == value|upper %}
+                <div class="dashboard-card-value">{{value}}</div>
+            {% else %}
+                <div class="dashboard-card-value">{{value|title}}</div>
+            {% endif %}
         </div>
     </div>
-    <a href="{% url url %}" class="btn main-btn dashboard-card-footer">{{button_text|title}}</a>
+    
+    {% if string_url %}
+        <a href="{{string_url}}" class="btn main-btn dashboard-card-footer">{{button_text|title}}</a>
+    {% elif url %}
+        <a href="{% url url %}" class="btn main-btn dashboard-card-footer">{{button_text|title}}</a>
+    {% endif %}
+
+    {% if second_button %}
+        {% if second_string_url %}
+            <a href="{{second_string_url}}" class="btn main-btn dashboard-card-footer ms-2">{{second_button_text|title}}</a>
+        {% elif second_url %}
+            <a href="{% url second_url %}" class="btn main-btn dashboard-card-footer ms-2">{{second_button_text|title}}</a>
+        {% endif %}
+    {% endif %}
+    
 </div>

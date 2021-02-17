@@ -134,8 +134,8 @@
                                                 <td class="d-none d-md-table-cell">Wanita</td>
                                             {% endif %}                                            
                                             <td class="d-none d-md-table-cell">{{siswa.agama}}</td>
-                                            <td><a href="{% url 'rapor' siswa.nis %}?action=unduh" class="btn main-btn fs-5 pt-2"><ion-icon name="cloud-download-outline"></ion-icon></a></td>
-                                            <td><a href="{% url 'rapor' siswa.nis %}?action=pratinjau" class="btn main-btn fs-5 pt-2"><ion-icon name="eye-outline"></ion-icon></a></td>
+                                            <td><a href="{% url 'rapor' siswa.nis 'unduh' %}" class="btn main-btn fs-5 pt-2"><ion-icon name="cloud-download-outline"></ion-icon></a></td>
+                                            <td><a href="{% url 'rapor' siswa.nis 'pratinjau' %}" class="btn main-btn fs-5 pt-2"><ion-icon name="eye-outline"></ion-icon></a></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>                                
