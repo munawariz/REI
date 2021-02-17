@@ -57,7 +57,7 @@ def unique_together_tp_mapel(sender, instance, **kwargs):
 @receiver(models.signals.post_save, sender=Nilai)
 def nilai_post_save(sender, instance, created, **kwargs):
     if created:
-        instance.semester = instance.siswa.kelas.semester
+        instance.semester = Semester.objects.get(tahun_pelajaran=instance.siswa.kelas.tahun_pelajaran, is_active=True)
         instance.save()
 
 

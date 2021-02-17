@@ -80,3 +80,10 @@ def has_ekskul(siswa, semester):
         return True
     else:
         return False
+
+def has_mapel(kelas):
+    mapel = MataPelajaran.objects.filter(kelas=kelas)
+    if mapel:
+        return True
+    else:
+        return False

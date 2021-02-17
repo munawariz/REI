@@ -412,7 +412,7 @@ class ubah_kkm(View):
         mapel = MataPelajaran.objects.get(pk=matapelajaran)
         try:
             if kkm_form.is_valid():
-                kkm = KKM.objects.filter(matapelajaran=mapel, semester=active_tp())
+                kkm = KKM.objects.filter(matapelajaran=mapel, tahun_pelajaran=active_tp())
                 kkm.update(**form_value(kkm_form))
                 messages.success(request, f'Data KKM untuk Matapelajaran {mapel.nama} berhasil diubah')
         except Exception as e:
