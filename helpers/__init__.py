@@ -18,6 +18,8 @@ def active_tp():
         return None
     except OperationalError:
         return None
+    except ProgrammingError:
+        return None
 
 def active_semester():    
     try:
