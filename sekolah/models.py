@@ -104,6 +104,8 @@ def only_one_is_active_instance(sender, instance, **kwargs):
             raise ValidationError('That Semester already exists')
     except ObjectDoesNotExist:
         pass
+    except ValidationError:
+        pass
 
 
 class Jurusan(models.Model):
@@ -120,8 +122,6 @@ def unique_together_nama_singkat(sender, instance, **kwargs):
         if jurusan and instance not in jurusan:
             raise ValidationError('That Jurusan already exists')
     except ObjectDoesNotExist:
-        pass
-    except ValidationError:
         pass
 
 
