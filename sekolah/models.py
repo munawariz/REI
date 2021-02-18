@@ -121,6 +121,8 @@ def unique_together_nama_singkat(sender, instance, **kwargs):
             raise ValidationError('That Jurusan already exists')
     except ObjectDoesNotExist:
         pass
+    except ValidationError:
+        pass
 
 
 class MataPelajaran(models.Model):
