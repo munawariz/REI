@@ -87,3 +87,27 @@ def has_mapel(kelas):
         return True
     else:
         return False
+
+def get_pengetahuan(siswa, semester):
+    matapelajaran = MataPelajaran.objects.filter(kelas=siswa.kelas).order_by('kelompok', 'nama')
+    return [pengetahuan(mapel, siswa, semester) for mapel in matapelajaran]
+
+def get_keterampilan(siswa, semester):
+    matapelajaran = MataPelajaran.objects.filter(kelas=siswa.kelas).order_by('kelompok', 'nama')
+    return [keterampilan(mapel, siswa, semester) for mapel in matapelajaran]
+
+def list_siswa_status(list_siswa, semester):
+    finished = []
+    unfinished = []
+    status = {}
+    for siswa in list_siswa:
+        if 0 in get_pengetahuan(siswa, semester) or 0 in get_keterampilan(siswa, semester):
+            unfinished.append(siswa.nis)
+            status[siswa] = False
+        else:
+            finished.append(siswa.nis)
+            status[siswa] = True
+    
+    return finished, unfinished, status
+
+        

@@ -1,22 +1,24 @@
+from helpers.choice import tingkat_choice
 from guru.models import Guru
 from siswa.models import Absensi, Siswa
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.query_utils import Q
-from django.http.response import Http404
+from django.http.response import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Rapor, Sekolah, Semester, TahunPelajaran
-from .forms import EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm
+from .forms import DisabledKelasForm, EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required, validdirs_required, activesemester_required
-from helpers import active_semester, active_tp, generate_rapor_context, get_initial, form_value, get_validkelas, get_validwalikelas, get_validsiswabaru, get_validpelajaran, semiactive_semester
-from helpers.nilai_helpers import zip_eksnilai, zip_pelkkm, zip_nilrapor
+from helpers import active_semester, active_tp, generate_rapor_context, get_initial, form_value, get_sekolah, get_validkelas, get_validwalikelas, get_validsiswabaru, get_validpelajaran, semiactive_semester, walikelas_choice
+from helpers.nilai_helpers import list_siswa_status, zip_eksnilai, zip_pelkkm, zip_nilrapor
 from django.contrib import messages
 from REI import settings
 import os, shutil
+from django.template.loader import render_to_string
 
 from helpers import generate_pdf
 from django.http import HttpResponse, FileResponse
@@ -120,7 +122,7 @@ class list_kelas(View):
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
             'list_kelas': list_kelas,
-            'kelas_form': KelasForm(),
+            'kelas_form': KelasForm(tingkat_list=tingkat_choice(get_sekolah()), walikelas_list=walikelas_choice(get_validwalikelas())),
         }
         return render(request, 'pages/kelas/kelas.html', context)
 
@@ -128,9 +130,13 @@ class list_kelas(View):
 @method_decorator(activesemester_required, name='dispatch')
 class buat_kelas(View):
     def post(self, request):
-        kelas_form = KelasForm(request.POST)
+        kelas_form = KelasForm(tingkat_choice(get_sekolah()), walikelas_choice(get_validwalikelas()), request.POST)
         try:
             if kelas_form.is_valid():
+                try:
+                    kelas_form.cleaned_data['walikelas'] = Guru.objects.get(nip=kelas_form.cleaned_data['walikelas'])
+                except Guru.DoesNotExist:
+                    kelas_form.cleaned_data['walikelas'] = None
                 Kelas.objects.create(**form_value(kelas_form), tahun_pelajaran=active_tp())
                 messages.success(request, 'Kelas berhasil dibuat, segera lengkapi data kelas tadi')
         except ValidationError:
@@ -162,15 +168,48 @@ class detail_kelas(View):
             raise Http404
 
         if kelas.walikelas == request.user or request.user.is_superuser: auth_walikelas = True
-        else: auth_walikelas = False 
+        else: auth_walikelas = False
 
+        initial = get_initial(kelas)
+        initial['walikelas'] = Guru.objects.get(pk=initial['walikelas'])
+        list_siswa = Siswa.objects.filter(kelas=kelas).order_by('nama')
+        finished, unfinished, status = list_siswa_status(list_siswa=list_siswa, semester=active_semester())
+        list_mapel = MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama')
+
+        siswa_cols = ['Nama', 'Status Nilai']
+        siswa_data = zip([key for key, value in status.items()], [value for key, value in status.items()])
+
+        mapel_cols = ['Mata Pelajaran', 'Kelompok']
+        mapel_data = zip([mapel.nama for mapel in list_mapel], [mapel.kelompok for mapel in list_mapel])
         context = {
             'kelas': kelas,
             'auth_walikelas': auth_walikelas,
-            'list_siswa': Siswa.objects.filter(kelas=kelas).order_by('nama'),
-            'list_matapelajaran': MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama'),
+            'form_kelas': DisabledKelasForm(initial=initial),
+            'list_siswa': list_siswa,
+            'jumlah_siswa': list_siswa.count(),
+            'status_siswa': f'{len(finished)} Siswa tuntas / {len(unfinished)} Siswa belum tuntas',
+            'list_matapelajaran': list_mapel,
+            'table_cols': siswa_cols,
+            'table_data': siswa_data,
+            'link': 'anggota/',
         }
-        return render(request, 'pages/kelas/detail-kelas.html', context)
+        if self.request.is_ajax():
+            if self.request.GET['type'] == 'siswa':
+                context['table_cols'] = siswa_cols
+                context['table_data'] = siswa_data
+                context['link'] = 'anggota/'
+            elif self.request.GET['type'] == 'mapel':
+                context['table_cols'] = mapel_cols
+                context['table_data'] = mapel_data
+                context['link'] = 'pelajaran/'
+            html = render_to_string(
+                template_name="pages/kelas/realtime-table.html", 
+                context = context
+            )
+            data_dict = {"html_from_view": html}
+            return JsonResponse(data=data_dict, safe=False)
+        else:    
+            return render(request, 'pages/kelas/detail-kelas.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')

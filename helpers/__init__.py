@@ -78,6 +78,14 @@ def get_validwalikelas():
 
     return valid_walikelas
 
+def walikelas_choice(validwalikelas):
+    vw = {}
+    vw[None] = '---------'
+    for walikelas in validwalikelas:
+        vw[walikelas.nip] = walikelas.nama
+
+    return [(nip, walikelas) for nip, walikelas in vw.items()]
+
 def get_validsiswabaru():
     from siswa.models import Siswa
     from sekolah.models import Kelas

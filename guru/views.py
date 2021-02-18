@@ -72,7 +72,7 @@ class ganti_password(View):
         
         return redirect('profil')
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(staftu_required, name='dispatch')
 class list_guru(View):
     def get(self, request):
         request.session['page'] = 'Daftar Guru'
