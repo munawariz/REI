@@ -66,8 +66,8 @@ def presave_tp(sender, instance, **kwargs):
 @receiver(models.signals.post_save, sender=TahunPelajaran)
 def postsave_tp(sender, instance, created, **kwargs):
     if created:
-        Semester.objects.create(tahun_pelajaran=instance, semester='Ganjil', is_active=False)
-        Semester.objects.create(tahun_pelajaran=instance, semester='Genap', is_active=False)
+        Semester.objects.get_or_create(tahun_pelajaran=instance, semester='Ganjil', is_active=False)
+        Semester.objects.get_or_create(tahun_pelajaran=instance, semester='Genap', is_active=False)
 
 class Semester(models.Model):
     nama = models.CharField(max_length=255, editable=False, null=True)
