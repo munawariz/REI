@@ -17,18 +17,24 @@
         </div>
     </div>
     
+    {% if footer_text %}
+        <p class="dashboard-card-footer">{{footer_text}}</p>
+    {% endif %}
+
     {% if string_url %}
         <a href="{{string_url}}" class="btn main-btn dashboard-card-footer">{{button_text|title}}</a>
     {% elif url %}
         <a href="{% url url %}" class="btn main-btn dashboard-card-footer">{{button_text|title}}</a>
     {% endif %}
 
-    {% if second_button %}
-        {% if second_string_url %}
-            <a href="{{second_string_url}}" class="btn main-btn dashboard-card-footer ms-2">{{second_button_text|title}}</a>
-        {% elif second_url %}
-            <a href="{% url second_url %}" class="btn main-btn dashboard-card-footer ms-2">{{second_button_text|title}}</a>
-        {% endif %}
+    {% if second_string_url %}
+        <a href="{{second_string_url}}" class="btn main-btn dashboard-card-footer ms-2">{{second_button_text|title}}</a>
+    {% elif second_url %}
+        <a href="{% url second_url %}" class="btn main-btn dashboard-card-footer ms-2">{{second_button_text|title}}</a>
+    {% endif %}
+    
+    {% if modal_button %}
+        {% include 'components/modal-form.html' with target=target title=modal_title modal_form=modal_form submit_button=submit_button from_dashboard_card=True %}
     {% endif %}
     
 </div>

@@ -8,18 +8,17 @@
             </tr>
         </thead>
         <tbody class="text-primary">
-                {% for col1, col2, col3 in table_data %}
-                    <tr>
+                {% for col1, col2 in table_data %}
+                    {% if col1.nis %}<tr data-href="{% url 'detail-siswa' col1.nis %}">{% else %}<tr>{% endif %}
                         <td>{{col1}}</td>
                         <td>{{col2}}</td>
-                        <td>{{col3}}</td>
                     </tr>
                 {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center">
-                        Data kosong atau gagal dicari
-                    </td>
-                </tr>
+                    <tr>
+                        <td colspan="3" class="text-center">
+                            Data kosong atau gagal dicari
+                        </td>
+                    </tr>
                 {% endfor %}
         </tbody>                         
     </table>

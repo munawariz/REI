@@ -37,37 +37,71 @@ class Sekolah(SingletonModel):
     class Meta:
         verbose_name = "Informasi Sekolah"
 
-
-class Semester(models.Model):
-    nama = models.CharField(max_length=255, editable=False, null=True)
-    tahun_mulai = models.CharField(verbose_name='Tahun Mulai', max_length=4)
-    tahun_akhir = models.CharField(verbose_name='Tahun Berakhir', max_length=4)
-    semester = models.CharField(max_length=6, choices=SEMESTER_CHOICE)
-    is_active = models.BooleanField(default=True)
+class TahunPelajaran(models.Model):
+    mulai = models.CharField(verbose_name='Tahun Mulai', max_length=4)
+    akhir = models.CharField(verbose_name='Tahun Berakhir', max_length=4)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.nama
+        return f'{self.mulai}/{self.akhir}'
 
-    def save(self, *args, **kwargs):
-        self.nama = f'{self.tahun_mulai}/{self.tahun_akhir} {self.semester}'
-        super(Semester, self).save(*args, **kwargs)
-        
-
-@receiver(models.signals.pre_save, sender=Semester)
-def only_one_is_active_instance(sender, instance, **kwargs):
+@receiver(models.signals.pre_save, sender=TahunPelajaran)
+def presave_tp(sender, instance, **kwargs):
     try:
-        tp = Semester.objects.filter(is_active=True)
+        tp = TahunPelajaran.objects.filter(is_active=True)
         if tp and instance.is_active:
             for tp in tp:                                        
                 tp.is_active = False
                 tp.save()
     except ObjectDoesNotExist:
         pass
-    
+
     try:
-        tp = Semester.objects.filter(tahun_mulai=instance.tahun_mulai, tahun_akhir=instance.tahun_akhir, semester=instance.semester)
+        tp = TahunPelajaran.objects.filter(mulai=instance.mulai, akhir=instance.akhir)
         if tp and instance not in tp:
-            raise ValidationError('Nilai for that Mata Pelajaran in that Tanggal Pendidikan already exists')
+            raise ValidationError('That Tahun Pelajaran already exists')
+    except ObjectDoesNotExist:
+        pass
+
+@receiver(models.signals.post_save, sender=TahunPelajaran)
+def postsave_tp(sender, instance, created, **kwargs):
+    if created:
+        Semester.objects.create(tahun_pelajaran=instance, semester='Ganjil', is_active=False)
+        Semester.objects.create(tahun_pelajaran=instance, semester='Genap', is_active=False)
+
+class Semester(models.Model):
+    nama = models.CharField(max_length=255, editable=False, null=True)
+    tahun_pelajaran = models.ForeignKey(TahunPelajaran, on_delete=models.CASCADE, related_name='semester')
+    semester = models.CharField(max_length=6, choices=SEMESTER_CHOICE)
+    is_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.nama
+
+    def save(self, *args, **kwargs):
+        self.nama = f'{self.tahun_pelajaran} {self.semester}'
+        super(Semester, self).save(*args, **kwargs)
+        
+
+@receiver(models.signals.pre_save, sender=Semester)
+def only_one_is_active_instance(sender, instance, **kwargs):
+    try:
+        if instance.is_active:
+            tp = TahunPelajaran.objects.get(semester=instance)
+            tp.is_active = True
+            tp.save()
+            semester = Semester.objects.filter(is_active=True)
+            if semester:
+                for semester in semester:                                        
+                    semester.is_active = False
+                    semester.save()
+    except ObjectDoesNotExist:
+        pass
+
+    try:
+        semester = Semester.objects.filter(tahun_pelajaran=instance.tahun_pelajaran, semester=instance.semester)
+        if semester and instance not in semester:
+            raise ValidationError('That Semester already exists')
     except ObjectDoesNotExist:
         pass
 
@@ -114,12 +148,12 @@ def unique_together_all_mapel(sender, instance, **kwargs):
 
 class KKM(models.Model):
     matapelajaran = models.ForeignKey(MataPelajaran, on_delete=models.CASCADE, related_name='kkm')
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, related_name='kkm')
+    tahun_pelajaran = models.ForeignKey(TahunPelajaran, on_delete=models.CASCADE, related_name='kkm')
     pengetahuan = models.SmallIntegerField(verbose_name='KKM Pengetahuan', default=0)
     keterampilan = models.SmallIntegerField(verbose_name='KKM Keterampilan', default=0)
 
     def __str__(self):
-        return f'{self.matapelajaran}({self.semester})'
+        return f'{self.matapelajaran}({self.tahun_pelajaran})'
 
     def save(self, *args, **kwargs):
         if int(self.pengetahuan) < 0: self.pengetahuan = 0
@@ -131,7 +165,7 @@ class KKM(models.Model):
 @receiver(models.signals.pre_save, sender=KKM)
 def unique_together_tp_mapel(sender, instance, **kwargs):
     try:
-        kkm = KKM.objects.filter(matapelajaran=instance.matapelajaran, semester=instance.semester)
+        kkm = KKM.objects.filter(matapelajaran=instance.matapelajaran, tahun_pelajaran=instance.tahun_pelajaran)
         if kkm and instance not in kkm:
             raise ValidationError('Nilai for that Mata Pelajaran in that Tanggal Pendidikan already exists')
     except ObjectDoesNotExist:
@@ -144,11 +178,11 @@ class Kelas(models.Model):
     kelas = models.CharField(max_length=1, choices=KELAS_CHOICE)
     matapelajaran = models.ManyToManyField(MataPelajaran, related_name='kelas', blank=True)
     walikelas = models.ForeignKey(Guru, on_delete=models.SET_NULL, related_name='kelas', null=True, blank=True)
-    semester = models.ForeignKey(Semester, on_delete=models.PROTECT, related_name='kelas', null=True)
+    tahun_pelajaran = models.ForeignKey(TahunPelajaran, on_delete=models.PROTECT, related_name='kelas', null=True)
     nama = models.CharField(max_length=255, editable=False, null=True, blank=True)
 
     def __str__(self):
-        return f'{self.tingkat}-{self.jurusan}-{self.kelas} {self.semester}'
+        return f'{self.tingkat}-{self.jurusan}-{self.kelas} {self.tahun_pelajaran}'
 
     def save(self, *args, **kwargs):
         if not self.jurusan:
@@ -161,7 +195,7 @@ class Kelas(models.Model):
 @receiver(models.signals.pre_save, sender=Kelas)
 def unique_together_all(sender, instance, **kwargs):
     try:
-        kelas = Kelas.objects.filter(tingkat=instance.tingkat, jurusan=instance.jurusan, kelas=instance.kelas, semester=instance.semester)
+        kelas = Kelas.objects.filter(tingkat=instance.tingkat, jurusan=instance.jurusan, kelas=instance.kelas, tahun_pelajaran=instance.tahun_pelajaran)
         if kelas and instance not in kelas:
             raise ValidationError('Kelas with all of that exact value already exists')
     except ObjectDoesNotExist:
@@ -181,14 +215,9 @@ class Rapor(models.Model):
     siswa = models.ForeignKey(Siswa, related_name='rapor', on_delete=models.CASCADE, null=True)
     semester = models.ForeignKey(Semester, related_name='rapor', on_delete=models.CASCADE)
     rapor = models.TextField(verbose_name='Lokasi PDF Rapor', null=True)
-    last_updated = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f'{self.siswa} - {self.semester}'
-
-    def save(self, *args, **kwargs):
-        self.last_updated = datetime.now()
-        super(Rapor, self).save(*args, **kwargs)
 
 @receiver(models.signals.pre_save, sender=Rapor)
 def rapor_pre_save(sender, instance, **kwargs):

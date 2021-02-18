@@ -1,22 +1,24 @@
+from helpers.choice import tingkat_choice
 from guru.models import Guru
 from siswa.models import Absensi, Siswa
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.query_utils import Q
-from django.http.response import Http404
+from django.http.response import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Rapor, Sekolah, Semester
-from .forms import EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm
+from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Rapor, Sekolah, Semester, TahunPelajaran
+from .forms import DisabledKelasForm, EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required, validdirs_required, activesemester_required
-from helpers import active_semester, generate_rapor_context, get_initial, form_value, get_validkelas, get_validwalikelas, get_validsiswabaru, get_validpelajaran
-from helpers.nilai_helpers import zip_eksnilai, zip_pelkkm, zip_nilrapor
+from helpers import active_semester, active_tp, generate_rapor_context, get_initial, form_value, get_sekolah, get_validkelas, get_validwalikelas, get_validsiswabaru, get_validpelajaran, semiactive_semester, walikelas_choice
+from helpers.nilai_helpers import list_siswa_status, zip_eksnilai, zip_pelkkm, zip_nilrapor
 from django.contrib import messages
 from REI import settings
 import os, shutil
+from django.template.loader import render_to_string
 
 from helpers import generate_pdf
 from django.http import HttpResponse, FileResponse
@@ -44,21 +46,19 @@ class list_semester(View):
     def get(self, request):
         request.session['page'] = 'Daftar Semester'
         if 'search' in request.GET and request.GET['search'] != '':
-            list_semester = Semester.objects.filter(
-                Q(nama__istartswith=request.GET['search']) |
-                Q(tahun_mulai__icontains=request.GET['search']) |
-                Q(tahun_akhir__icontains=request.GET['search']) |
-                Q(semester__icontains=request.GET['search'])
-            ).order_by('-tahun_mulai', '-tahun_akhir', '-semester')
+            list_tp = TahunPelajaran.objects.filter(
+                Q(mulai__icontains=request.GET['search']) |
+                Q(akhir__icontains=request.GET['search'])
+            ).order_by('-mulai', '-akhir')
         else:
-            list_semester = Semester.objects.all().order_by('-tahun_mulai', '-tahun_akhir', '-semester')
+            list_tp = TahunPelajaran.objects.all().order_by('-mulai', '-akhir')
         
-        paginator = Paginator(list_semester, 5)
+        paginator = Paginator(list_tp, 5)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         number_of_pages = [(number+1) for number in range(page_obj.paginator.num_pages)]
         context = {
-            'list_semester': page_obj,
+            'list_tp': page_obj,
             'page_obj': page_obj,
             'create_form': SemesterForm(),
             'number_of_pages': number_of_pages,
@@ -71,10 +71,12 @@ class buat_semester(View):
         semester_form = SemesterForm(request.POST)
         try:
             if semester_form.is_valid():
-                semester = Semester.objects.create(**form_value(semester_form), is_active=False)
-                messages.success(request, 'Semester berhasil dibuat')
+                TahunPelajaran.objects.create(**form_value(semester_form))
+                messages.success(request, 'Tahun Pelajaran berhasil dibuat')
         except ValidationError:
-            messages.error(request, 'Semester dengan data persis seperti itu sudah ada')
+            messages.error(request, 'Tahun Pelajaran dengan data persis seperti itu sudah ada')
+        except Exception as e:
+            print(e)
         finally:
             return redirect('list-semester')
 
@@ -90,10 +92,10 @@ class aktifkan_semester(View):
 class hapus_semester(View):
     def get(self, request, semester):
         try:
-            Semester.objects.get(pk=semester).delete()
-            messages.success(request, 'Semester berhasil dihapus')
+            TahunPelajaran.objects.get(pk=semester).delete()
+            messages.success(request, 'Tahun Pelajaran berhasil dihapus')
         except ProtectedError:
-            messages.error(request, 'Semester masih memiliki kelas aktif, tidak dapat dihapus')
+            messages.error(request, 'Tahun Pelajaran memiliki Semester yang masih menampung data, tidak dapat dihapus')
         finally:
             return redirect('list-semester')
 
@@ -102,14 +104,15 @@ class hapus_semester(View):
 class list_kelas(View):
     def get(self, request):
         request.session['page'] = 'Daftar Kelas'
+        semester = active_semester()
         if 'search' in request.GET and request.GET['search'] != '':
             list_kelas = Kelas.objects.filter(
-                Q(semester=active_semester()) & (
+                Q(tahun_pelajaran=semester.tahun_pelajaran) & (
                 Q(nama__icontains=request.GET['search']) |
                 Q(walikelas__nama__icontains=request.GET['search']))
                 ).order_by('jurusan', 'tingkat', 'kelas')
         else:
-            list_kelas = Kelas.objects.filter(semester=active_semester()).order_by('jurusan', 'tingkat', 'kelas')
+            list_kelas = Kelas.objects.filter(tahun_pelajaran=semester.tahun_pelajaran).order_by('jurusan', 'tingkat', 'kelas')
         
         paginator = Paginator(list_kelas, 5)
         page_number = request.GET.get('page')
@@ -119,7 +122,7 @@ class list_kelas(View):
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
             'list_kelas': list_kelas,
-            'kelas_form': KelasForm(),
+            'kelas_form': KelasForm(tingkat_list=tingkat_choice(get_sekolah()), walikelas_list=walikelas_choice(get_validwalikelas())),
         }
         return render(request, 'pages/kelas/kelas.html', context)
 
@@ -127,10 +130,14 @@ class list_kelas(View):
 @method_decorator(activesemester_required, name='dispatch')
 class buat_kelas(View):
     def post(self, request):
-        kelas_form = KelasForm(request.POST)
+        kelas_form = KelasForm(tingkat_choice(get_sekolah()), walikelas_choice(get_validwalikelas()), request.POST)
         try:
             if kelas_form.is_valid():
-                kelas = Kelas.objects.create(**form_value(kelas_form), semester=active_semester())
+                try:
+                    kelas_form.cleaned_data['walikelas'] = Guru.objects.get(nip=kelas_form.cleaned_data['walikelas'])
+                except Guru.DoesNotExist:
+                    kelas_form.cleaned_data['walikelas'] = None
+                Kelas.objects.create(**form_value(kelas_form), tahun_pelajaran=active_tp())
                 messages.success(request, 'Kelas berhasil dibuat, segera lengkapi data kelas tadi')
         except ValidationError:
             messages.error(request, 'Kelas itu sudah ada')
@@ -141,9 +148,10 @@ class buat_kelas(View):
 @method_decorator(activesemester_required, name='dispatch')
 class hapus_kelas(View):
     def get(self, request, kelas):
+        tp = active_tp()
         try:
-            Kelas.objects.get(nama=kelas, semester=active_semester()).delete()
-            messages.success(request, f'Kelas {kelas} berhasil dihapus dari semester {active_semester()}')
+            Kelas.objects.get(nama=kelas, tahun_pelajaran=tp).delete()
+            messages.success(request, f'Kelas {kelas} berhasil dihapus dari tahun pelajaran {tp}')
         except ProtectedError:
             messages.error(request, 'Kelas masih memiliki siswa, tidak dapat dihapus')
         finally:
@@ -155,27 +163,60 @@ class detail_kelas(View):
     def get(self, request, kelas):
         request.session['page'] = f'Detail {kelas}'
         try:
-            kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
+            kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
         except ObjectDoesNotExist:
             raise Http404
 
         if kelas.walikelas == request.user or request.user.is_superuser: auth_walikelas = True
-        else: auth_walikelas = False 
+        else: auth_walikelas = False
 
+        initial = get_initial(kelas)
+        initial['walikelas'] = Guru.objects.get(pk=initial['walikelas'])
+        list_siswa = Siswa.objects.filter(kelas=kelas).order_by('nama')
+        finished, unfinished, status = list_siswa_status(list_siswa=list_siswa, semester=active_semester())
+        list_mapel = MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama')
+
+        siswa_cols = ['Nama', 'Status Nilai']
+        siswa_data = zip([key for key, value in status.items()], [value for key, value in status.items()])
+
+        mapel_cols = ['Mata Pelajaran', 'Kelompok']
+        mapel_data = zip([mapel.nama for mapel in list_mapel], [mapel.kelompok for mapel in list_mapel])
         context = {
             'kelas': kelas,
             'auth_walikelas': auth_walikelas,
-            'list_siswa': Siswa.objects.filter(kelas=kelas).order_by('nama'),
-            'list_matapelajaran': MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama'),
+            'form_kelas': DisabledKelasForm(initial=initial),
+            'list_siswa': list_siswa,
+            'jumlah_siswa': list_siswa.count(),
+            'status_siswa': f'{len(finished)} Siswa tuntas / {len(unfinished)} Siswa belum tuntas',
+            'list_matapelajaran': list_mapel,
+            'table_cols': siswa_cols,
+            'table_data': siswa_data,
+            'link': 'anggota/',
         }
-        return render(request, 'pages/kelas/detail-kelas.html', context)
+        if self.request.is_ajax():
+            if self.request.GET['type'] == 'siswa':
+                context['table_cols'] = siswa_cols
+                context['table_data'] = siswa_data
+                context['link'] = 'anggota/'
+            elif self.request.GET['type'] == 'mapel':
+                context['table_cols'] = mapel_cols
+                context['table_data'] = mapel_data
+                context['link'] = 'pelajaran/'
+            html = render_to_string(
+                template_name="pages/kelas/realtime-table.html", 
+                context = context
+            )
+            data_dict = {"html_from_view": html}
+            return JsonResponse(data=data_dict, safe=False)
+        else:    
+            return render(request, 'pages/kelas/detail-kelas.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class walikelas_kelas(View):
     def get(self, request, kelas):
         request.session['page'] = f'Walikelas {kelas}'
-        kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
+        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
         try:
             active_walikelas = Guru.objects.get(kelas=kelas)
         except ObjectDoesNotExist:
@@ -192,7 +233,7 @@ class walikelas_kelas(View):
 @method_decorator(activesemester_required, name='dispatch')
 class ganti_walikelas(View):
     def post(self, request, kelas):
-        kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
+        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
         if request.POST['new_walikelas']:
             new_walikelas = Guru.objects.get(nip=request.POST['new_walikelas'])
             kelas.walikelas = new_walikelas
@@ -205,7 +246,7 @@ class ganti_walikelas(View):
 class anggota_kelas(View):
     def get(self, request, kelas):
         request.session['page'] = f'Anggota Kelas {kelas}'
-        kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
+        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
         context = {
             'kelas': kelas,
             'list_siswa': Siswa.objects.filter(kelas=kelas).order_by('nama'),
@@ -218,7 +259,7 @@ class anggota_kelas(View):
 class tambah_anggota(View):
     def get(self, request, kelas, siswa):
         siswa = Siswa.objects.get(nis=siswa)
-        kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
+        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
         siswa.kelas = kelas
         siswa.save()
         messages.success(request, f'{siswa.nama} berhasil menjadi anggota kelas {kelas.nama}')
@@ -239,11 +280,12 @@ class hapus_anggota(View):
 class pelajaran_kelas(View):
     def get(self, request, kelas):
         request.session['page'] = f'Matapelajaran {kelas}'
-        kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
+        tp = active_tp()
+        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=tp)
         context = {
             'kelas': kelas,
-            'list_matapelajaran': zip_pelkkm(MataPelajaran.objects.filter(kelas=kelas), active_semester()),
-            'matapelajaran_baru': zip_pelkkm(get_validpelajaran(kelas.nama), active_semester()),
+            'list_matapelajaran': zip_pelkkm(MataPelajaran.objects.filter(kelas=kelas), tp),
+            'matapelajaran_baru': zip_pelkkm(get_validpelajaran(kelas.nama), tp),
         }
         return render(request, 'pages/kelas/pelajaran-kelas.html', context)
 
@@ -252,7 +294,7 @@ class pelajaran_kelas(View):
 class tambah_pelajaran(View):
     def get(self, request, kelas, pelajaran):
         matapelajaran = MataPelajaran.objects.get(pk=pelajaran)
-        kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
+        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
         kelas.matapelajaran.add(matapelajaran)
         messages.success(request, f'{matapelajaran.nama} berhasil ditambahkan ke kelas {kelas.nama}')
         return redirect('pelajaran-kelas', kelas=kelas.nama)
@@ -262,7 +304,7 @@ class tambah_pelajaran(View):
 class hapus_pelajaran(View):
     def get(self, request, kelas, pelajaran):
         matapelajaran = MataPelajaran.objects.get(pk=pelajaran)
-        kelas = Kelas.objects.get(nama=kelas, semester=active_semester())
+        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
         kelas.matapelajaran.remove(matapelajaran)
         messages.success(request, f'{matapelajaran.nama} berhasil dihapus dari kelas {kelas.nama}')
         return redirect('pelajaran-kelas', kelas=kelas.nama)
@@ -304,7 +346,6 @@ class hapus_jurusan(View):
             messages.error(request, f'{nama_jurusan} masih memiliki kelas aktif, tidak dapat dihapus')
         finally:
             return redirect('list-jurusan')
-
 
 @method_decorator(staftu_required, name='dispatch')
 class list_ekskul(View):
@@ -349,7 +390,7 @@ class list_matapelajaran(View):
         request.session['page'] = 'Daftar Matapelajaran'
         list_matapelajaran = MataPelajaran.objects.all().order_by('kelompok')
         context = {
-            'data': zip_pelkkm(list_matapelajaran, active_semester()),
+            'data': zip_pelkkm(list_matapelajaran, active_tp()),
             'list_matapelajaran': list_matapelajaran,
             'matapelajaran_form': MatapelajaranForm(),
         }
@@ -378,7 +419,7 @@ class detail_matapelajaran(View):
         except ObjectDoesNotExist:
             raise Http404
         request.session['page'] = f'Detail {matapelajaran.nama}'
-        kkm, created = KKM.objects.get_or_create(matapelajaran=matapelajaran, semester=active_semester())
+        kkm, created = KKM.objects.get_or_create(matapelajaran=matapelajaran, tahun_pelajaran=active_tp())
         context = {
             'matapelajaran': matapelajaran,
             'kkm': kkm,
@@ -395,8 +436,8 @@ class ubah_matapelajaran(View):
         try:
             if matapelajaran_form.is_valid():
                 MataPelajaran.objects.filter(pk=matapelajaran).update(**form_value(matapelajaran_form))
-                nama_mapel = MataPelajaran.objects.get(pk=matapelajaran).nama
-                messages.success(request, f'Data Matapelajaran {nama_mapel} berhasil diubah')
+                mapel = MataPelajaran.objects.get(pk=matapelajaran)
+                messages.success(request, f'Data Matapelajaran {mapel.nama} berhasil diubah')
         except Exception as e:
             messages.error(request, f'Terjadi kesalahan saat mencoba mengubah data Matapelajaran')
         finally:
@@ -410,7 +451,7 @@ class ubah_kkm(View):
         mapel = MataPelajaran.objects.get(pk=matapelajaran)
         try:
             if kkm_form.is_valid():
-                kkm = KKM.objects.filter(matapelajaran=mapel, semester=active_semester())
+                kkm = KKM.objects.filter(matapelajaran=mapel, tahun_pelajaran=active_tp())
                 kkm.update(**form_value(kkm_form))
                 messages.success(request, f'Data KKM untuk Matapelajaran {mapel.nama} berhasil diubah')
         except Exception as e:
@@ -467,7 +508,8 @@ class bundle_rapor_view(View):
         try:
             sekolah = Sekolah.objects.get()
             semester = active_semester()
-            kelas = Kelas.objects.get(nama=kelas, semester=semester)
+            tp = active_tp()
+            kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=tp)
             siswa = Siswa.objects.filter(kelas=kelas)
         except ObjectDoesNotExist:
             raise Http404
@@ -476,7 +518,7 @@ class bundle_rapor_view(View):
             context = generate_rapor_context(sekolah, semester, siswa)
             generate_pdf(siswa, kwargs['pdf_dir'], context)
 
-        bundle_dir = f'{settings.MEDIA_ROOT}/rapor/{kelas.semester.tahun_mulai} - {kelas.semester.tahun_akhir} {kelas.semester.semester}/bundel/{kelas.jurusan}'
+        bundle_dir = f'{settings.MEDIA_ROOT}/rapor/{kelas.tahun_pelajaran.mulai} - {kelas.tahun_pelajaran.akhir} {kelas.tahun_pelajaran.semester.semester}/bundel/{kelas.jurusan}'
         if not os.path.isdir(bundle_dir):
             os.makedirs(bundle_dir)
         

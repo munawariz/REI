@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 from sekolah.models import Kelas
-from helpers import active_semester
+from helpers import active_semester, active_tp
 
 def append_df_to_excel(filename, df, sheet_name='Sheet1', startrow=None,
                        truncate_sheet=False, 
@@ -18,7 +18,7 @@ def extract_and_clean_siswa(file):
     excel = pd.read_excel(file, dtype={'NIS':str, 'NISN':str})
     json_string = json.loads(excel.to_json(orient='records', date_format='iso'))
 
-    semester = active_semester()
+    tp = active_tp()
     cleaned_json = []
     for data in json_string:
         if not data['NISN'].startswith('00'):
@@ -34,7 +34,7 @@ def extract_and_clean_siswa(file):
         
         try:
             data['Kelas'] = data['Kelas'].replace(' ', '-')
-            data['Kelas'] = Kelas.objects.get(nama=data['Kelas'], semester=semester)
+            data['Kelas'] = Kelas.objects.get(nama=data['Kelas'], tahun_pelajaran=tp)
         except Kelas.DoesNotExist:
             data['Kelas'] = None
         except AttributeError:

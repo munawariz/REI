@@ -17,8 +17,8 @@ from .forms import SiswaForm, AbsenForm, NilaiEkskulForm, UploadExcelForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from helpers.nilai_helpers import has_ekskul, zip_eksnilai, zip_pelnilai
-from helpers import calculate_age, active_semester, get_initial, form_value, get_validkelas
+from helpers.nilai_helpers import has_ekskul, has_mapel, zip_eksnilai, zip_pelnilai
+from helpers import active_tp, calculate_age, active_semester, get_initial, form_value, get_validkelas
 from helpers.excel_handlers import append_df_to_excel, extract_and_clean_siswa
 from django.contrib import messages
 from django.template.loader import render_to_string
@@ -48,7 +48,7 @@ class list_siswa(View):
             'number_of_pages': number_of_pages,
             'siswa_form': SiswaForm(),
             'excel_form': UploadExcelForm(),
-            'semester_aktif': active_semester(),
+            'tp_aktif': active_tp(),
         }
         return render(request,  'pages/siswa/siswa.html', context)
 
@@ -78,13 +78,17 @@ class detail_siswa(View):
         request.session['page'] = f'Detail {siswa.nama}'
         semester = active_semester()
         if siswa.kelas:
-            nama_kelas = f'{siswa.kelas.tingkat} {siswa.kelas.jurusan} {siswa.kelas.kelas}'
+            nama_kelas = f'{siswa.kelas.tingkat} {siswa.kelas.jurusan} {siswa.kelas.kelas}'.replace('None', '')
         else:
             nama_kelas = ''
             messages.error(request, f'{siswa.nama} belum memiliki kelas di semester ini')
 
-        data_mapel = zip_pelnilai(siswa, semester)
-        _idMapel, mapel, peng, ket = zip(*data_mapel)
+        if siswa.kelas and has_mapel(siswa.kelas):
+            data_mapel = zip_pelnilai(siswa, semester)
+            _idMapel, mapel, peng, ket = zip(*data_mapel)
+            data_mapel = zip(mapel, peng, ket)
+        else:
+            data_mapel = None
         cols_mapel = ['Mata Pelajaran', 'Nilai Pengetahuan', 'Nilai Keterampilan']
         
         if has_ekskul(siswa, semester):
@@ -95,7 +99,7 @@ class detail_siswa(View):
             data_ekskul = None
         cols_ekskul = ['Ekskul', 'Jenis Ekskul', 'Nilai']
 
-        data_absen = Absensi.objects.get(siswa=siswa, semester=semester)
+        data_absen, created = Absensi.objects.get_or_create(siswa=siswa, semester=semester)
         data_absen = zip(str(data_absen.sakit), str(data_absen.izin), str(data_absen.bolos))
         cols_absen = ['Sakit', 'Izin', 'Tanpa Keterangan']
         context = {
@@ -103,14 +107,14 @@ class detail_siswa(View):
             'nama_kelas': nama_kelas,
             'semester': semester,
             'usia': calculate_age(siswa.tanggal_lahir),
-            'table_data': zip(mapel, peng, ket),
+            'table_data': data_mapel,
             'table_cols': cols_mapel,
             'link': 'nilai/',
         }
 
         if self.request.is_ajax():
             if self.request.GET['type'] == 'mapel':
-                context['table_data'] = zip(mapel, peng, ket)
+                context['table_data'] = data_mapel
                 context['table_cols'] = cols_mapel
                 context['link'] = 'nilai/'
             elif self.request.GET['type'] == 'ekskul':
@@ -326,7 +330,7 @@ class export_excel_siswa(View):
 
         for siswa in qs:
             try:
-                siswa['kelas_id'] = Kelas.objects.get(pk=siswa['kelas_id'], semester=semester).nama.replace('-', ' ')
+                siswa['kelas_id'] = Kelas.objects.get(pk=siswa['kelas_id'], tahun_pelajaran=semester.tahun_pelajaran).nama.replace('-', ' ')
             except Kelas.DoesNotExist:
                 siswa['kelas_id'] = None
             siswa['tanggal_lahir'] = siswa['tanggal_lahir'].strftime('%Y-%m-%d')

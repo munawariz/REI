@@ -20,7 +20,7 @@
 
                         {% url 'rapor' siswa.nis 'unduh' as unduh_rapor %}
                         {% url 'rapor' siswa.nis 'pratinjau' as pratinjau_rapor %}
-                        {% include 'components/dashboard-card.html' with color='orange' icon='newspaper' title='Rapor' value=semester button_text='Unduh' string_url=unduh_rapor second_button=True second_string_url=pratinjau_rapor second_button_text='Pratinjau' %}
+                        {% include 'components/dashboard-card.html' with color='orange' icon='newspaper' title='Rapor' value=semester button_text='Unduh' string_url=unduh_rapor second_string_url=pratinjau_rapor second_button_text='Pratinjau' %}
                     </div>
                 </div>
             </center>

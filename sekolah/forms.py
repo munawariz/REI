@@ -1,8 +1,8 @@
 from django import forms
 from django.db.utils import OperationalError
-from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Semester, Sekolah
+from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Semester, Sekolah, TahunPelajaran
 from helpers.choice import tingkat_choice
-from helpers import get_sekolah
+from helpers import get_sekolah, get_validwalikelas, walikelas_choice
 class SekolahForm(forms.ModelForm):
     class Meta:
         model = Sekolah
@@ -10,14 +10,32 @@ class SekolahForm(forms.ModelForm):
 
 class SemesterForm(forms.ModelForm):
     class Meta:
-        model = Semester
-        fields = ('tahun_mulai', 'tahun_akhir', 'semester')
+        model = TahunPelajaran
+        fields = ('mulai', 'akhir')
 
 class KelasForm(forms.ModelForm):
     try:
         tingkat = forms.ChoiceField(choices=tingkat_choice(get_sekolah()))
-    except Exception as e:
-        print(e)
+        walikelas = forms.ChoiceField(choices=walikelas_choice(get_validwalikelas()), required=False)
+    except Exception:
+        pass
+
+    def __init__(self, tingkat_list, walikelas_list, *args, **kwargs):
+        super(KelasForm, self).__init__(*args, **kwargs)
+        self.fields["tingkat"] = forms.ChoiceField(choices=tingkat_list)
+        self.fields["walikelas"] = forms.ChoiceField(choices=walikelas_list, required=False)
+    class Meta:
+        model = Kelas
+        fields = ('tingkat', 'jurusan', 'kelas')
+
+class DisabledKelasForm(forms.ModelForm):
+    try:
+        tingkat = forms.CharField()
+        walikelas = forms.CharField()
+        jurusan = forms.CharField()
+        kelas = forms.CharField()
+    except Exception:
+        pass
     class Meta:
         model = Kelas
         fields = ('tingkat', 'jurusan', 'kelas')

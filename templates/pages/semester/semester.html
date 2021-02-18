@@ -1,49 +1,53 @@
 {% extends 'base.html' %}
+{% load rei_tags %}
 
 {% block content %}
-  <div class="row mt-3">
-    <div class="col-md-8 section-wrapper">
-      <center>
-        <div class="section-header">
-          Semester
-        </div>
-        <div class="section-body">
-          {% include 'components/searchbar.html' %}
-          {% for semester in list_semester %}
-            <div class="card mt-3 bg-primary">
-              <div class="card-body">
-                <h5 class="card-title left center mt-2">
-                  {{semester.nama}}
-                </h5>
-                <div class="row right" style="margin-right: -3rem;">
-                  <div class="col-1">
-                    <a href="{% url 'hapus-semester' semester.pk %}" class="btn main-btn right" style="margin-right: -0.8rem;"><ion-icon name="trash"></ion-icon></a>
-                  </div>
-                  <div class="col-10" style="width: 12rem;">
-                    {% if semester.is_active == True %}
-                      <a href="#" class="btn green-btn disabled w-100">Semester Aktif</a>
-                    {% else %}
-                      <a href="{% url 'aktifkan-semester' semester.pk %}" class="btn main-btn w-100">Aktifkan Semester</a>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
-            </div>
-          {% endfor %}
-          {% include 'components/pagination.html' with extra_param='search' extra_value=request.GET.search %}
-        </div>
-      </center>
-    </div>
+	<div class="row mt-3">
+		<div class="col-md-8 section-wrapper">
+			<center>
+				<div class="section-header">
+					Semester
+				</div>
+				<div class="section-body">
+					{% include 'components/searchbar.html' %}
+					{% for tp in list_tp %}
+						<div class="card mt-3 bg-primary">
+							<div class="card-body">
+								<h5 class="card-title left center mt-2">
+								{{tp.mulai}} / {{tp.akhir}}
+								</h5>
+								<div class="d-flex flex-row justify-content-end right">
+									<div class="col-1">
+										<a href="{% url 'hapus-semester' tp.pk %}" class="btn main-btn right me-3"><ion-icon name="trash"></ion-icon></a>
+									</div>
+									<div class="col-10 d-flex flex-row">
+                                        {% semester_from_tp tp as list_semester%}
+                                        {% for semester in list_semester %}
+                                            {% if semester.is_active == True %}
+                                                <a href="#" class="btn green-btn disabled me-2">{{semester.semester}}</a>
+                                            {% else %}
+                                                <a href="{% url 'aktifkan-semester' semester.pk %}" class="btn main-btn me-2">{{semester.semester}}</a>
+                                            {% endif %}
+                                        {% endfor %}
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+					{% include 'components/pagination.html' with extra_param='search' extra_value=request.GET.search %}
+				</div>
+			</center>
+		</div>
 
-    <div class="col-md-3 section-wrapper">
-      <center>
-        <div class="section-header">
-          Buat Semester
-        </div>
-        <div class="section-body">
-          {% include 'components/form.html' with form=create_form submit_button='Buat' action='buat/' %}
-        </div>
-      </center>
-    </div>
-  </div>
+		<div class="col-md-3 section-wrapper">
+			<center>
+				<div class="section-header">
+					Buat Semester
+				</div>
+				<div class="section-body">
+					{% include 'components/form.html' with form=create_form submit_button='Buat' action='buat/' %}
+				</div>
+			</center>
+		</div>
+	</div>
 {% endblock content %}

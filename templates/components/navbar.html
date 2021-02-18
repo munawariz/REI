@@ -25,58 +25,57 @@
                     <span class="link-text">Daftar Siswa</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="{% url 'list-guru' %}" class="nav-link">
-                    <ion-icon name="person-outline" class="icon-nav"></ion-icon>
-                    <span class="link-text">Daftar Guru</span>
-                </a>
-            </li>
+            
             <li class="nav-item">
                 <a href="{% url 'list-kelas' %}" class="nav-link">
                     <ion-icon name="people-outline" class="icon-nav"></ion-icon>
                     <span class="link-text">Daftar Kelas</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="{% url 'list-matapelajaran' %}" class="nav-link">
-                    <ion-icon name="book-outline" class="icon-nav"></ion-icon>
-                    <span class="link-text">Daftar Matapelajaran</span>
-                </a>
-            </li>
-        {% endif %}
 
-        <li class="nav-item">
-            <a href="{% url 'list-ekskul' %}" class="nav-link">
-                <ion-icon name="american-football-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">Daftar Ekskul</span>
-            </a>
-        </li>
-        {% if sekolah.tingkat == 'SMK' %}
-        <li class="nav-item">
-            <a href="{% url 'list-jurusan' %}" class="nav-link">
-                <ion-icon name="telescope-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">Daftar Jurusan</span>
-            </a>
-        </li>
-        {% endif %}
-
-        {% if user.is_superuser or user.is_staftu %}
-        <li class="nav-item">
-            <a href="{% url 'list-semester' %}" class="nav-link">                
-                <ion-icon name="calendar-outline" class="icon-nav"></ion-icon>
-                <span class="link-text">Semester</span>
-            </a>
-        </li>
-        {% endif %}
-
-        {% if user.is_superuser or user.is_walikelas %}
-            {% if active_kelas %}
+            {% if user.is_superuser or user.is_staftu %}
                 <li class="nav-item">
-                    <a href="{% url 'detail-kelas' active_kelas.nama %}" class="nav-link">
-                        <ion-icon name="archive-outline" class="icon-nav"></ion-icon>
-                        <span class="link-text">Kelas Anda</span>
+                    <a href="{% url 'list-guru' %}" class="nav-link">
+                        <ion-icon name="person-outline" class="icon-nav"></ion-icon>
+                        <span class="link-text">Daftar Guru</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{% url 'list-matapelajaran' %}" class="nav-link">
+                        <ion-icon name="book-outline" class="icon-nav"></ion-icon>
+                        <span class="link-text">Daftar Matapelajaran</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'list-ekskul' %}" class="nav-link">
+                        <ion-icon name="american-football-outline" class="icon-nav"></ion-icon>
+                        <span class="link-text">Daftar Ekskul</span>
+                    </a>
+                </li>
+                {% if sekolah.tingkat == 'SMK' %}
+                <li class="nav-item">
+                    <a href="{% url 'list-jurusan' %}" class="nav-link">
+                        <ion-icon name="telescope-outline" class="icon-nav"></ion-icon>
+                        <span class="link-text">Daftar Jurusan</span>
+                    </a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a href="{% url 'list-semester' %}" class="nav-link">                
+                        <ion-icon name="calendar-outline" class="icon-nav"></ion-icon>
+                        <span class="link-text">Semester</span>
+                    </a>
+                </li>
+            {% endif %}
+            {% if user.is_superuser or user.is_walikelas %}
+                {% if active_kelas %}
+                    <li class="nav-item">
+                        <a href="{% url 'detail-kelas' active_kelas.nama %}" class="nav-link">
+                            <ion-icon name="archive-outline" class="icon-nav"></ion-icon>
+                            <span class="link-text">Kelas Anda</span>
+                        </a>
+                    </li>
+                {% endif %}
             {% endif %}
         {% endif %}
     </ul>

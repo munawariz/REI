@@ -62,7 +62,7 @@
                                             <td>Wanita</td>
                                         {% endif %}                                            
                                         <td>{{siswa.agama}}</td>
-                                        <td>{% if siswa.kelas.semester == semester_aktif %}{{siswa.kelas.tingkat}} {{siswa.kelas.jurusan}} {{siswa.kelas.kelas}}{% endif %}</td>
+                                        <td>{% if siswa.kelas.tahun_pelajaran == tp_aktif %}{{siswa.kelas.tingkat}} {{siswa.kelas.jurusan|default:""}} {{siswa.kelas.kelas}}{% endif %}</td>
                                         <td><a href="{% url 'hapus-siswa' siswa.nis %}" class="btn main-btn right"><ion-icon name="trash"></ion-icon></a></td>
                                     </tr>
                                 {% endfor %}

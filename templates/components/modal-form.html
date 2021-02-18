@@ -1,4 +1,6 @@
-<button type="button" class="btn main-btn" data-bs-toggle="modal" data-bs-target="#{{target}}">
+{% if from_dashboard_card %}<button type="button" class="btn main-btn dashboard-card-footer" data-bs-toggle="modal" data-bs-target="#{{target}}">
+{% else %}<button type="button" class="btn main-btn" data-bs-toggle="modal" data-bs-target="#{{target}}">
+{% endif %}
     {{button_text}}
 </button>
 <center>

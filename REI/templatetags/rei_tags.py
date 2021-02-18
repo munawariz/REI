@@ -1,4 +1,5 @@
-from helpers import active_semester
+from sekolah.models import Semester
+from helpers import active_semester, active_tp
 from django import template
 from django.core.exceptions import ObjectDoesNotExist
 register = template.Library()
@@ -11,7 +12,7 @@ def active_kelas(context):
             from sekolah.models import Kelas
             from helpers import active_semester
             guru = Guru.objects.get(nip=context['user'].nip)
-            kelas = Kelas.objects.get(walikelas=guru, semester=active_semester())
+            kelas = Kelas.objects.get(walikelas=guru, tahun_pelajaran=active_tp())
             return kelas
         except ObjectDoesNotExist:
             return None
@@ -21,3 +22,8 @@ def active_kelas(context):
 @register.simple_tag
 def semester_is_active():
     return active_semester()
+
+@register.simple_tag(takes_context=False)
+def semester_from_tp(tp):
+    semester = Semester.objects.filter(tahun_pelajaran=tp).order_by('semester')
+    return semester

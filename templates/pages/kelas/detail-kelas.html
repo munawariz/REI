@@ -5,96 +5,43 @@
         <div class="section-wrapper col-md">
             <center>
                 <div class="section-header">
-                    Detail {{kelas.nama}}
+                    Dashboard {{kelas.nama}}
                 </div>
-            </center>
-            <div class="row mt-5 flex-center">
-                <div class="section-wrapper col-md-3 col-11">
-                    <center>
-                        <div class="section-header fs-6 p-1">
-                            Profil Kelas
-                        </div>
-                    </center>
-                    <ul class="list-unstyled section-body">
-                        <li>
-                            <div class="small text-primary">Tingkat</div>
-                            {{kelas.tingkat}}
-                        </li>
-                        <li>
-                            <div class="small text-primary">jurusan</div>
-                            {{kelas.jurusan}}
-                        </li>
-                        <li>
-                            <div class="small text-primary">Kelas</div>
-                            {{kelas.kelas}}
-                        </li>
-                        <li>
-                            <div class="small text-primary">Semester</div>
-                            {{kelas.semester}}
-                        </li>
-                    </ul>
-                </div>
+                <div class="section-body">
+                    <div class="row mt-4 d-flex justify-content-center">
+                        {% url 'profil-guru-lain' kelas.walikelas.nip as detail_walikelas %}
+                        {% url 'walikelas-kelas' kelas.nama as ubah_walikelas %}
+                        {% include 'components/dashboard-card.html' with color='red' icon='person' title='Walikelas' value=kelas.walikelas.nama button_text='Detail Walikelas' string_url=detail_walikelas second_string_url=ubah_walikelas second_button_text='Ubah' %}
 
-                <div class="section-wrapper col-md-3 col-11">
-                    <center>
-                        <div class="section-header fs-6 p-1">
-                            Walikelas
-                        </div>
-                    </center>
-                    <button class="btn btn-md help-icon right mt-n2">
-                        <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah data walikelas"></ion-icon>
-                    </button>
-                    <div class="section-body">
-                        <center class="mb-3">{{kelas.walikelas}}</center>
-                        <a href="{% url 'walikelas-kelas' kelas.nama %}" class="btn main-btn right">Ubah</a>
-                        {% if kelas.walikelas %}
-                        <a href="{% url 'profil-guru-lain' kelas.walikelas.nip %}" class="btn main-btn">Detail Walikelas</a>
-                        {% endif %}
+                        {% include 'components/dashboard-card.html' with color='green' icon='people' title='Profil Kelas' value=kelas.nama button_text='Detail Kelas' modal_button=True modal_form=form_kelas target='profil-kelas' disabled=True modal_title='Profil Kelas' %}
+                        
+                        {% include 'components/dashboard-card.html' with color='orange' icon='list' title='Jumlah Siswa' value=jumlah_siswa footer_text=status_siswa %}
+                        
+                        {% include 'components/dashboard-card.html' with color='purple' icon='calendar' title='Tahun Pelajaran' value=kelas.tahun_pelajaran %}
                     </div>
                 </div>
-
-                <div class="section-wrapper col-md-3 col-11">
-                    <center>
-                        <div class="section-header fs-6 p-1">
-                            Daftar Matapelajaran
-                        </div>
-                    </center>
-                    <button class="btn btn-md help-icon right mt-n2">
-                        <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah data matapelajaran"></ion-icon>
-                    </button>
-                    <ul class="section-body list-unstyled">
-                        {% for matapelajaran in list_matapelajaran %}
-                            <li>
-                                <div class="text-primary small">{{matapelajaran.nama}}</div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                    <a href="{% url 'pelajaran-kelas' kelas.nama %}" class="btn main-btn right">Ubah</a>
+            </center>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="section-wrapper col card-blue">
+            <div class="section-header fs-6 mx-auto">
+                <div class="d-flex flex-row justify-content-center" id="tab">
+                    <a href="#" class="btn main-btn bg-none shadow-none me-1 bg-active" id="siswaTab" name="siswa">
+                        <ion-icon name="list" class="mt-1"></ion-icon>
+                        <span class="d-lg-block d-none">Siswa</span>
+                    </a>
+                    <a href="#" class="btn main-btn bg-none shadow-none me-1" id="mapelTab" name="mapel">
+                        <ion-icon name="book" class="mt-1"></ion-icon>
+                        <span class="d-lg-block d-none">Mata Pelajaran</span>
+                    </a>
                 </div>
-
-                <div class="section-wrapper col-md-7 col-11">
-                    <center>
-                        <div class="section-header fs-6 p-1">
-                            Daftar Siswa
-                        </div>
-                    </center>
-                    <button class="btn btn-md help-icon right mt-n2">
-                        <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Hanya Admin atau Staf TU yang bisa mengubah data siswa"></ion-icon>
-                    </button>
-                    <ul class="section-body list-unstyled three-columns">
-                        {% for siswa in list_siswa %}
-                            <li>
-                                <div class="text-primary small">{{siswa.nama}}</div>
-                                <h5 class="small">{{siswa.nis}}/{{siswa.nisn}}</h5>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                    <a href="{% url 'anggota-kelas' kelas.nama %}" class="btn main-btn right">Ubah</a>
-                </div>
+            </div>
+            <div class="section-body row d-flex justify-content-center" id="realtime-table">
+                {% include 'pages/kelas/realtime-table.html' %}
             </div>
         </div>
     </div>
-
     {% if auth_walikelas %}
         <div class="row mt-3">
             <div class="col-md section-wrapper">
@@ -148,3 +95,47 @@
         </div>
     {% endif %}
 {% endblock content %}
+
+{% block script %}
+    <script>
+        const artists_div = $('#realtime-table')
+        const delay_by_in_ms = 100
+        let type = 'mapel'
+        let scheduled_function = false
+
+        let ajax_call = function(){
+            $.ajax({
+                type: 'GET',
+                url: '{{request.path}}',
+                data: {"type": type},
+                success: function (response) {
+                    artists_div.fadeTo('fast', 0).promise().then(() => {
+                        artists_div.html(response['html_from_view'])
+                        artists_div.fadeTo('fast', 1)
+                    })
+                },
+            })
+        }
+
+        function send_request() {
+            if (scheduled_function) {
+                clearTimeout(scheduled_function)
+            }
+
+            scheduled_function = setTimeout(ajax_call, delay_by_in_ms)
+        }
+
+        $("#tab a").each(function(i){
+            $(this).click(function () {
+                let tabs = ['siswaTab', 'mapelTab']
+                $(tabs).each(function(i){
+                    $('#'+this).removeClass('bg-active')
+                })
+                $(this).addClass('bg-active')
+                type = this.name
+                send_request()
+            })
+        });
+    </script>
+
+{% endblock script %}
