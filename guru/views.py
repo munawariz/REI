@@ -24,12 +24,13 @@ class dashboard(View):
     def get(self, request):
         request.session['page'] = 'Dashboard'
         semester = active_semester()
+        tp = active_tp()
         context = {
             'sekolah': get_sekolah(),
             'semester': semester,
-            'siswa_berkelas': Siswa.objects.exclude(kelas=None).filter(kelas__tahun_pelajaran=semester.tahun_pelajaran).count(),
-            'siswa_nokelas': Siswa.objects.exclude(kelas__tahun_pelajaran=semester.tahun_pelajaran).filter(kelas=None).count(),
-            'jumlah_kelas': Kelas.objects.filter(tahun_pelajaran=semester.tahun_pelajaran).count(),
+            'siswa_berkelas': Siswa.objects.exclude(kelas=None).filter(kelas__tahun_pelajaran=tp).count(),
+            'siswa_nokelas': Siswa.objects.exclude(kelas__tahun_pelajaran=tp).filter(kelas=None).count(),
+            'jumlah_kelas': Kelas.objects.filter(tahun_pelajaran=tp).count(),
             'jumlah_jurusan': Jurusan.objects.count(),
         }
         return render(request, 'pages/dashboard.html', context)
