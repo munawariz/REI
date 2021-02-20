@@ -18,6 +18,7 @@
             </a>
         </li>
 
+        {% comment %} Start of List Item That Required Active Semester {% endcomment %}
         {% if active_semester %}
             <li class="nav-item">
                 <a href="{% url 'list-siswa' %}" class="nav-link">
@@ -60,12 +61,6 @@
                     </a>
                 </li>
                 {% endif %}
-                <li class="nav-item">
-                    <a href="{% url 'list-semester' %}" class="nav-link">                
-                        <ion-icon name="calendar-outline" class="icon-nav"></ion-icon>
-                        <span class="link-text">Semester</span>
-                    </a>
-                </li>
             {% endif %}
             {% if user.is_superuser or user.is_walikelas %}
                 {% if active_kelas %}
@@ -78,5 +73,13 @@
                 {% endif %}
             {% endif %}
         {% endif %}
+        {% comment %} End of List Item That Required Active Semester {% endcomment %}
+
+        {% if user.is_superuser or user.is_staftu %}<li class="nav-item">
+            <a href="{% url 'list-semester' %}" class="nav-link">                
+                <ion-icon name="calendar-outline" class="icon-nav"></ion-icon>
+                <span class="link-text">Semester</span>
+            </a>
+        </li>{% endif %}
     </ul>
 </nav>
