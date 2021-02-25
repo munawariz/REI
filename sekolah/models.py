@@ -24,18 +24,19 @@ class Sekolah(SingletonModel):
     kepsek = models.CharField(max_length=255, null=True, verbose_name='Kepala Sekolah')
     nip_kepsek = models.CharField(max_length=18, verbose_name='Nomor Induk', null=True)
 
-    def save(self, *args, **kwargs):
-        if self.tingkat == 'SMK': self.tingkat_verbose = 'Sekolah Menengah Kejuruan'
-        elif self.tingkat == 'SMA': self.tingkat_verbose = 'Sekolah Menengah Atas'
-        elif self.tingkat == 'SMP': self.tingkat_verbose = 'Sekolah Menengah Pertama'
-        elif self.tingkat == 'SD': self.tingkat_verbose = 'Sekolah Dasar'
-        super(Sekolah, self).save(*args, **kwargs)
-
     def __str__(self):
         return "Informasi Sekolah"
 
     class Meta:
         verbose_name = "Informasi Sekolah"
+
+@receiver(models.signals.pre_save, sender=Sekolah)
+def presave_sekolah(sender, instance, **kwargs):
+    print(instance.tingkat)
+    if instance.tingkat == 'SMK': instance.tingkat_verbose = 'Sekolah Menengah Kejuruan'
+    elif instance.tingkat == 'SMA': instance.tingkat_verbose = 'Sekolah Menengah Atas'
+    elif instance.tingkat == 'SMP': instance.tingkat_verbose = 'Sekolah Menengah Pertama'
+    elif instance.tingkat == 'SD': instance.tingkat_verbose = 'Sekolah Dasar'
 
 class TahunPelajaran(models.Model):
     mulai = models.CharField(verbose_name='Tahun Mulai', max_length=4)

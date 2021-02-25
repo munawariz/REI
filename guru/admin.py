@@ -4,8 +4,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 @admin.register(Guru)
 class UserAdmin(BaseUserAdmin): 
-    list_display = ('nip', 'nama', 'email', 'is_walikelas', 'is_staftu', 'gender')
-    list_filter = ('is_walikelas', 'is_staftu', 'gender')
+    list_display = ('nip', 'nama', 'email', 'is_walikelas', 'is_staftu', 'gender', 'is_active')
+    list_filter = ('is_walikelas', 'is_staftu', 'gender', 'is_active')
     fieldsets = (
         ('Account Profile', {'fields': ('nip', 'nama', 'email', 'gender', 'password', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat', 'is_walikelas', 'is_staftu')}),
         ('Account Status', {'fields': ('is_active',)})

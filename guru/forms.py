@@ -2,6 +2,24 @@ from django import forms
 from django.core.exceptions import ValidationError
 from .models import Guru
 from helpers import input_type as type
+from django.contrib.auth.forms import AuthenticationForm
+from django.utils.translation import gettext_lazy as _
+
+class LoginForm(AuthenticationForm):
+    def confirm_login_allowed(self, user):
+        if not user.is_active:
+            raise ValidationError(
+                _("Akun ini terdaftar tetapi memiliki status nonaktif, silahkan minta admin untuk mengaktifkan akun anda"),
+                code='inactive',
+            )
+
+    error_messages = {
+        'invalid_login': _(
+            "Nomor Induk atau Password salah silahkan coba lagi"
+        ),
+        'inactive': _("Akun ini nonaktif, silahkan minta admin untuk mengaktifkan akun anda"),
+    }
+
 
 class GuruCreateForm(forms.ModelForm):
     password = forms.CharField(max_length=18)

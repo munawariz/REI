@@ -129,6 +129,7 @@ AUTH_USER_MODEL = 'guru.Guru'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.AllowAllUsersModelBackend', )
 
 # Stuff
 DATE_FORMAT = '%d-%m-%y'
