@@ -317,6 +317,9 @@ class export_excel_siswa(View):
     def get(self, request):
         semester = active_semester()
         qs = list(Siswa.objects.select_related('kelas').all().values())
+        if not qs:
+            messages.error(request, 'Tidak ada data siswa yang dapat di ekspor')
+            return redirect('list-siswa')
         cols = []
 
         for col in [field.name for field in Siswa._meta.fields]:
