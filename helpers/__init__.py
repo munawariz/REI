@@ -154,6 +154,7 @@ def generate_rapor_context(sekolah, semester, siswa):
             'ekskul': zip_eksnilai(siswa, semester),
             'absensi': Absensi.objects.get_or_create(siswa=siswa, semester=semester)[0],
             'sekolah': sekolah,
+            'semester': semester,
         }
 
 def generate_pdf(siswa, pdf_dir, context):
@@ -161,7 +162,7 @@ def generate_pdf(siswa, pdf_dir, context):
     html_string = render_to_string('pages/rapor/rapor.html', context)
     html = HTML(string=html_string)
     html.write_pdf(target=f'{pdf_dir}/{siswa.nama}.pdf', stylesheets=['static/css/rapor.css'])
-    rapor, created = Rapor.objects.update_or_create(siswa=siswa, semester=active_semester(), defaults={'rapor': f'{pdf_dir}/{siswa.nama}.pdf'})
+    Rapor.objects.update_or_create(siswa=siswa, semester=context['semester'], defaults={'rapor': f'{pdf_dir}/{siswa.nama}.pdf'})
 
 def get_sekolah():
     from sekolah.models import Sekolah

@@ -83,8 +83,8 @@ def validdirs_required(function=None):
             except KeyError:
                 kelas = None
                 return redirect('dashboard')
-
-        dirs = f'{settings.MEDIA_ROOT}/rapor/{kelas.tahun_pelajaran.mulai} - {kelas.tahun_pelajaran.akhir} {kelas.tahun_pelajaran.semester.semester}/{kelas.jurusan}/{kelas.nama}'
+        semester = active_semester()
+        dirs = f'{settings.MEDIA_ROOT}/rapor/{kelas.tahun_pelajaran.mulai} - {kelas.tahun_pelajaran.akhir} {semester}/{kelas.jurusan}/{kelas.nama}'
         if not os.path.isdir(dirs): 
             os.makedirs(dirs)
         kwargs['pdf_dir'] = dirs

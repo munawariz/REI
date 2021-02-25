@@ -9,12 +9,17 @@ from helpers import active_semester, active_tp, get_initial, form_value, get_sek
 from .models import Guru
 from siswa.models import Siswa
 from sekolah.models import Jurusan, Kelas, Sekolah
-from .forms import GuruEditForm, PasswordChangeForm, GuruCreateForm
+from .forms import GuruEditForm, PasswordChangeForm, GuruCreateForm, LoginForm
 from django.contrib.auth import authenticate
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib import messages
+from django.contrib.auth.views import LoginView
+
+
+class CustomLoginView(LoginView):
+    authentication_form = LoginForm
 
 def index(request):
     return redirect('dashboard')
@@ -116,7 +121,11 @@ class buat_guru(View):
                 guru.save()
                 messages.success(request, 'Akun berhasil dibuat')
         except IntegrityError:
-            messages.error(request, 'Akun dengan NIP itu sudah ada')
+            registered_nip = Guru.objects.get(nip=guru_form.cleaned_data['nip'])
+            if not registered_nip.is_active:
+                messages.error(request, 'Akun dengan NIP itu sudah ada tetapi statusnya nonaktif, silahkan minta admin untuk mengaktifkan akun tadi')
+            else:
+                messages.error(request, 'Akun dengan NIP itu sudah ada')
         finally:
             return redirect('list-guru')
 
@@ -145,7 +154,10 @@ class profil_lain(View):
 class hapus_guru(View):
     def get(self, request, guru):
         guru = Guru.objects.get(nip=guru)
-        guru.is_active = False
-        guru.save()
-        messages.success(request, f'Akun {guru.nama} berhasil dihapus')
+        if not request.user.is_superuser and guru.is_superuser:
+            messages.error(request, 'Akun Staf TU tidak bisa menghapus akun admin')
+        else:
+            guru.is_active = False
+            guru.save()
+            messages.success(request, f'Akun {guru.nama} berhasil dihapus')
         return redirect('list-guru')

@@ -38,6 +38,7 @@ class detail_sekolah(View):
         sekolah_form = SekolahForm(request.POST)
         if sekolah_form.is_valid():
             Sekolah.objects.update(**form_value(sekolah_form))
+            Sekolah.objects.get().save()
             messages.success(request, 'Data Sekolah berhasil diubah')
             return redirect('detail-sekolah')
     
