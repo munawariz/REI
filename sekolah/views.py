@@ -1,3 +1,4 @@
+from django.db.utils import IntegrityError
 from helpers.choice import tingkat_choice
 from guru.models import Guru
 from siswa.models import Absensi, Siswa
@@ -172,7 +173,7 @@ class detail_kelas(View):
         else: auth_walikelas = False
 
         initial = get_initial(kelas)
-        initial['walikelas'] = Guru.objects.get(pk=initial['walikelas'])
+        if initial['walikelas']: initial['walikelas'] = Guru.objects.get(pk=initial['walikelas'])
         list_siswa = Siswa.objects.filter(kelas=kelas).order_by('nama')
         finished, unfinished, status = list_siswa_status(list_siswa=list_siswa, semester=active_semester())
         list_mapel = MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama')
@@ -366,6 +367,8 @@ class buat_ekskul(View):
             if ekskul_form.is_valid():
                 ekskul = Ekskul.objects.create(**form_value(ekskul_form))
                 messages.success(request, f'Ekstrakulikuler {ekskul.nama} berhasil dibuat')
+        except ValidationError:
+            messages.error(request, f'Ekskul dengan data persis seperti itu sudah tersedia')
         except Exception as e:
             messages.error(request, f'Terjadi kesalahan saat membuat ekskul ')
         finally:
@@ -452,9 +455,12 @@ class ubah_kkm(View):
         mapel = MataPelajaran.objects.get(pk=matapelajaran)
         try:
             if kkm_form.is_valid():
-                kkm = KKM.objects.filter(matapelajaran=mapel, tahun_pelajaran=active_tp())
-                kkm.update(**form_value(kkm_form))
+                kkm = KKM.objects.get(matapelajaran=mapel, tahun_pelajaran=active_tp())
+                kkm.__dict__.update(**form_value(kkm_form))
+                kkm.save()
                 messages.success(request, f'Data KKM untuk Matapelajaran {mapel.nama} berhasil diubah')
+        except IntegrityError:
+            messages.error(request, f'Nilai yang di-input tidak diantara 0-100. Aplikasi otomatis menyimpan 0 ke dalam database')
         except Exception as e:
             messages.error(request, f'Terjadi kesalahan saat mencoba mengubah data KKM untuk Matapelajaran {mapel.nama}')
         finally:
@@ -519,7 +525,7 @@ class bundle_rapor_view(View):
             context = generate_rapor_context(sekolah, semester, siswa)
             generate_pdf(siswa, kwargs['pdf_dir'], context)
 
-        bundle_dir = f'{settings.MEDIA_ROOT}/rapor/{kelas.tahun_pelajaran.mulai} - {kelas.tahun_pelajaran.akhir} {kelas.tahun_pelajaran.semester.semester}/bundel/{kelas.jurusan}'
+        bundle_dir = f'{settings.MEDIA_ROOT}/rapor/{kelas.tahun_pelajaran.mulai} - {kelas.tahun_pelajaran.akhir} {semester.semester}/bundel/{kelas.jurusan}'
         if not os.path.isdir(bundle_dir):
             os.makedirs(bundle_dir)
         
