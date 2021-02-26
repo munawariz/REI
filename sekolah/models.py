@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
+from django.db.utils import IntegrityError
 from solo.models import SingletonModel
 from django.dispatch import receiver
 from helpers.choice import JENIS_EKSKUL, TINGKAT_SEKOLAH, SEMESTER_CHOICE, MATAPELAJARAN_CHOICE, KELAS_CHOICE, TINGKAT_KELAS_CHOICE
@@ -158,13 +159,6 @@ class KKM(models.Model):
     def __str__(self):
         return f'{self.matapelajaran}({self.tahun_pelajaran})'
 
-    def save(self, *args, **kwargs):
-        if int(self.pengetahuan) < 0: self.pengetahuan = 0
-        if int(self.pengetahuan) > 100: self.pengetahuan = 100
-        if int(self.keterampilan) < 0: self.keterampilan = 0
-        if int(self.keterampilan) > 100: self.keterampilan = 100
-        super(KKM, self).save(*args, **kwargs)
-
 @receiver(models.signals.pre_save, sender=KKM)
 def unique_together_tp_mapel(sender, instance, **kwargs):
     try:
@@ -173,6 +167,16 @@ def unique_together_tp_mapel(sender, instance, **kwargs):
             raise ValidationError('Nilai for that Mata Pelajaran in that Tanggal Pendidikan already exists')
     except ObjectDoesNotExist:
         pass
+
+@receiver(models.signals.post_save, sender=KKM)
+def set_kkm_range(sender, instance, **kwargs):
+    if int(instance.pengetahuan) < 0 or int(instance.pengetahuan) > 100 or int(instance.keterampilan) < 0 or int(instance.keterampilan) > 100:
+        if int(instance.pengetahuan) < 0 or int(instance.pengetahuan) > 100:
+            instance.pengetahuan = 0
+        if int(instance.keterampilan) < 0 or int(instance.keterampilan) > 100:
+            instance.keterampilan = 0
+        instance.save()
+        raise IntegrityError
 
 
 class Kelas(models.Model):
@@ -196,7 +200,7 @@ class Kelas(models.Model):
         super(Kelas, self).save(*args, **kwargs)
 
 @receiver(models.signals.pre_save, sender=Kelas)
-def unique_together_all(sender, instance, **kwargs):
+def unique_together_all_kelas(sender, instance, **kwargs):
     try:
         kelas = Kelas.objects.filter(tingkat=instance.tingkat, jurusan=instance.jurusan, kelas=instance.kelas, tahun_pelajaran=instance.tahun_pelajaran)
         if kelas and instance not in kelas:
@@ -211,7 +215,15 @@ class Ekskul(models.Model):
 
     def __str__(self):
         return self.nama
-
+        
+@receiver(models.signals.pre_save, sender=Ekskul)
+def unique_together_all_ekskul(sender, instance, **kwargs):
+    try:
+        ekskul = Ekskul.objects.filter(nama=instance.nama, jenis=instance.jenis)
+        if ekskul and instance not in ekskul:
+            raise ValidationError('Ekskul with all of that exact value already exists')
+    except ObjectDoesNotExist:
+        pass
 
 class Rapor(models.Model):
     from siswa.models import Siswa

@@ -54,15 +54,16 @@ class list_siswa(View):
 
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
-class buat_siswa(CreateView):
+class buat_siswa(View):
     def post(self, request):
         siswa_form = SiswaForm(request.POST)
         try:
             if siswa_form.is_valid():
-                siswa, created = Siswa.objects.get_or_create(**form_value(siswa_form))
-                if created:
-                    messages.success(request, f'Data siswa {siswa.nama} berhasil dibuat')
-        except ValidationError:
+                Siswa.objects.create(**form_value(siswa_form))
+                messages.success(request, 'Data siswa berhasil dicatat kedalam database')
+            else:
+                messages.error(request, 'Data gagal dibuat, periksa apakah NIS atau NISN sudah tersedia didata sebelumnya')    
+        except IntegrityError:
             messages.error(request, 'Data gagal dibuat, periksa apakah NIS atau NISN sudah tersedia didata sebelumnya')
         finally:
             return redirect('list-siswa')
