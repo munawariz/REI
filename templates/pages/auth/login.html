@@ -1,0 +1,48 @@
+{% load widget_tweaks %}
+{% load rei_tags %}
+{% load static %}
+{% semester_is_active as active_semester %}
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="description" content="">
+        {% include 'include/fonts.html' %}
+        {% include 'include/css.html' %}
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+        <title>REI - Rapor Elektronik</title>
+    </head>
+    <body>
+        <div class="error-pagewrap">
+			<div class="error-page-int">
+				<div class="text-center m-b-md custom-login">
+					<h3>REI - Rapor Elektronik</h3>
+					<p>Silahkan Login</p>
+				</div>
+				<div class="content-error">
+					<div class="hpanel">
+						<div class="panel-body">
+							<form method="post">
+								{% csrf_token %}
+								<div class="form-group">
+									<label class="control-label" for="username">Nomor Induk</label>
+									{% render_field form.username|add_class:"form-control" placeholder="Masukkan Nomor Induk Anda"%}
+									<span class="help-block small">NIP Atau NUPTK Anda</span>
+								</div>
+								<div class="form-group">
+									<label class="control-label" for="password">Password</label>
+									{% render_field form.password|add_class:"form-control"%}
+								</div>
+								<button class="btn btn-success btn-block loginbtn">Login</button>
+							</form>
+							<small>{{form.non_field_errors.as_text}}</small><br>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% include 'include/js.html' %}
+    </body>
+</html>

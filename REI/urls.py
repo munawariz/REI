@@ -12,8 +12,8 @@ import debug_toolbar
 from . import views as rei_views
 
 urlpatterns = [
-    path('login/', guru_view.CustomLoginView.as_view(template_name='pages/guru/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='pages/guru/login.html'), name='logout'),
+    path('login/', guru_view.CustomLoginView.as_view(template_name='pages/auth/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(template_name='pages/auth/login.html'), name='logout'),
     path('admin/', admin.site.urls),
     path('', guru_view.index),
     path('dashboard/', guru_view.dashboard.as_view(), name='dashboard'),
