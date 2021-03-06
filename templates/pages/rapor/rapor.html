@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Rapor {{siswa.nama}}</title>
+    </head>
+    <body>
+        <!-- Info Sekolah (Page 1) -->
+        <div class="text-center">
+            <h3 class="title">
+                RAPOR SISWA<br>{{sekolah.tingkat_verbose}}<br>({{sekolah.tingkat}})
+            </h3>
+            <table class="info-sekolah table mt-5">
+                <tr>
+                    <th>Nama Sekolah</th><td>{{sekolah.nama}}</td>
+                </tr>
+                <tr>
+                    <th>NPSN</th><td>{{sekolah.npsn}}</td>
+                </tr>
+                <tr>
+                    <th>Alamat Sekolah</th><td>{{sekolah.alamat}}</td>
+                </tr>
+                <tr>
+                    <th></th><td>Kode Pos {{sekolah.kode_pos}}</td>
+                </tr>
+                <tr>
+                    <th></th><td>Telp. {{sekolah.no_telepon}}</td>
+                </tr>
+                <tr>
+                    <th>Kelurahan</th><td>{{sekolah.kelurahan}}</td>
+                </tr>
+                <tr>
+                    <th>Kecamatan</th><td>{{sekolah.kecamatan}}</td>
+                </tr>
+                <tr>
+                    <th>Kota/Kabupaten</th><td>{{sekolah.kota}}</td>
+                </tr>
+                <tr>
+                    <th>Provinsi</th><td>{{sekolah.provinsi}}</td>
+                </tr>
+                <tr>
+                    <th>Website</th><td>{{sekolah.website}}</td>
+                </tr>
+                <tr>
+                    <th>Email</th><td>{{sekolah.email}}</td>
+                </tr>
+            </table>
+        </div>
+        {% include 'pages/rapor/footer.html' %}
+        <p style="page-break-before: always" ></p>
+
+        <!-- Info Siswa (Page 2) -->
+        <div class="text-center">
+            <p class="title">KETERANGAN TENTANG DIRI PESERTA DIDIK</p>
+            <table class="info-siswa table mt-5">
+                <tr>
+                    <td>1. </td><td>Nama Peserta Didik</td><td>: {{siswa.nama}}</td>
+                </tr>
+                <tr>
+                    <td>2. </td><td>Nomor Induk (NIS/NISN)</td><td>: {{siswa.nis}}/{{siswa.nisn}}</td>
+                </tr>
+                <tr>
+                    <td>3. </td><td>Tempat Tanggal Lahir</td><td>: {{siswa.tempat_lahir}}, {{siswa.tanggal_lahir|date:'d-m-Y'}}</td>
+                </tr>
+                <tr>
+                    <td>4. </td><td>Jenis Kelamin</td><td>: {{jenkel_siswa}}</td>
+                </tr>
+                <tr>
+                    <td>5. </td><td>Agama</td><td>: {{siswa.agama}}</td>
+                </tr>
+                <tr>
+                    <td>6. </td><td>Alamat Peserta Didik</td><td>: {{siswa.alamat}}</td>
+                </tr>
+                <tr>
+                    <td>7. </td><td>Alamat Email Peserta Didik</td><td>: {{siswa.email}}</td>
+                </tr>
+                <tr>
+                    <td>8. </td><td>Diterima di sekolah ini</td>
+                </tr>
+                <tr>
+                    <td></td><td>Di Tingkat</td><td>: {{siswa.diterima_di_tingkat}}</td>
+                </tr>
+                <tr>
+                    <td>9. </td><td>Nama Orang Tua</td>
+                </tr>
+                <tr>
+                    <td></td><td>Ayah</td><td>: {{siswa.nama_ayah}}</td>
+                </tr>
+                <tr>
+                    <td></td><td>Ibu</td><td>: {{siswa.nama_ibu}}</td>
+                </tr>
+                <tr>
+                    <td></td><td>Wali</td><td>: {{siswa.nama_wali|default:' '}}</td>
+                </tr>
+            </table>
+        </div>
+        {% include 'pages/rapor/footer.html' %}
+        <p style="page-break-before: always" ></p>
+
+        <!-- Rapor Kompetensi Siswa (Page 3+) -->
+        <div class="text-center">
+            <p class="title">PENCAPAIAN KOMPETENSI SISWA</p>
+            <table class="header-info table left text-small mt-1">
+                <tr>
+                    <th>Nama Sekolah</th><td>: {{sekolah.nama}}</td><th>Kelas</th><td>: {{kelas.nama}}</td>
+                </tr>
+                <tr>
+                    <th>Alamat Sekolah</th><td>: {{sekolah.alamat}}</td><th>Semester</th><td>: {{semester.semester}}</td>
+                </tr>
+                <tr>
+                    <th>Nama Siswa</th><td>: {{siswa.nama}}</td>
+                </tr>
+                <tr>
+                    <th>NIS/NISN</th><td>: {{siswa.nis}}/{{siswa.nisn}}</td><th>Tahun Pelajaran</th><td>: {{kelas.tahun_pelajaran}}</td>
+                </tr>
+            </table>
+
+            <p class="mt-5 left">A. Nilai Akademik</p>
+            <table class="table table-border mt-1 w-100">
+                <tr>
+                    <th class="w-5">No</th>
+                    <th>Mata Pelajaran</th>
+                    <th>Pengetahuan</th>
+                    <th>Keterampilan</th>
+                    <th>Nilai Akhir</th>
+                    <th>Predikat</th>
+                </tr>
+                {% for id, pel, peng, kkmpeng, remedpeng, ket, kkmket, remedket, nilakhir, predikat in matapelajaran %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{pel}}</td>
+                    <td class="{% if remedpeng %}text-red{% endif %}">{{peng}}</td>
+                    <td class="{% if remedket %}text-red{% endif %}">{{ket}}</td>
+                    <td>{{nilakhir}}</td>
+                    <td>{{predikat}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <p class="mt-5 left">B. Ekstrakulikuler</p>
+            <table class="table table-border mt-1 w-100">
+                <tr>
+                    <th class="w-5">No</th>
+                    <th>Kegiatan Ekstrakuliker</th>
+                    <th>Nilai</th>
+                </tr>
+                {% for id_ekskul, id_nil, ekskul, nilai, jenis in ekskul %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{ekskul}}</td>
+                    <td>{{nilai}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <p class="mt-5 left">C. Kehadiran</p>
+            <table class="table table-border mt-1 w-100">
+                <tr>
+                    <th>Sakit</th><td>{{absensi.sakit}}</td>
+                </tr>
+                <tr>
+                    <th>Izin</th><td>{{absensi.izin}}</td>
+                </tr>
+                <tr>
+                    <th>Tanpa Keterangan</th><td>{{absensi.bolos}}</td>
+                </tr>
+            </table>
+        </div>
+        {% include 'pages/rapor/footer.html' %}
+    </body>
+</html>

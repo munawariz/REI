@@ -1,5 +1,23 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block content %}
-    {% include 'components/breadcrumb.html' with searchbar=True%}
+    <div class="row mt-3">
+        <div class="section-wrapper col-md">
+            <center>
+                <div class="section-header">
+                    Dashboard
+                </div>
+                <div class="section-body">
+                    <div class="row mt-4 d-flex justify-content-center">
+                        {% include 'components/dashboard-card.html' with color='purple' icon='calendar' title='Semester Aktif' value=semester button_text='Lihat Daftar Semester' url='list-semester' %}
+                        {% include 'components/dashboard-card.html' with color='green' icon='list' title='Siswa Yang Mempunyai Kelas' value=siswa_berkelas button_text='Lihat Daftar Siswa' url='list-siswa' %}
+                        {% include 'components/dashboard-card.html' with color='red' icon='list' title='Belum Mempunyai Kelas' value=siswa_nokelas button_text='Lihat Daftar Siswa' url='list-siswa' %}
+                        {% include 'components/dashboard-card.html' with color='blue' icon='people' title='Jumlah Kelas' value=jumlah_kelas button_text='Lihat Daftar Kelas' url='list-kelas' %}
+                        {% include 'components/dashboard-card.html' with color='orange' icon='telescope' title='Jumlah Jurusan' value=jumlah_jurusan button_text='Lihat Daftar Jurusan' url='list-jurusan' %}
+                    </div>
+                </div>
+            </center>
+        </div>
+    </div>
 {% endblock content %}

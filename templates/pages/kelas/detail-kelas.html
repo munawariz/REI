@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row mt-3">
+        <div class="section-wrapper col-md">
+            <center>
+                <div class="section-header">
+                    Dashboard {{kelas.nama}}
+                </div>
+                <div class="section-body">
+                    <div class="row mt-4 d-flex justify-content-center">
+                        {% url 'profil-guru-lain' kelas.walikelas.nip as detail_walikelas %}
+                        {% url 'walikelas-kelas' kelas.nama as ubah_walikelas %}
+                        {% include 'components/dashboard-card.html' with color='red' icon='person' title='Walikelas' value=kelas.walikelas.nama button_text='Detail Walikelas' string_url=detail_walikelas second_string_url=ubah_walikelas second_button_text='Ubah' %}
+
+                        {% include 'components/dashboard-card.html' with color='green' icon='people' title='Profil Kelas' value=kelas.nama button_text='Detail Kelas' modal_button=True modal_form=form_kelas target='profil-kelas' disabled=True modal_title='Profil Kelas' %}
+                        
+                        {% include 'components/dashboard-card.html' with color='orange' icon='list' title='Jumlah Siswa' value=jumlah_siswa footer_text=status_siswa %}
+                        
+                        {% include 'components/dashboard-card.html' with color='purple' icon='calendar' title='Tahun Pelajaran' value=kelas.tahun_pelajaran %}
+                    </div>
+                </div>
+            </center>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="section-wrapper col card-blue">
+            <div class="section-header fs-6 mx-auto">
+                <div class="d-flex flex-row justify-content-center" id="tab">
+                    <a href="#" class="btn main-btn bg-none shadow-none me-1 bg-active" id="siswaTab" name="siswa">
+                        <ion-icon name="list" class="mt-1"></ion-icon>
+                        <span class="d-lg-block d-none">Siswa</span>
+                    </a>
+                    <a href="#" class="btn main-btn bg-none shadow-none me-1" id="mapelTab" name="mapel">
+                        <ion-icon name="book" class="mt-1"></ion-icon>
+                        <span class="d-lg-block d-none">Mata Pelajaran</span>
+                    </a>
+                </div>
+            </div>
+            <div class="section-body row d-flex justify-content-center" id="realtime-table">
+                {% include 'pages/kelas/realtime-table.html' %}
+            </div>
+        </div>
+    </div>
+    {% if auth_walikelas %}
+        <div class="row mt-3">
+            <div class="col-md section-wrapper">
+                <center>
+                    <div class="section-header">
+                        Rapor Siswa
+                    </div>
+                </center>
+                <div class="section-body">
+                    <div class="section-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover bg-transparent">
+                                <thead class="text-secondary">
+                                    <tr class='column-name'>
+                                        <td>NIS</td>
+                                        <td>NISN</td>
+                                        <td>Nama</td>
+                                        <td class="d-none d-md-table-cell">Email</td>
+                                        <td class="d-none d-md-table-cell">Tempat/Tanggal Lahir</td>
+                                        <td class="d-none d-md-table-cell">Jenis Kelamin</td>
+                                        <td class="d-none d-md-table-cell">Agama</td>
+                                        <td>Unduh</td>
+                                        <td>Pratinjau</td>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-primary">
+                                    {% for siswa in list_siswa %}
+                                        <tr data-href="{% url 'detail-siswa' siswa.nis %}">
+                                            <td>{{siswa.nis}}</td>
+                                            <td>{{siswa.nisn}}</td>
+                                            <td>{{siswa.nama}}</td>
+                                            <td class="d-none d-md-table-cell">{{siswa.email}}</td>
+                                            <td class="d-none d-md-table-cell">{{siswa.tempat_lahir}}/{{siswa.tanggal_lahir|date:'d-m-Y'}}</td>
+                                            {% if siswa.gender == 'P' %}
+                                                <td class="d-none d-md-table-cell">Pria</td>
+                                            {% else %}
+                                                <td class="d-none d-md-table-cell">Wanita</td>
+                                            {% endif %}                                            
+                                            <td class="d-none d-md-table-cell">{{siswa.agama}}</td>
+                                            <td><a href="{% url 'rapor' siswa.nis 'unduh' %}" class="btn main-btn fs-5 pt-2"><ion-icon name="cloud-download-outline"></ion-icon></a></td>
+                                            <td><a href="{% url 'rapor' siswa.nis 'pratinjau' %}" class="btn main-btn fs-5 pt-2"><ion-icon name="eye-outline"></ion-icon></a></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>                                
+                            </table>
+                        </div>
+                        <a href="{% url 'rapor-bundle' kelas.nama %}" class="btn main-btn w-100">Unduh Rapor Kelas Ini</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock content %}
+
+{% block script %}
+    <script>
+        const artists_div = $('#realtime-table')
+        const delay_by_in_ms = 100
+        let type = 'mapel'
+        let scheduled_function = false
+
+        let ajax_call = function(){
+            $.ajax({
+                type: 'GET',
+                url: '{{request.path}}',
+                data: {"type": type},
+                success: function (response) {
+                    artists_div.fadeTo('fast', 0).promise().then(() => {
+                        artists_div.html(response['html_from_view'])
+                        artists_div.fadeTo('fast', 1)
+                    })
+                },
+            })
+        }
+
+        function send_request() {
+            if (scheduled_function) {
+                clearTimeout(scheduled_function)
+            }
+
+            scheduled_function = setTimeout(ajax_call, delay_by_in_ms)
+        }
+
+        $("#tab a").each(function(i){
+            $(this).click(function () {
+                let tabs = ['siswaTab', 'mapelTab']
+                $(tabs).each(function(i){
+                    $('#'+this).removeClass('bg-active')
+                })
+                $(this).addClass('bg-active')
+                type = this.name
+                send_request()
+            })
+        });
+    </script>
+
+{% endblock script %}

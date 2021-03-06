@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row mt-3">
+        <div class="section-wrapper col-md">
+            <center>
+                <div class="section-header">
+                    Dashboard {{siswa.nama}}
+                </div>
+                <div class="section-body">
+                    <div class="row mt-4 d-flex justify-content-center">
+                        {% url 'profil-siswa' siswa.nis as profil_siswa %}
+                        {% include 'components/dashboard-card.html' with color='purple' icon='accessibility' title='Siswa' value=siswa.nama button_text='Detail Profil' string_url=profil_siswa %}
+
+                        {% url 'detail-kelas' siswa.kelas.nama as detail_kelas %}
+                        {% include 'components/dashboard-card.html' with color='green' icon='people' title='Kelas' value=nama_kelas button_text='Detail Kelas' string_url=detail_kelas %}
+
+                        {% url 'profil-guru-lain' siswa.kelas.walikelas.nip as detail_walikelas %}
+                        {% include 'components/dashboard-card.html' with color='red' icon='person' title='Walikelas' value=siswa.kelas.walikelas.nama button_text='Detail Walikelas' string_url=detail_walikelas %}
+
+                        {% url 'rapor' siswa.nis 'unduh' as unduh_rapor %}
+                        {% url 'rapor' siswa.nis 'pratinjau' as pratinjau_rapor %}
+                        {% include 'components/dashboard-card.html' with color='orange' icon='newspaper' title='Rapor' value=semester button_text='Unduh' string_url=unduh_rapor second_string_url=pratinjau_rapor second_button_text='Pratinjau' %}
+                    </div>
+                </div>
+            </center>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="section-wrapper col card-blue">
+            <div class="section-header fs-6 mx-auto">
+                <div class="d-flex flex-row justify-content-center" id="tab">
+                    <a href="#" class="btn main-btn bg-none shadow-none me-1 bg-active" id="mapelTab" name="mapel">
+                        <ion-icon name="book" class="mt-1"></ion-icon>
+                        <span class="d-lg-block d-none">Mata Pelajaran</span>
+                    </a>
+                    <a href="#" class="btn main-btn bg-none shadow-none me-1" id="ekskulTab" name="ekskul">
+                        <ion-icon name="american-football" class="mt-1"></ion-icon>
+                        <span class="d-lg-block d-none">Ekskul</span>
+                    </a>
+                    <a href="#" class="btn main-btn bg-none shadow-none" id="absenTab" name="absen">
+                        <ion-icon name="clipboard" class="mt-1"></ion-icon>
+                        <span class="d-lg-block d-none">Absensi</span>
+                    </a>
+                </div>
+            </div>
+            <div class="section-body row d-flex justify-content-center" id="realtime-table">
+                {% include 'pages/siswa/realtime-table.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script>
+        const artists_div = $('#realtime-table')
+        const delay_by_in_ms = 100
+        let type = 'mapel'
+        let scheduled_function = false
+
+        let ajax_call = function(){
+            $.ajax({
+                type: 'GET',
+                url: '{{request.path}}',
+                data: {"type": type},
+                success: function (response) {
+                    artists_div.fadeTo('fast', 0).promise().then(() => {
+                        artists_div.html(response['html_from_view'])
+                        artists_div.fadeTo('fast', 1)
+                    })
+                },
+            })
+        }
+
+        function send_request() {
+            if (scheduled_function) {
+                clearTimeout(scheduled_function)
+            }
+
+            scheduled_function = setTimeout(ajax_call, delay_by_in_ms)
+        }
+
+        $("#tab a").each(function(i){
+            $(this).click(function () {
+                let tabs = ['mapelTab', 'ekskulTab', 'absenTab']
+                $(tabs).each(function(i){
+                    $('#'+this).removeClass('bg-active')
+                })
+                $(this).addClass('bg-active')
+                type = this.name
+                send_request()
+            })
+        });
+    </script>
+
+{% endblock script %}

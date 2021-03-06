@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row mt-3">
+        <div class="col-md-8 section-wrapper">
+            <center>
+                <div class="section-header">
+                    List Kelas
+                </div>
+            </center>
+            <button class="btn btn-md help-icon right mt-n4">
+                <ion-icon name="help-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Daftar kelas yang ditampilkan hanyalah kelas yang ada di semester yang sedang aktif"></ion-icon>
+            </button>
+            <div class="section-body">
+                {% include 'components/searchbar.html' %}
+                {% for kelas in list_kelas %}
+                    <div class="card mt-3 bg-primary">
+                        <div class="card-body">
+                            <a href="{% url 'detail-kelas' kelas.nama %}" class="card-title left center mt-2 card-a">
+                                {{kelas.nama}}
+                            </a>
+                            <div class="row right flex-center" style="width: 13rem">
+                                <div class="col-10">
+                                    <h6 class="info-label">Walikelas</h6>
+                                    <h5 class="info-value">{{kelas.walikelas}}</h5>
+                                </div>
+                                <div class="col-1">
+                                    <a href="{% url 'hapus-kelas' kelas.nama %}" class="btn main-btn right" style="margin-right: -0.8rem;"><ion-icon name="trash"></ion-icon></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% include 'components/pagination.html' %}
+            </div>
+        </div>
+        <div class="col-md-3 section-wrapper">
+            <center>
+                <div class="section-header">
+                    Buat Kelas
+                </div>
+            </center>
+            <div class="section-body">
+                {% include 'components/form.html' with form=kelas_form submit_button='Buat' action='buat/' %}
+            </div>
+        </div>
+    <div>
+{% endblock content %}

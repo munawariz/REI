@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mt-3">
+    <div class="col-md section-wrapper">
+        <center>
+            <div class="section-header">
+                Daftar Guru
+            </div>
+        </center>
+        <div class="section-body">
+            {% include 'components/searchbar.html' %}
+            <div class="table-responsive">
+                <table class="table table-hover bg-transparent">
+                    <thead class="text-secondary">
+                        <tr class='column-name'>
+                            <td>NIP</td>
+                            <td>Nama</td>
+                            <td>Email</td>
+                            <td>Tempat/Tanggal Lahir</td>
+                            <td>Jenis Kelamin</td>
+                            <td>Agama</td>
+                            <td>Walikelas</td>
+                            <td>Staf TU</td>
+                            <td>Admin</td>
+                            <td>Hapus</td>
+                        </tr>
+                    </thead>
+                    <tbody class="text-primary">
+                        {% for guru in list_guru %}
+                        <tr data-href="{% url 'profil-guru-lain' guru.nip %}">
+                            <td>{{guru.nip}}</td>
+                            <td>{{guru.nama}}</td>
+                            <td>{{guru.email}}</td>
+                            <td>{{guru.tempat_lahir}}/{{guru.tanggal_lahir|date:'d-m-Y'}}</td>
+                            {% if guru.gender == 'P' %}
+                            <td>Pria</td>
+                            {% else %}
+                            <td>Wanita</td>
+                            {% endif %}
+                            <td>{{guru.agama}}</td>
+                            <td>{% if guru.is_walikelas %}<ion-icon name="checkmark-outline"></ion-icon>{% endif %}</td>
+                            <td>{% if guru.is_staftu %}<ion-icon name="checkmark-outline"></ion-icon>{% endif %}</td>
+                            <td>{% if guru.is_superuser %}<ion-icon name="checkmark-outline"></ion-icon>{% endif %}</td>
+                            <td><a href="{% url 'hapus-guru' guru.nip %}" class="btn main-btn right"><ion-icon name="trash"></ion-icon></a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% include "components/pagination.html" with extra_param='search' extra_value=request.GET.search %}
+    </div>
+</div>
+
+{% if user.is_superuser or user.is_staftu %}
+    <div class="row mt-3">
+        <div class="col-md section-wrapper">
+            <center>
+                <div class="section-header">
+                    Buat Akun Guru
+                </div>
+            </center>
+            <div class="section-body">
+                <div class="row mt-3">
+                    <div class="col-md section-wrapper">
+                        <center>
+                            <div class="section-header">
+                                Walikelas
+                            </div>
+                        </center>
+                        <div class="section-body">
+                            {% include 'components/form.html' with form=guru_form submit_button='Buat' col='three' action='buat/?level=walikelas' %}
+                        </div>
+                    </div>
+                    <div class="col-md section-wrapper">
+                        <center>
+                            <div class="section-header">
+                                Staf TU
+                            </div>
+                        </center>
+                        <div class="section-body">
+                            {% include 'components/form.html' with form=guru_form submit_button='Buat' col='three' action='buat/?level=staftu' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock content %}

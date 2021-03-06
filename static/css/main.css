@@ -1,280 +1,692 @@
-/*! HTML5 Boilerplate v5.2.0 | MIT License | https://html5boilerplate.com/ */
-
-/*
- * What follows is the result of much research on cross-browser styling.
- * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
- * Kroc Camen, and the H5BP dev community and team.
- */
-
-/* ==========================================================================
-   Base styles: opinionated defaults
-   ========================================================================== */
-
-html {
-    color: #222;
-    font-size: 1em;
-    line-height: 1.4;
+:root{
+    font-size: 16px;
+    --text-primary: #a9afbbd1;
+    --text-secondary: #ececec;
+    --bg-primary: #181d30;
+    --bg-secondary: #202c3c;
+    --theme-color: #7b1fa2;
+    --transition-speed: 600ms;
 }
 
-/*
- * Remove text-shadow in selection highlight:
- * https://twitter.com/miketaylr/status/12228805301
- *
- * These selection rule sets have to be separate.
- * Customize the background color to match your design.
- */
-
-::-moz-selection {
-    background: #b3d4fc;
-    text-shadow: none;
+html{
+    scroll-behavior: smooth;
 }
 
-::selection {
-    background: #b3d4fc;
-    text-shadow: none;
-}
-
-/*
- * A better looking default horizontal rule
- */
-
-hr {
-    display: block;
-    height: 1px;
-    border: 0;
-    border-top: 1px solid #ccc;
-    margin: 1em 0;
-    padding: 0;
-}
-
-/*
- * Remove the gap between audio, canvas, iframes,
- * images, videos and the bottom of their containers:
- * https://github.com/h5bp/html5-boilerplate/issues/440
- */
-
-audio,
-canvas,
-iframe,
-img,
-svg,
-video {
-    vertical-align: middle;
-}
-
-/*
- * Remove default fieldset styles.
- */
-
-fieldset {
-    border: 0;
+body{
+    color: var(--text-secondary);
+    background-color: var(--bg-primary);
     margin: 0;
     padding: 0;
 }
 
-/*
- * Allow only vertical resizing of textareas.
- */
-
-textarea {
-    resize: vertical;
+label{
+    display: block;
 }
 
-/* ==========================================================================
-   Browser Upgrade Prompt
-   ========================================================================== */
-
-.browserupgrade {
-    margin: 0.2em 0;
-    background: #ccc;
-    color: #000;
-    padding: 0.2em 0;
+body::-webkit-scrollbar, ::-webkit-scrollbar{
+    width: 0.25rem;
 }
 
-/* ==========================================================================
-   Author's custom styles
-   ========================================================================== */
+body::-webkit-scrollbar-track, ::-webkit-scrollbar-track {
+    background: #1e1e24;
+}
 
+body::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb{
+    background: var(--theme-color);
+}
 
+main{
+    padding: 1rem;
+    padding-bottom: 0;
+    transition: ease 300ms;
+    z-index: 0;
+}
 
+.content{
+    box-shadow: inset 0.5rem 0 6px -6px rgba(0, 0, 0, 0.7);
+    min-height: calc(100vh - 4rem);
+    padding: 1rem;
+    padding-bottom: 0;
+}
 
+.appbar{
+    height: 4rem;
+    margin: -1rem;
+    color: white;
+    box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
+    position: unset;
+}
 
+.appbar-nav{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+}
 
+.appbar-item{
+    height: 100%;
+    margin-top: 2.2rem;
+    margin-right: 1.2rem;
+}
 
+.dropdown-toggle{
+    text-decoration: none !important;
+    color: white;
+}
 
-
-
-
-
-
-
-
-
-
-/* ==========================================================================
-   Helper classes
-   ========================================================================== */
-
-/*
- * Hide visually and from screen readers:
- */
-
-.hidden {
+.dropdown-toggle::after{
     display: none !important;
 }
 
-/*
- * Hide only visually, but have it available for screen readers:
- * http://snook.ca/archives/html_and_css/hiding-content-for-accessibility
- */
+.dropdown-toggle:hover{
+    color: var(--text-primary);
+}
 
-.visuallyhidden {
-    border: 0;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    margin: -1px;
+.dropdown-menu{
+    margin-top: 0.6rem !important;
+    background-color: var(--bg-secondary);
+    box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
+}
+
+.dropdown-item{
+    color: var(--text-secondary);
+}
+
+.dropdown-item:hover{
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    color: var(--text-secondary);
+}
+
+.dropdown-icon{
+    font-size: 1.5rem;
+}
+
+form{
+    width: 95%;    
+    position: relative;
+}
+
+.search-bar{
+    margin-top: -1.2rem;
+    margin-right: 1rem;    
+    max-width: 60%;
+}
+
+.search-icon{
+    font-size: 1.3rem;
+    margin-top: 0.7rem;
+    margin-left: -1rem;
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    border-radius: 100%;
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.5);
+    color: var(--text-secondary);
+}
+
+.search-icon:hover{
+    background: linear-gradient(60deg, #913db4, #a350af);
+    color: white;
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
+}
+
+.help-icon{
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-radius: 100%;
+    margin-right: -1rem;
+    font-size: 1.2rem;
+}
+
+.help-icon:hover{
+    background: transparent;
+    color: var(--theme-color);
+}
+
+.field{
+    width: 100%;
+    position: relative;
+    border-bottom: 1px solid var(--text-primary);
+    margin: 1rem auto 0.25rem;
+}
+
+.input{
+    outline: none;
+    border: none;
     overflow: hidden;
-    padding: 0;
-    position: absolute;
-    width: 1px;
-}
-
-/*
- * Extends the .visuallyhidden class to allow the element
- * to be focusable when navigated to via the keyboard:
- * https://www.drupal.org/node/897638
- */
-
-.visuallyhidden.focusable:active,
-.visuallyhidden.focusable:focus {
-    clip: auto;
-    height: auto;
     margin: 0;
-    overflow: visible;
-    position: static;
-    width: auto;
+    width: 100%;
+    padding: 0.25rem 0;
+    background: none;
+    color: var(--text-secondary);    
+    position: relative;
+    z-index: 2;
 }
 
-/*
- * Hide visually and from screen readers, but maintain layout
- */
-
-.invisible {
-    visibility: hidden;
+.label{    
+    position: absolute;
+    transform: translateY(-1.7rem);
+    transform-origin: 0%;
+    transition: transform 400ms;
+    color: var(--text-primary);
+    z-index: 1;
 }
 
-/*
- * Clearfix: contain floats
- *
- * For modern browsers
- * 1. The space content is one way to avoid an Opera bug when the
- *    `contenteditable` attribute is included anywhere else in the document.
- *    Otherwise it causes space to appear at the top and bottom of elements
- *    that receive the `clearfix` class.
- * 2. The use of `table` rather than `block` is only necessary if using
- *    `:before` to contain the top-margins of child elements.
- */
-
-.clearfix:before,
-.clearfix:after {
-    content: " "; /* 1 */
-    display: table; /* 2 */
+.field::after{
+    content: "";
+    position: relative;
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--theme-color);
+    transform: scaleX(0);
+    transform-origin: 0%;
+    transition: transform 500ms ease;
+    top: 1px;
 }
 
-.clearfix:after {
-    clear: both;
+.field:focus-within{
+    border-color: transparent;
 }
 
-/* ==========================================================================
-   EXAMPLE Media Queries for Responsive Design.
-   These examples override the primary ('mobile first') styles.
-   Modify as content requires.
-   ========================================================================== */
-
-@media only screen and (min-width: 35em) {
-    /* Style adjustments for viewports that meet the condition */
+.field:focus-within::after{
+    transform: scaleX(1);
 }
 
-@media print,
-       (-webkit-min-device-pixel-ratio: 1.25),
-       (min-resolution: 1.25dppx),
-       (min-resolution: 120dpi) {
-    /* Style adjustments for high resolution devices */
+.field:focus-within .label,
+.input:not(:placeholder-shown) + .label{
+    transform: scale(0.7) translateY(-4.5rem);
 }
 
-/* ==========================================================================
-   Print styles.
-   Inlined to avoid the additional HTTP request:
-   http://www.phpied.com/delay-loading-your-print-css/
-   ========================================================================== */
+.bg-primary{
+    background-color: var(--bg-primary)!important;
+}
 
-@media print {
-    *,
-    *:before,
-    *:after {
-        background: transparent !important;
-        color: #000 !important; /* Black prints faster:
-                                   http://www.sanbeiji.com/archives/953 */
-        box-shadow: none !important;
-        text-shadow: none !important;
+.bg-secondary{
+    background-color: var(--bg-secondary)!important; 
+}
+
+.bg-theme{
+    background-color: var(--theme-color);
+}
+
+.text-primary{
+    color: var(--text-primary) !important;
+}
+
+.text-secondary{
+    color: var(--text-secondary) !important;
+}
+
+.text-theme{
+    color: var(--theme-color) !important;
+}
+
+.mt-n1{
+    margin-top: -0.5rem;
+}
+.mt-n2{
+    margin-top: -1rem;
+}
+.mt-n3{
+    margin-top: -1.5rem;
+}
+.mt-n4{
+    margin-top: -2rem;
+}
+.mt-n5{
+    margin-top: -2.6rem;
+}
+.mt-n6{
+    margin-top: -3.5rem;
+}
+
+.flex-center{
+    display: flex;
+    justify-content: center;
+}
+
+.section-wrapper{
+    border-radius: 0.25rem;    
+    background-color: var(--bg-secondary);    
+    box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
+    height: fit-content;
+    padding-bottom: 1.5rem;
+    margin: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-header{
+    background-color: var(--theme-color);
+    width: 80%;
+    margin-top: -1.3rem;
+    font-size: 1.3rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    border-radius: 0.25rem;
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.5);
+}
+
+.section-body{
+    width: 100%;
+    padding-top: 0.5rem;
+    background: transparent;
+    margin-top: 0.5rem;  
+}
+
+.modal-header{
+    background-color: var(--theme-color)!important;
+    font-size: 1.3rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.5);
+    border-radius: 0.25rem;
+    border: none!important;
+}
+
+.modal-body{
+    background-color: var(--bg-secondary);    
+    box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
+    border-radius: 0.25rem;
+}
+
+.modal-content{
+    background-color: var(--bg-secondary);
+}
+
+.left{
+    float: left !important;
+}
+
+.right{
+    float: right !important;
+}
+
+.main-btn{
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    color: var(--text-secondary);
+    border-radius: 0.25rem !important;
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.3);
+    width: fit-content !important;
+}
+
+.main-btn:hover{
+    background: linear-gradient(60deg, #913db4, #a350af);
+    color: var(--text-secondary);
+    border-radius: 0.25rem;
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
+}
+
+.green-btn{
+    background: linear-gradient(60deg, #2ea21f, #429e3f);
+    color: var(--text-secondary);
+    border-radius: 0.25rem !important;
+    box-shadow: 1px 0.2rem 5px rgba(46, 162, 31, 0.7);
+}
+
+select > option{
+    color: var(--text-secondary);
+    background-color: var(--theme-color);
+}
+
+tr:hover td{
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.column-name:hover td{
+    cursor: default;
+}
+
+tbody{
+    border-color: var(--text-primary);
+}
+
+.table{
+    max-height: 100vw !important;
+}
+
+.page-link{
+    background-color: var(--theme-color) !important;
+    border: none;
+    color: var(--text-secondary);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.5);
+}
+
+.page-link:hover{
+    background-color: rgb(163, 52, 211) !important;
+    color: var(--text-primary);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
+}
+
+.info{
+    padding-left: 1rem;
+    padding-top: 0.2rem
+}
+
+.info-label{
+    font-weight: normal;
+    color: var(--text-primary);
+    margin-bottom: 0;
+    font-size: 0.8rem;
+}
+
+.info-value{
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+.label-pelajaran{
+    float: left;
+    position: relative;
+    margin-top: -1.7rem;
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+.border-100{
+    border-radius: 100% !important;
+}
+
+.alert{
+    border: none !important;
+}
+
+.main-alert{
+    color: var(--text-secondary);
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.5);
+    border-radius: 0.25rem;
+    width: 100% !important;
+}
+
+.error-alert{
+    color: var(--text-secondary);
+    background: linear-gradient(60deg, #a21f1f, #9e3f3f);
+    box-shadow: 1px 0.2rem 5px rgba(162, 31, 31, 0.5);
+    border-radius: 0.25rem;
+    width: 100% !important;
+}
+
+.success-alert{
+    color: var(--text-secondary);
+    background: linear-gradient(60deg, #2ea21f, #559e3f);
+    box-shadow: 1px 0.2rem 5px rgba(57, 162, 31, 0.5);
+    border-radius: 0.25rem;
+    width: 100% !important;
+}
+
+.alert-dismissible .btn-close{
+    padding: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.list-unstyled li{
+    margin-top: 0.3rem;
+}
+
+.card-a{
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 500 !important;
+    color: var(--text-secondary);
+}
+
+.card-a:hover{
+    cursor: pointer;
+    color: var(--theme-color);
+}
+
+ul.three-columns{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+ul.two-columns{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+ul.one-columns{
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+}
+
+.float{
+    position:fixed;
+    width:60px;
+	height:60px;
+	bottom: 2rem;
+    right:40px;
+	background: linear-gradient(60deg, #7b1fa2, #913f9e);
+	color:var(--text-secondary);
+	border-radius:100%;
+    text-align:center;
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.3);
+    z-index: 99!important;
+    margin: 2rem;
+    margin-right: -2rem;
+    transition: transform 600ms;
+    transform: scale(0.8);
+}
+
+.float:hover{
+    transform: scale(0.9);
+    background: linear-gradient(60deg, #913db4, #a350af);
+    color: var(--text-secondary);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.7);
+}
+
+.dashboard-card{
+    background-color: var(--bg-primary);
+    margin: 0.5rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.2rem 7px rgba(0, 0, 0, 0.7);
+    font-style: bold;
+    padding: 1rem;
+    width: fit-content;
+}
+
+.dashboard-card-icon{
+    font-size: 2rem;
+    margin-top: -2.5rem;
+}
+
+.dashboard-card-icon-bg{
+    border-radius: 0.25rem;
+    width: 3.25rem;
+    height: 3.25rem;
+    padding-top: 0.3rem;
+}
+
+.dashboard-card-title{
+    font-size: 0.7rem;
+    width: max-content;
+    float: right;
+    margin-top: -0.6rem;
+    position: sticky;
+    text-align: end;
+}
+
+.dashboard-card-value{
+    font-size: 1.3rem;
+    font-weight: bold;
+    width: 100%;
+    float: right;
+    text-align: end;
+}
+
+.dashboard-card-info{
+    font-size: 0.6rem;
+    width: 100%;
+    float: left;
+    text-align: start;
+}
+
+.dashboard-card-content::after{
+    content: '';
+    position: relative;
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: rgb(61, 61, 61);
+    margin-top: 0.5rem;
+}
+
+.dashboard-card-footer{
+    text-decoration: none;
+    font-size: small;
+    margin-top: 1rem;
+    color: white;
+    max-width: max-content;
+    float: left;
+}
+
+.card-purple .dashboard-card-icon-bg{
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    box-shadow: 1px 0.2rem 5px rgba(123,31,162,0.3);
+}
+
+.card-purple .dashboard-card-title{
+    color: #913f9e;
+}
+
+.card-green .dashboard-card-icon-bg,
+.card-green .main-btn,
+.card-green .section-header{
+    background: linear-gradient(60deg,#288c6c,#4ea752);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(76,175,80,0.3);
+}
+
+.card-green .main-btn:hover{
+    background: linear-gradient(60deg,#37af89,#5ebe63);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(76,175,80,0.6);
+}
+
+.card-green .dashboard-card-title{
+    color: #288c6c;
+}
+
+.card-blue .dashboard-card-icon-bg,
+.card-blue .main-btn,
+.card-blue .section-header{
+    background: linear-gradient(60deg,#1f83a2,#1f9aaa);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(0,188,212,0.3);
+}
+
+.card-blue .main-btn:hover{
+    background: linear-gradient(60deg,#01a1b6,#21a3b4);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(0,188,212,0.6);
+}
+
+.card-blue .dashboard-card-title{
+    color: #1f83a2;
+}
+
+.card-orange .dashboard-card-icon-bg,
+.card-orange .main-btn,
+.card-orange .section-header{
+    background: linear-gradient(60deg,#f5700c,#e98c02);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(255,152,0,0.3);
+}
+
+.card-orange .main-btn:hover{
+    background: linear-gradient(60deg,#f57a1c,#e7900d);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(255,152,0,0.6);
+}
+
+.card-orange .dashboard-card-title{
+    color: #e98c02;
+}
+
+.card-red .dashboard-card-icon-bg,
+.card-red .main-btn,
+.card-red .section-header{
+    background: linear-gradient(60deg,#d22824,#da3a36);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(244,67,54,0.3);
+}
+
+.card-red .main-btn:hover{
+    background: linear-gradient(60deg,#cc3230,#dd4b48);
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 0.14), 1px 0.2rem 5px rgba(244,67,54,0.6);
+}
+
+.card-red .dashboard-card-title{
+    color: #d22824;
+}
+
+.bg-none{
+    background: none !important;
+    background-color: transparent;
+}
+
+.bg-none:hover,
+.bg-active{
+    background: rgba(255, 255, 255, 0.4) !important;
+}
+
+@media only screen and (max-width: 768px){
+    main{
+        margin: 0;
+        margin-bottom: 5rem;
     }
 
-    a,
-    a:visited {
-        text-decoration: underline;
+    .content{
+        margin: 1rem;
+        margin-left: -1rem;
+        box-shadow: none;
     }
 
-    a[href]:after {
-        content: " (" attr(href) ")";
+    .modal-dialog{
+        width: 90vw;
     }
 
-    abbr[title]:after {
-        content: " (" attr(title) ")";
+    .flex-center{
+        justify-content: unset;
     }
 
-    /*
-     * Don't show links that are fragment identifiers,
-     * or use the `javascript:` pseudo protocol
-     */
-
-    a[href^="#"]:after,
-    a[href^="javascript:"]:after {
-        content: "";
+    ul.three-columns{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    pre,
-    blockquote {
-        border: 1px solid #999;
-        page-break-inside: avoid;
+    ul.two-columns{
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
     }
 
-    /*
-     * Printing Tables:
-     * http://css-discuss.incutio.com/wiki/Printing_Tables
-     */
-
-    thead {
-        display: table-header-group;
+    .dashboard-card-icon{
+        margin: 0;
     }
 
-    tr,
-    img {
-        page-break-inside: avoid;
+    .dashboard-card-title{
+        float: none;
+        margin-top: 1rem;
+        text-align: center;
     }
 
-    img {
-        max-width: 100% !important;
+    .dashboard-card-value{
+        float: none;
+        text-align: center;
+    }
+}
+
+@media only screen and (min-width: 768px){
+    main{
+        margin-left: 5rem;
     }
 
-    p,
-    h2,
-    h3 {
-        orphans: 3;
-        widows: 3;
+    .content{
+        margin: 1rem 0 0 -1rem;
+        padding-top: 2rem;
     }
 
-    h2,
-    h3 {
-        page-break-after: avoid;
+    .modal-dialog{
+        max-width: 60vw !important;
     }
 }

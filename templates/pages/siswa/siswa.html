@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="row mt-3">
+        <div class="section-wrapper col-md">
+            <center>
+                <div class="section-header">
+                    List Siswa
+                </div>
+                <div class="section-body">
+                    <div class="d-flex flex-row">
+                        <div class="me-3">
+                            {% include 'components/modal-form.html' with target='formSiswa' button_text='Tambah Siswa' title='Form Penambahan Siswa' modal_form=siswa_form submit_button='Buat' action='buat/' col='three' %}
+                        </div>
+                        <div class="me-3">
+                            <form action="{% url 'import-excel-siswa' %}" method="post" enctype="multipart/form-data" name="excelForm" class="float-right">
+                                {% csrf_token %}
+                                <div id="uploadButton" class="btn main-btn" onclick=getFile()>Import</div>
+                                <div style='height: 0px;width: 0px; overflow:hidden;'>
+                                    {% render_field excel_form.file|add_class:"input" onchange="sub(this)" id="upfile" value="upload" accept=".xlsx, .xls, .ods" %}
+                                </div>
+                            </form>
+                        </div>
+                        <div class="me-3">
+                            <a href="{% url 'download-template-siswa' %}" class="btn main-btn left">Spreadsheet Template</a>
+                        </div>
+                        <div>
+                            <a href="{% url 'export-excel-siswa' %}" class="btn main-btn left">Export</a>
+                        </div>
+                        <div class="ms-auto">
+                            {% include 'components/searchbar.html' %}
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover bg-transparent">
+                            <thead class="text-secondary">
+                                <tr class='column-name'>
+                                    <td>NIS</td>
+                                    <td>NISN</td>
+                                    <td>Nama</td>
+                                    <td>Email</td>
+                                    <td>Tempat/Tanggal Lahir</td>
+                                    <td>Jenis Kelamin</td>
+                                    <td>Agama</td>
+                                    <td>Kelas</td>
+                                    <td>Hapus</td>
+                                </tr>
+                            </thead>
+                            <tbody class="text-primary">
+                                {% for siswa in list_siswa %}
+                                    <tr data-href="{% url 'detail-siswa' siswa.nis %}">
+                                        <td>{{siswa.nis}}</td>
+                                        <td>{{siswa.nisn}}</td>
+                                        <td>{{siswa.nama}}</td>
+                                        <td>{{siswa.email}}</td>
+                                        <td>{{siswa.tempat_lahir}}/{{siswa.tanggal_lahir|date:'d-m-Y'}}</td>
+                                        {% if siswa.gender == 'P' %}
+                                            <td>Pria</td>
+                                        {% else %}
+                                            <td>Wanita</td>
+                                        {% endif %}                                            
+                                        <td>{{siswa.agama}}</td>
+                                        <td>{% if siswa.kelas.tahun_pelajaran == tp_aktif %}{{siswa.kelas.tingkat}} {{siswa.kelas.jurusan|default:""}} {{siswa.kelas.kelas}}{% endif %}</td>
+                                        <td><a href="{% url 'hapus-siswa' siswa.nis %}" class="btn main-btn right"><ion-icon name="trash"></ion-icon></a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>                                
+                        </table>
+                    </div>
+                </div>
+                {% include "components/pagination.html" with extra_param='search' extra_value=request.GET.search %}
+            </center>                
+        </div>
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script>
+    function getFile() {
+        document.getElementById("upfile").click();
+    }
+
+    function sub(obj) {
+        var file = obj.value;
+        var fileName = file.split("\\");
+        document.getElementById("uploadButton").innerHTML = fileName[fileName.length - 1];
+        document.excelForm.submit();
+        event.preventDefault();
+    }
+    </script>
+{% endblock script %}

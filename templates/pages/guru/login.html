@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block stylesheet %}
+<style>
+    html{
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
+</style>
+{% endblock stylesheet %}
+
+{% block content %}
+    <div class="mt-5 mx-auto">
+        <div class="mx-auto p-5" style="width: 400px;">
+            <center>
+                <h2 class="fw-bolder mb-5">Rapor Elektronik Indonesia</h2>
+            </center>
+            <form method="post">
+                {% csrf_token %}
+                <center>
+                    <div class="field mb-5">
+                        {% render_field form.username|add_class:"input" placeholder=" "%}
+                        <label class="label" for="username">Nomor Induk</label><br>                        
+                    </div>
+
+                    <div class="field mb-4">
+                        {% render_field form.password|add_class:"input" placeholder=" "%}
+                        <label class="label" for="password">Password</label><br>                        
+                    </div>
+                    
+                    <small>{{form.non_field_errors.as_text}}</small><br>
+                    <input class="btn main-btn" type="submit" value="Login" style="font-size: 1.2rem;">
+                </center>                
+            </form>
+        </div>
+    </div>
+{% endblock %}

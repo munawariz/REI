@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row mt-3">
+        <div class="col-md-8 section-wrapper">
+            <center>
+                <div class="section-header">
+                    Edit Profil
+                </div>
+                <div class="section-body">
+                {% if user.is_superuser or user.is_staftu%}
+                    {% include "components/form.html" with form=profile_form submit_button='Ganti'%}
+                {% else %}
+                    {% include "components/form.html" with form=profile_form submit_button='Ganti' disabled=True%}
+                {% endif %}
+                </div>
+            </center>            
+        </div>
+
+        {% if guru.pk == user.pk %}
+        <div class="col-md-3 section-wrapper">
+            <center>
+                <div class="section-header">
+                    Ganti Password
+                </div>
+                <div class="section-body">
+                    {% include 'components/form.html' with form=password_form submit_button='Ganti' col='one' action='/guru/password/ganti/' %}
+                </div>
+            </center>
+        </div>
+        {% else %}
+        <div class="col-md-3 section-wrapper">
+            <center>
+                <div class="section-header">
+                    Profil {{guru.nama}}
+                </div>
+            </center>
+            <div class="section-body">
+                <div class="info">
+                    <h6 class="info-label">Nama</h6>
+                    <h5 class="info-value">{{guru.nama}}</h5>
+                </div>
+                <div class="info">
+                    <h6 class="info-label">NIP</h6>
+                    <h5 class="info-value">{{guru.nip}}</h5>
+                </div>
+                <div class="info">
+                    <h6 class="info-label">Email</h6>
+                    <h5 class="info-value">{{guru.email}}</h5>
+                </div>
+                <div class="info">
+                    <h6 class="info-label">Level</h6>
+                    {% if guru.is_walikelas %}<h5 class="info-value">Walikelas</h5>{% endif %}
+                    {% if guru.is_superuser %}<h5 class="info-value">Staf TU</h5>{% endif %}
+                    {% if guru.is_staftu %}<h5 class="info-value">Admin</h5>{% endif %}
+                </div>
+                {% if kelas %}
+                <div class="info">
+                    <h6 class="info-label">Walikelas</h6>
+                    <h5 class="info-value">{{kelas.nama}}</h5>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock content %}

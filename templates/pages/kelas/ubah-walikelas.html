@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row mt-5">
+        <div class="col-md-7 section-wrapper">
+            <center>
+                <div class="section-header">
+                    Ubah Walikelas {{kelas.nama}}
+                </div>
+            </center>
+            <div class="section-body">
+                <form method="post" action="{% url 'ganti-walikelas' kelas.nama %}" id="ganti-walikelas-form">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md">
+                            <div class="field mb-4">
+                                <input type="text" class="input" placeholder=" " value="{{kelas.walikelas.nama}}" disabled>
+                                <label class="label">Walikelas Saat Ini</label>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="field mb-4">
+                                <select name="new_walikelas" class="input" placeholder=" ">
+                                    <option value selected>---------</option>
+                                    {% for walikelas in valid_walikelas %}
+                                        <option value="{{walikelas.nip}}">{{walikelas.nama}}</option>
+                                    {% endfor %}
+                                </select>
+                                <label class="label">Walikelas Baru</label>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="submit" class="btn main-btn right" value="Ganti">
+                </form>
+            </div>
+        </div>
+        {% include 'components/kelas-navcard.html' %}
+    </div>
+{% endblock content %}
