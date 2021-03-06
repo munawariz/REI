@@ -8,7 +8,7 @@ from django.views.generic import View, CreateView
 from helpers import active_semester, active_tp, get_initial, form_value, get_sekolah
 from .models import Guru
 from siswa.models import Siswa
-from sekolah.models import Jurusan, Kelas, Sekolah
+from sekolah.models import Ekskul, Jurusan, Kelas, MataPelajaran, Sekolah
 from .forms import GuruEditForm, PasswordChangeForm, GuruCreateForm, LoginForm
 from django.contrib.auth import authenticate
 from django.utils.decorators import method_decorator
@@ -37,6 +37,12 @@ class dashboard(View):
             'siswa_nokelas': Siswa.objects.exclude(kelas__tahun_pelajaran=tp).filter(kelas=None).count(),
             'jumlah_kelas': Kelas.objects.filter(tahun_pelajaran=tp).count(),
             'jumlah_jurusan': Jurusan.objects.count(),
+            'jumlah_guru': Guru.objects.count(),
+            'jumlah_walikelas': Guru.objects.filter(is_walikelas=True, is_staftu=False).count(),
+            'jumlah_tu': Guru.objects.filter(is_staftu=True, is_walikelas=False).count(),
+            'jumlah_admin': Guru.objects.filter( Q( Q(is_walikelas=True)&Q(is_staftu=True) | Q(is_superuser=True) ) ).count(),
+            'jumlah_mapel': MataPelajaran.objects.count(),
+            'jumlah_ekskul': Ekskul.objects.count(),
         }
         return render(request, 'pages/dashboard.html', context)
 

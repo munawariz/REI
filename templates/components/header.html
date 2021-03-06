@@ -28,7 +28,6 @@
                                 <ul class="nav navbar-nav mai-top-nav header-right-menu">
                                     <li class="nav-item">
                                         <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="nav-link dropdown-toggle">
-                                                <img src="img/product/pro4.jpg" alt="" />
                                                 <span class="admin-name">{{user.nama}} {% if user.is_superuser or user.is_walikelas and user.is_staftu %} (Admin) {% elif user.is_walikelas %} (Walikelas) {% elif user.is_staftu %} (Staf TU) {% endif %}</span>
                                                 <i class="fa fa-angle-down edu-icon edu-down-arrow"></i>
                                             </a>
