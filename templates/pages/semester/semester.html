@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load rei_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+    {% include 'components/breadcrumb.html' with searchbar=True %}
+
+    <div class="product-status mg-b-15">
+        <div class="container-fluid">
+            <div class="row mg-b-30">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                    <div class="hpanel widget-int-shape responsive-mg-b-30">
+                        <div class="panel-body">
+                            <div class="stats-title pull-left">
+                                <h4>Semester Aktif</h4>
+                            </div>
+                            <div class="stats-icon pull-right">
+                                <i class="educate-icon educate-event"></i>
+                            </div>
+                            <div class="m-t-xl widget-cl-1">
+                                <h1 class="text-success">{{active_semester}}</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                    <div class="hpanel widget-int-shape responsive-mg-b-30">
+                        <div class="panel-body">
+                            <div class="stats-title pull-left">
+                                <h4>Jumlah Kelas</h4>
+                            </div>
+                            <div class="stats-icon pull-right">
+                                <i class="educate-icon educate-form"></i>
+                            </div>
+                            <div class="m-t-xl widget-cl-1">
+                                <h1 class="text-success counter">{{jumlah_kelas}}</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                    <div class="hpanel widget-int-shape responsive-mg-b-30">
+                        <div class="panel-body">
+                            <div class="stats-title pull-left">
+                                <h4>Jumlah Siswa</h4>
+                            </div>
+                            <div class="stats-icon pull-right">
+                                <i class="educate-icon educate-student"></i>
+                            </div>
+                            <div class="m-t-xl widget-cl-1">
+                                <h1 class="text-success">{{active_semester}}</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mg-b-30">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="product-status-wrap drp-lst">
+                        <h4>Daftar Tahun Pelajaran</h4>
+                        {% url 'buat-semester' as action %}
+                        <div class="add-product">
+                            <a id="buatTP">Buat Tahun Pelajaran</a>
+                        </div>
+                        
+                        <div class="asset-inner table-condensed">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th class="vert-center text-center p-10" rowspan="2">Tahun Mulai</th>
+                                        <th class="vert-center text-center p-10" rowspan="2">Tahun Akhir</th>
+                                        <th class="border-bot-none text-center p-10" colspan="2">Semester</th>
+                                        <th class="vert-center text-center p-10" rowspan="2">Hapus</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="vert-center text-center p-10">Ganjil</th>
+                                        <th class="vert-center text-center p-10">Genap</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tp in page_obj %}
+                                        <tr>
+                                            <td class="vert-center text-center">{{tp.mulai}}</td>
+                                            <td class="vert-center text-center">{{tp.akhir}}</td>
+                                            {% semester_from_tp tp as list_semester%}
+                                            {% for semester in list_semester %}
+                                                <td class="vert-center text-center">
+                                                {% if semester.is_active %}
+                                                    <button class="pd-setting">Aktif</button>
+                                                {% else %}
+                                                    <button onclick="confirmationAlert('Yakin ingin mengaktifkan semester {{semester}}', '{% url 'aktifkan-semester' semester.id %}')" class="ds-setting">Aktifkan</button>
+                                                {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                            <td class="vert-center text-center">
+                                                <button onclick="confirmationAlert('Yakin ingin menghapus tahun {{tp.mulai}}/{{tp.akhir}}', '{% url 'hapus-semester' tp.id %}')" title="Hapus" class="pd-setting-ed"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% include 'components/pagination.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extrascript %}
+<script>
+    $('#buatTP').on('click', function () {
+        formAlert(
+            'Buat Tahun Pelajaran',
+            '{% include "components/sweetalert-form.html" with form=tp_form action="/semester/buat/" %}');
+        event.preventDefault();
+    })
+</script>
+{% endblock extrascript %}

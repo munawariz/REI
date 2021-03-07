@@ -94,7 +94,29 @@ textarea {
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
+.border-bot-none{
+    border-bottom: none !important;
+}
 
+.border-top-none{
+    border-top: none !important;
+}
+
+.vert-center{
+    vertical-align: middle !important;
+}
+
+.text-center{
+    text-align: center !important;
+}
+
+.p-0{
+    padding: 0 !important;
+}
+
+.p-10{
+    padding: 10px !important;
+}
 
 
 

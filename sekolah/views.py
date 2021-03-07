@@ -46,7 +46,7 @@ class detail_sekolah(View):
 @method_decorator(staftu_required, name='dispatch')
 class list_semester(View):
     def get(self, request):
-        request.session['page'] = 'Daftar Semester'
+        request.session['page'] = 'Daftar Tahun Pelajaran'
         if 'search' in request.GET and request.GET['search'] != '':
             list_tp = TahunPelajaran.objects.filter(
                 Q(mulai__icontains=request.GET['search']) |
@@ -62,8 +62,9 @@ class list_semester(View):
         context = {
             'list_tp': page_obj,
             'page_obj': page_obj,
-            'create_form': SemesterForm(),
+            'tp_form': SemesterForm(),
             'number_of_pages': number_of_pages,
+            'jumlah_kelas': Kelas.objects.filter(tahun_pelajaran=active_tp()).count()
         }
         return render(request, 'pages/semester/semester.html', context)
 
