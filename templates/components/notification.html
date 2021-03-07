@@ -1,0 +1,39 @@
+{% if messages %}
+    {% for message in messages %}
+        <script>
+            {% if message.tags == 'success' %}
+            Lobibox.notify('success', {
+                showClass: 'fadeInDown',
+                hideClass: 'bounceOut',
+                sound: false,
+                delay: 3500,
+                msg: '{{message}}',
+            });
+            {% elif message.tags == 'error' %}
+            Lobibox.notify('error', {
+                showClass: 'fadeInDown',
+                hideClass: 'bounceOut',
+                sound: false,
+                delay: 3500,
+                msg: '{{message}}',
+            });
+            {% elif message.tags == 'warning' %}
+            Lobibox.notify('warning', {
+                showClass: 'fadeInDown',
+                hideClass: 'bounceOut',
+                sound: false,
+                delay: 3500,
+                msg: '{{message}}',
+            });
+            {% else %}
+            Lobibox.notify('info', {
+                showClass: 'fadeInDown',
+                hideClass: 'bounceOut',
+                sound: false,
+                delay: 3500,
+                msg: '{{message}}',
+            });
+            {% endif %}
+        </script>
+    {% endfor %}
+{% endif %}

@@ -6,12 +6,7 @@
                     <nav id="dropdown">
                         <ul class="mobile-menu-nav">
                             <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                            <li><a data-toggle="collapse" data-target="#semester" href="#">Semester <span class="admin-project-icon edu-icon edu-down-arrow"></span></a>
-                                <ul id="semester" class="collapse dropdown-header-top">
-                                    <li><a href="{% url 'list-semester' %}">Daftar Semester</a></li>
-                                    <li><a href="{% url 'buat-semester' %}">Buat Semester</a></li>
-                                </ul>
-                            </li>
+                            <li><a href="{% url 'list-semester' %}">Dashboard</a></li>
                             <li><a data-toggle="collapse" data-target="#guru" href="#">Guru <span class="admin-project-icon edu-icon edu-down-arrow"></span></a>
                                 <ul id="guru" class="collapse dropdown-header-top">
                                     <li><a href="{% url 'list-guru' %}">Daftar Guru</a></li>

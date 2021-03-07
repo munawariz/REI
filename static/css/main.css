@@ -118,6 +118,9 @@ textarea {
     padding: 10px !important;
 }
 
+.cursor-pointer:hover{
+    cursor: pointer !important;
+}
 
 
 

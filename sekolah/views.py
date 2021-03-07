@@ -89,6 +89,7 @@ class aktifkan_semester(View):
         semester = Semester.objects.get(pk=semester)
         semester.is_active = True
         semester.save()
+        messages.success(request, 'Semester berhasil diaktifkan, data akan mengacu kepada semester ini')
         return redirect('list-semester')
 
 @method_decorator(staftu_required, name='dispatch')

@@ -12,6 +12,7 @@
         <meta name="description" content="">
         {% include 'include/fonts.html' %}
         {% include 'include/css.html' %}
+        
         <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
         <title>REI - Rapor Elektronik</title>
     </head>
@@ -49,6 +50,7 @@
             </div>
         </div>
         {% include 'include/js.html' %}
+        {% include 'components/notification.html' %}
         {% block extrascript %}{% endblock extrascript %}
     </body>
 </html>
