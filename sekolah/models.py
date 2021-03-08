@@ -22,8 +22,7 @@ class Sekolah(SingletonModel):
     provinsi = models.CharField(max_length=50)
     website = models.CharField(max_length=50)
     email = models.EmailField()
-    kepsek = models.CharField(max_length=255, null=True, verbose_name='Kepala Sekolah')
-    nip_kepsek = models.CharField(max_length=18, verbose_name='Nomor Induk', null=True)
+    kepsek = models.OneToOneField(Guru, verbose_name='Kepala Sekolah', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return "Informasi Sekolah"
@@ -33,7 +32,6 @@ class Sekolah(SingletonModel):
 
 @receiver(models.signals.pre_save, sender=Sekolah)
 def presave_sekolah(sender, instance, **kwargs):
-    print(instance.tingkat)
     if instance.tingkat == 'SMK': instance.tingkat_verbose = 'Sekolah Menengah Kejuruan'
     elif instance.tingkat == 'SMA': instance.tingkat_verbose = 'Sekolah Menengah Atas'
     elif instance.tingkat == 'SMP': instance.tingkat_verbose = 'Sekolah Menengah Pertama'
