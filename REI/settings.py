@@ -1,6 +1,7 @@
 from pathlib import Path
 import dj_database_url
 import django_heroku
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'o23cgzqp0=^d!7(!j#y$f=-$^or*=je4y)w-0y(__egg(lht)#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'https://rei-postgre.herokuapp.com/']
 
@@ -126,7 +127,7 @@ STATICFILES_DIRS = [
     BASE_DIR/'static/',
 ]
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR/'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # Authentication
 AUTH_USER_MODEL = 'guru.Guru'

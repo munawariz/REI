@@ -97,7 +97,7 @@ class list_guru(View):
         else:
             list_guru = Guru.objects.filter(is_active=True).order_by('is_superuser', 'is_staftu', 'is_walikelas', 'nama')
 
-        paginator = Paginator(list_guru, 10)
+        paginator = Paginator(list_guru, 1)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         number_of_pages = [(number+1) for number in range(page_obj.paginator.num_pages)]

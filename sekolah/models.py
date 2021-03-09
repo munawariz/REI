@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.db.utils import IntegrityError
@@ -22,7 +21,7 @@ class Sekolah(SingletonModel):
     provinsi = models.CharField(max_length=50)
     website = models.CharField(max_length=50)
     email = models.EmailField()
-    kepsek = models.OneToOneField(Guru, verbose_name='Kepala Sekolah', on_delete=models.SET_NULL, null=True)
+    kepsek = models.OneToOneField(Guru, verbose_name='Kepala Sekolah', on_delete=models.SET_NULL, null=True, related_name='is_kepsek')
 
     def __str__(self):
         return "Informasi Sekolah"

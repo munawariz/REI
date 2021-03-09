@@ -4,17 +4,17 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 @admin.register(Guru)
 class UserAdmin(BaseUserAdmin): 
-    list_display = ('nip', 'nama', 'nama_gelar', 'email', 'is_walikelas', 'is_staftu', 'gender', 'is_active')
+    list_display = ('nip', 'nama', 'nama_gelar', 'email', 'is_walikelas', 'is_staftu', 'is_superuser', 'gender', 'is_active')
     list_filter = ('is_walikelas', 'is_staftu', 'gender', 'is_active')
     fieldsets = (
-        ('Account Profile', {'fields': ('nip', 'nama', 'email', 'gender', 'password', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat', 'is_walikelas', 'is_staftu')}),
+        ('Account Profile', {'fields': ('nip', 'nama', 'email', 'gender', 'password', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat', 'avatar', 'is_walikelas', 'is_staftu', 'is_superuser')}),
         ('Account Status', {'fields': ('is_active',)})
     )
 
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('nip', 'nama', 'email', 'gender', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat', 'password1', 'password2', 'is_walikelas', 'is_staftu'),
+            'fields': ('nip', 'nama', 'email', 'gender', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat', 'avatar', 'password1', 'password2', 'is_walikelas', 'is_staftu', 'is_superuser'),
         }),
     )
     search_fields = ('nip', 'nama', 'email')

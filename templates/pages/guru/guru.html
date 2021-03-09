@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load rei_tags %}
+
+{% block content %}
+    {% include 'components/breadcrumb.html' with searchbar=True %}
+    <div class="container-fluid">
+        <div class="row">
+            {% for guru in list_guru %}
+            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mg-b-30">
+                <table id="container" class="hpanel hblue contact-panel contact-panel-cs height-50">
+                    <tr>
+                        <td valign="top" class="p-15 pb-0">
+                            <div class="panel-body custom-panel-jw">
+                                <div class="social-media-in">
+                                    <a href="#"><i class="fa fa-facebook"></i></a>
+                                    <a href="#"><i class="fa fa-twitter"></i></a>
+                                    <a href="mailto:{{guru.email}}"><i class="fa fa-envelope"></i></a>
+                                </div>
+                                <img alt="avatar_guru" class="img-circle m-b mw-mh-100" src="/media/avatar/guru/{% get_basename guru %}">
+                                <h3><a href="">{{guru.nama_gelar}}</a></h3>
+                                {% if guru.is_superuser or guru.is_walikelas and guru.is_staftu %}
+                                    <p class="all-pro-ad">Admin</p>
+                                {% elif guru.is_kepsek %}
+                                    <p class="all-pro-ad">Kepala Sekolah</p>
+                                {% elif guru.is_walikelas %}
+                                    <p class="all-pro-ad">Walikelas</p>
+                                {% elif guru.is_staftu %}
+                                    <p class="all-pro-ad">Staf TU</p>
+                                {% endif %}
+                                
+                                <p class="">
+                                    {% get_gelar guru as gelar %}
+                                    {% for gelar in gelar %}
+                                        {{gelar.verbose_tingkat}} {{gelar.verbose_jurusan}} Di {{gelar.universitas}}<br>
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="bottom" class="p-15 pt-0">
+                            <a href="{% url 'profil-guru-lain' guru.nip %}" class="button-footer pull-right">Detail Guru</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mg-b-20">
+        {% include 'components/pagination.html' %}
+        </div>
+    </div>
+{% endblock content %}

@@ -138,7 +138,7 @@ JURUSAN_GELAR_CHOICE = (
             ('K.G.', 'Kedokteran Gigi'),
             ('K.H.', 'Kedokteran Hewan'),
             ('Kep.', 'Keperawatan'),
-            ('K.M.', 'Kesehatan Masyrakat'),
+            ('K.M.', 'Kesehatan Masyarakat'),
             ('Psi.', 'Psikologi'),
         )
     ),

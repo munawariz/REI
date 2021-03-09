@@ -1,9 +1,11 @@
+from REI.settings import MEDIA_ROOT
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.db.models import signals
 from helpers.choice import GENDER_CHOICE, TINGKAT_GELAR_CHOICE, JURUSAN_GELAR_CHOICE
 from django.dispatch import receiver
+from helpers.externalAPI import avatarAPI
+import os
 
 class UserManager(BaseUserManager):
     def create_user(self, nip, nama, password=None):
@@ -48,6 +50,7 @@ class Guru(AbstractBaseUser):
     is_walikelas = models.BooleanField(default=True, verbose_name='Walikelas')
     is_staftu = models.BooleanField(default=True, verbose_name='Staf TU')
     is_active = models.BooleanField(default=True)
+    avatar = models.ImageField(upload_to='avatar/guru/', null=True, blank=True)
 
     USERNAME_FIELD = 'nip'
     REQUIRED_FIELDS = ['nama',]
@@ -58,7 +61,10 @@ class Guru(AbstractBaseUser):
         return self.nama or ''
 
     def save(self, *args, **kwargs):
-        self.nama_gelar = gelarize_nama_guru(self.nip)
+        try:
+            self.nama_gelar = gelarize_nama_guru(self.nip)
+        except Guru.DoesNotExist:
+            pass
         return super(Guru, self).save(*args, **kwargs)
 
     def has_perm(self, perm, obj=None):
@@ -66,6 +72,44 @@ class Guru(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
+
+@receiver(models.signals.pre_save, sender=Guru)
+def guru_pre_save(sender, instance, **kwargs):
+    try:
+        old_file = sender.objects.get(pk=instance.pk).avatar.path
+        new_file = instance.avatar
+        print('Deklarasi file')
+        print(old_file)
+        if (old_file and not new_file) or (old_file and new_file and not old_file == new_file):
+            if os.path.isfile(old_file):
+                print('pre_delete oldfile')
+                os.remove(old_file)
+                print('post_delete oldfile')
+        if old_file and not os.path.isfile(old_file):
+            print('pre_getapi')
+            instance.avatar = avatarAPI(instance)
+            print('post_getapi')
+            
+    except sender.DoesNotExist:
+        return False
+    except ValueError:
+        return False
+    except Exception as e:
+        print(e)
+        
+@receiver(models.signals.post_save, sender=Guru)
+def guru_post_save(sender, instance, created, **kwargs):
+    if not instance.avatar:
+        print('Post Save')
+        instance.avatar = avatarAPI(instance)
+        instance.save()
+
+@receiver(models.signals.post_delete, sender=Guru)
+def guru_post_delete(sender, instance, **kwargs):
+    if instance.avatar.path:
+        if os.path.isfile(instance.avatar.path):
+            os.remove(instance.avatar.path)
+
 
 class Gelar(models.Model):
     guru = models.ForeignKey(Guru, on_delete=models.CASCADE)
@@ -98,13 +142,20 @@ def gelar_pre_save(sender, instance, **kwargs):
 def gelar_post_save(sender, instance, **kwargs):
     Guru.objects.get(nip=instance.guru.nip).save()
 
+@receiver(models.signals.post_delete, sender=Gelar)
+def gelar_post_delete(sender, instance, **kwargs):
+    Guru.objects.get(nip=instance.guru.nip).save()
+
+
 def gelarize_nama_guru(nip):
     guru = Guru.objects.get(nip=nip)
     nama = guru.nama
-    gelar = Gelar.objects.filter(guru=guru).order_by('verbose_tingkat')
-    
+    gelar = Gelar.objects.filter(guru=guru).order_by('verbose_tingkat', 'jurusan')
+    order = ['Diploma 1', 'Diploma 2', 'Diploma 3', 'Diploma 4', 'Sarjana', 'Magister', 'Doktor']
+    gelar = sorted(gelar, key=lambda x: order.index(x.verbose_tingkat))
     for gelar in gelar:
-        if not 'Doktor' == gelar.verbose_tingkat:
+        vb_tingkat = gelar.verbose_tingkat
+        if not 'Doktor' == vb_tingkat:
             nama = nama+', '+gelar.gelar    
         elif 'Doktor' == gelar.verbose_tingkat and not str(nama).startswith('Dr. '):
             nama = 'Dr. '+nama
