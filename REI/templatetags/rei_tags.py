@@ -1,9 +1,11 @@
-from guru.models import Gelar, Guru
+from django.forms.widgets import ClearableFileInput
+from guru.models import Gelar
 from sekolah.models import Semester
 from helpers import active_semester, active_tp
 from django import template
 import os
 from django.core.exceptions import ObjectDoesNotExist
+from django.forms import CheckboxInput, FileInput
 register = template.Library()
 
 @register.simple_tag(takes_context=True)
@@ -47,4 +49,15 @@ def get_gelar(guru, **kwargs):
 
 @register.simple_tag(takes_context=False)
 def get_basename(subjek):
-    return os.path.basename(subjek.avatar.path)
+    try:
+        return os.path.basename(subjek.avatar.path)
+    except:
+        return os.path.basename(str(subjek))
+
+@register.filter(takes_context=False, name='is_checkbox')
+def is_checkbox(field):
+  return field.field.widget.__class__.__name__ == CheckboxInput().__class__.__name__
+
+@register.filter(takes_context=False, name='is_file')
+def is_file(field):
+  return field.field.widget.__class__.__name__ == ClearableFileInput().__class__.__name__

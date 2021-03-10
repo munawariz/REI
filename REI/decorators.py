@@ -103,3 +103,19 @@ def activesemester_required(function=None):
             return redirect('dashboard')
 
     return wrapper
+
+def staforself_required(function=None):
+    @wraps(function)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated: return login_redirect(request)
+        user = Guru.objects.filter(Q(pk=request.user.pk) & (Q(is_staftu=True) | Q(is_superuser=True)))
+        if user or request.user.nip == kwargs['guru']:
+            return function(request, *args, **kwargs)
+        else:
+            messages.error(request, 'Hanya Staf TU atau Admin atau Akun yang bersangkutan yang diperbolehkan mengakses halaman tadi')
+            if request.META.get('HTTP_REFERER'):
+                return redirect(request.META.get('HTTP_REFERER'))
+            else:
+                return redirect('dashboard')
+
+    return wrapper

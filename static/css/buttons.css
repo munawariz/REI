@@ -96,11 +96,11 @@
 	color:#fff;
 }
 .btn-danger-bg .btn-dropdown-menu li .btn-setting-icon .btn-icon-st a{
-	background: #d9534f;
+	background: #d9534f !important;
 	color:#fff;
 }
 .btn-danger-bg .btn-dropdown-menu li .btn-setting-icon .btn-icon-st a:hover{
-	background: #303030;
+	background: #303030 !important;
 	color:#fff;
 }
 .btn-dropdown-menu li .btn-setting-icon .btn-icon-st a:hover{
@@ -119,7 +119,7 @@
 	color:#fff;
 }
 .btn-danger-bg .btn-dropdown-menu li a:hover{
-	background: #d9534f;
+	background: #d9534f !important;
 	color:#fff;
 }
 .btn-dropdown-menu li a:hover{

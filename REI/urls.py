@@ -21,9 +21,11 @@ urlpatterns = [
         path('', guru_view.list_guru.as_view(), name='list-guru'),
         path('buat/', guru_view.buat_guru.as_view(), name='buat-guru'),
         path('hapus/<guru>/', guru_view.hapus_guru.as_view(), name='hapus-guru'),
-        path('profil/', guru_view.profil.as_view(), name='profil'),
-        path('profil/<guru>/', guru_view.profil_lain.as_view(), name='profil-guru-lain'),
+        path('profil/<guru>/', guru_view.profil_lain.as_view(), name='detail-guru'),
+        path('ubah/<guru>/', guru_view.ubah_profil_guru.as_view(), name='ubah-profil-guru'),
         path('password/ganti/', guru_view.ganti_password.as_view(), name='ganti-password'),
+        path('gelar/tambah/<guru>/', guru_view.tambah_gelar.as_view(), name='tambah-gelar'),
+        path('gelar/hapus/<guru>/<gelar>/', guru_view.hapus_gelar.as_view(), name='hapus-gelar')
     ])),
     path('siswa/', include([
         path('', siswa_view.list_siswa.as_view(), name='list-siswa'),

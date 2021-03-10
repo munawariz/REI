@@ -11,3 +11,6 @@ class EmailInput(forms.EmailInput):
 
 class PasswordInput(forms.PasswordInput):
     input_type = 'password'
+
+class CheckboxInput(forms.CheckboxInput):
+    input_type = 'checkbox'

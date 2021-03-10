@@ -78,17 +78,11 @@ def guru_pre_save(sender, instance, **kwargs):
     try:
         old_file = sender.objects.get(pk=instance.pk).avatar.path
         new_file = instance.avatar
-        print('Deklarasi file')
-        print(old_file)
         if (old_file and not new_file) or (old_file and new_file and not old_file == new_file):
             if os.path.isfile(old_file):
-                print('pre_delete oldfile')
                 os.remove(old_file)
-                print('post_delete oldfile')
-        if old_file and not os.path.isfile(old_file):
-            print('pre_getapi')
-            instance.avatar = avatarAPI(instance)
-            print('post_getapi')
+        # if old_file and not os.path.isfile(old_file):
+        #     instance.avatar = avatarAPI(instance)
             
     except sender.DoesNotExist:
         return False
@@ -100,15 +94,15 @@ def guru_pre_save(sender, instance, **kwargs):
 @receiver(models.signals.post_save, sender=Guru)
 def guru_post_save(sender, instance, created, **kwargs):
     if not instance.avatar:
-        print('Post Save')
         instance.avatar = avatarAPI(instance)
         instance.save()
 
 @receiver(models.signals.post_delete, sender=Guru)
 def guru_post_delete(sender, instance, **kwargs):
-    if instance.avatar.path:
-        if os.path.isfile(instance.avatar.path):
-            os.remove(instance.avatar.path)
+    image = instance.avatar.path
+    if image:
+        if os.path.isfile(image):
+            os.remove(image)
 
 
 class Gelar(models.Model):

@@ -1,21 +1,24 @@
 from django.db.utils import IntegrityError
-from REI.decorators import staftu_required, activesemester_required
+from REI.decorators import staforself_required, staftu_required, activesemester_required
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.query_utils import Q
 from django.http.response import Http404
 from django.shortcuts import redirect, render
 from django.views.generic import View, CreateView
 from helpers import active_semester, active_tp, get_initial, form_value, get_sekolah
-from .models import Guru
+from .models import Gelar, Guru
 from siswa.models import Siswa
 from sekolah.models import Ekskul, Jurusan, Kelas, MataPelajaran, Sekolah
-from .forms import GuruEditForm, PasswordChangeForm, GuruCreateForm, LoginForm
+from .forms import GelarForm, GuruEditForm, PasswordChangeForm, GuruCreateForm, LoginForm
 from django.contrib.auth import authenticate
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
+from django.utils.datastructures import MultiValueDictKeyError
+from REI.settings import MEDIA_ROOT
+from helpers.externalAPI import avatarAPI
 
 
 class CustomLoginView(LoginView):
@@ -47,25 +50,6 @@ class dashboard(View):
         return render(request, 'pages/dashboard.html', context)
 
 @method_decorator(login_required, name='dispatch')
-class profil(View):
-    def get(self, request):
-        request.session['page'] = 'Profil Anda'
-        guru = Guru.objects.get(pk=request.user.pk)
-        context = {
-            'profile_form': GuruEditForm(initial=get_initial(guru)),
-            'password_form': PasswordChangeForm(),
-            'guru': guru,
-        }
-        return render(request, 'pages/guru/detail-guru.html', context)
-
-    def post(self, request):
-        profile_form = GuruEditForm(request.POST)
-        if profile_form.is_valid():
-            Guru.objects.filter(pk=request.user.pk).update(**form_value(profile_form))
-            messages.success(request, 'Update profil berhasil!')
-            return redirect('profil')
-
-@method_decorator(login_required, name='dispatch')
 class ganti_password(View):
     def post(self, request):
         password_form = PasswordChangeForm(request.POST)
@@ -76,13 +60,13 @@ class ganti_password(View):
             if user is not None:
                 user.set_password(newpassword)
                 user.save()
-                messages.success(request, 'Password anda berhasil diganti')
+                messages.success(request, 'Password anda berhasil diganti. Silahkan login menggunakan password baru')
             else:
                 messages.error(request, 'Password lama anda salah, silahkan coba lagi')
         else:
             if ValidationError: messages.error(request, 'Konfirmasi password baru anda salah')
         
-        return redirect('profil')
+        return redirect('detail-guru', guru=user.nip)
 
 @method_decorator(staftu_required, name='dispatch')
 class list_guru(View):
@@ -97,7 +81,7 @@ class list_guru(View):
         else:
             list_guru = Guru.objects.filter(is_active=True).order_by('is_superuser', 'is_staftu', 'is_walikelas', 'nama')
 
-        paginator = Paginator(list_guru, 1)
+        paginator = Paginator(list_guru, 4)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         number_of_pages = [(number+1) for number in range(page_obj.paginator.num_pages)]
@@ -105,24 +89,23 @@ class list_guru(View):
             'list_guru': page_obj,
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
-            'guru_form': GuruCreateForm()
         }
         return render(request, 'pages/guru/guru.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
 class buat_guru(View):
+    def get(self, request):
+        request.session['page'] = 'Buat Guru'
+        context = {
+            'guru_form': GuruCreateForm()
+        }
+        return render(request, 'pages/guru/buat-guru.html', context)
+
     def post(self, request):
         guru_form = GuruCreateForm(request.POST)
         try:
             if guru_form.is_valid():
-                if request.GET['level'] == 'staftu': 
-                    is_staftu = True
-                    is_walikelas = False
-                if request.GET['level'] == 'walikelas': 
-                    is_walikelas = True
-                    is_staftu = False
-
-                guru = Guru.objects.create(**form_value(guru_form), is_staftu=is_staftu, is_walikelas=is_walikelas, is_active=True)
+                guru = Guru.objects.create(**form_value(guru_form), is_active=True)
                 guru.set_password(guru_form.cleaned_data['password'])
                 guru.save()
                 messages.success(request, 'Akun berhasil dibuat')
@@ -147,10 +130,11 @@ class profil_lain(View):
         except Kelas.DoesNotExist:
             kelas=None
         request.session['page'] = f'Profil {guru.nama}'
-        if guru == request.user: return redirect('profil')
         
         context = {
             'profile_form': GuruEditForm(initial=get_initial(guru)),
+            'password_form': PasswordChangeForm(),
+            'gelar_form': GelarForm(),
             'guru': guru,
             'kelas': kelas,
         }
@@ -167,3 +151,64 @@ class hapus_guru(View):
             guru.save()
             messages.success(request, f'Akun {guru.nama} berhasil dihapus')
         return redirect('list-guru')
+
+@method_decorator(staforself_required, name='dispatch')
+class ubah_profil_guru(View):
+    def post(self, request, guru):
+        profile_form = GuruEditForm(request.POST, request.FILES)
+        try:
+            if profile_form.is_valid():
+                Guru.objects.filter(nip=guru).update(**form_value(profile_form))
+                subjek = Guru.objects.get(nip=guru)
+                try:
+                    new_ava = request.FILES['avatar']
+                    ext = str(new_ava)[-3:]
+                    if '.' in str(new_ava)[-4:]: ext = str(new_ava)[-4:]
+                    ava_dir = f'{MEDIA_ROOT}/avatar/guru/{subjek.nip}.{ext}'
+                    with open(ava_dir, 'wb+') as destination:
+                        for chunk in new_ava.chunks():
+                            destination.write(chunk)
+                    destination.close()
+                    subjek.avatar = ava_dir
+                    subjek.save()
+                except MultiValueDictKeyError:
+                    try:
+                        clearbox = request.POST['avatar-clear']
+                        if clearbox == 'on':
+                            subjek.avatar = avatarAPI(subjek)
+                            subjek.save()
+                    except:
+                        pass
+                except Exception as e:
+                    messages.error(request, e)
+                    
+                messages.success(request, 'Update profil berhasil!')
+            else:
+                messages.error(request, 'Silahkan pilih salah satu antara melakukan clear avatar atau mengupload avatar baru')
+        except Exception as e:
+            messages.error(request, e)
+        finally:
+            return redirect('detail-guru', guru=guru)
+
+@method_decorator(staforself_required, name='dispatch')
+class tambah_gelar(View):
+    def post(self, request, guru):
+        gelar_form = GelarForm(request.POST)
+        try:
+            subjek = Guru.objects.get(nip=guru)
+        except Guru.DoesNotExist:
+            raise Http404
+        if gelar_form.is_valid():
+            Gelar.objects.create(**form_value(gelar_form), guru=subjek)
+            messages.success(request, 'Gelar berhasil ditambahkan')
+        return redirect('detail-guru', guru=guru)
+
+@method_decorator(staforself_required, name='dispatch')
+class hapus_gelar(View):
+    def get(self, request, guru, gelar):
+        try:
+            gelar = Gelar.objects.get(id=gelar)
+        except Gelar.DoesNotExist:
+            raise Http404
+        gelar.delete()
+        return redirect('detail-guru', guru=guru)

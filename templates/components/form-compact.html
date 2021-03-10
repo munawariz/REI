@@ -1,0 +1,49 @@
+{% load widget_tweaks %}
+{% load rei_tags %}
+
+<form method="POST" action="{{action}}" class="dropzone dropzone-custom needsclick add-professors" id="{{form_id}}" enctype="{{enctype|default:'application/x-www-form-urlencoded'}}">
+    {% csrf_token %}
+    {% if disabled %}<fieldset disabled>{% endif %}
+    <ul class="{{col|default:'two'}}-columns ul-form">
+        {% for field in form %}
+            {% if not field|is_checkbox %}
+            <li>
+                {% if not field|is_file %}
+                    <div class="form-group">
+                        {% render_field field|add_class:"form-control" placeholder=field.label%}
+                    </div>
+                {% else %}
+                    {% include 'components/image-field.html' %}
+                {% endif %}
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    <div class="bt-df-checkbox pull-left mg-l-1">
+    {% for field in form %}
+        {% if field|is_checkbox %}
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="i-checks pull-left">
+                        <label>
+                            {% render_field field|add_class:"form-control" type="checkbox" %}
+                            {{field.label}}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+    {% if disabled %}
+    </fieldset>
+    {% else %}
+    <div class="row mg-t-15">
+        <div class="col-lg-12">
+            <div class="payment-adress">
+                <button type="submit" class="btn btn-primary waves-effect waves-light">{{submit_text}}</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</form>

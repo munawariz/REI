@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load rei_tags %}
+
+{% block content %}
+    {% include 'components/breadcrumb.html' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="product-payment-inner-st">
+                    <ul id="myTabedu1" class="tab-review-design">
+                        <li class="active"><a href="#profil">Profil Guru</a></li>
+                        {% if guru.nip == request.user.nip %}
+                        <li><a href="#password">Edit Password</a></li>
+                        {% endif %}
+                        <li><a href="#gelar">Gelar Pendidikan</a></li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content custom-product-edit">
+                        <div class="product-tab-list tab-pane fade active in" id="profil">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    {% url 'ubah-profil-guru' guru.nip as edit_profil %}
+                                    {% include 'components/form-compact.html' with form=profile_form submit_text='Ganti' action=edit_profil enctype='multipart/form-data' %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-tab-list tab-pane fade" id="password">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    {% url 'ganti-password' as change_pass %}
+                                    {% include 'components/form-compact.html' with form=password_form submit_text='Ganti' col='one' action=change_pass %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-tab-list tab-pane fade" id="gelar">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    {% get_gelar guru as gelar %}
+                                    {% for gelar in gelar %}
+                                    <div class="row">
+                                        <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+                                            <fieldset disabled="disabled">
+                                                <input type="text" value="{{gelar.verbose_tingkat}} {{gelar.verbose_jurusan}} - {{gelar.universitas}}" class="form-control mg-b-10">
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                            {% url 'hapus-gelar' guru.nip gelar.id as hapus_gelar %}
+                                            <button onclick="confirmationAlert('Yakin ingin menghapus {{gelar.verbose_tingkat}} {{gelar.verbose_jurusan}} untuk {{guru.nama}}?', '{{hapus_gelar}}')" class="btn btn-danger widget-btn-4 btn-md pull-right mg-r-1">
+                                                <span class="fa fa-trash">
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    <button id='buatGelar' class='btn btn-primary waves-effect waves-light'>Tambah Gelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extrascript %}
+    <script>
+        $('#buatGelar').on('click', function () {
+            {% url 'tambah-gelar' guru.nip as tambah_gelar %}
+            formAlert(
+                'Tambah Gelar Untuk {{guru.nama}}',
+                `{% include "components/sweetalert-form.html" with form=gelar_form action=tambah_gelar %}`);
+            event.preventDefault();
+        })
+    </script>
+{% endblock extrascript %}

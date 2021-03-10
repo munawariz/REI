@@ -138,6 +138,14 @@ textarea {
     margin-bottom: 0 !important;
 }
 
+.mg-l-1{
+    margin-left:10px !important;
+}
+
+.mg-r-1{
+    margin-right:10px !important;
+}
+
 .cursor-pointer:hover{
     cursor: pointer !important;
 }
@@ -170,8 +178,40 @@ textarea {
 }
 
 
+ul.three-columns{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+	list-style: none;
+}
 
+ul.two-columns{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+	list-style: none;
+}
 
+ul.one-columns{
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+	list-style: none;
+}
+
+@media only screen and (max-width: 768px){
+    ul.three-columns{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    ul.two-columns{
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+.ul-form li{
+    margin-left: 0.5rem !important;
+    margin-right: 0.5rem !important;
+}
 
 
 

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% include 'components/breadcrumb.html' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="product-payment-inner-st">
+                    <ul id="myTabedu1" class="tab-review-design">
+                        <li class="active"><a>Buat Guru</a></li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content custom-product-edit">
+                        <div class="product-tab-list tab-pane fade active in">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="review-content-section">
+                                        <div id="dropzone1" class="pro-ad">
+                                            {% url 'buat-guru' as buat_guru %}
+                                            {% include 'components/form-compact.html' with form=guru_form action=buat_guru submit_text='Buat' col='two' %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

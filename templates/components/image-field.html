@@ -1,0 +1,8 @@
+{% load widget_tweaks %}
+{% load rei_tags %}
+<div class="form-group">
+    <img alt="logo" id="thumbnail" class="img-circle m-b mw-mh-100" src="/media/avatar/guru/{% get_basename field.initial %}">
+    <input type="checkbox" name="avatar-clear" id="avatar-clear_id">
+    <label for="avatar-clear_id">Clear</label>
+    <input type="file" class="form-control mg-t-10 change" accept="image/*" name="{{field.name}}" id="id_{{field.name}}" onchange="document.getElementById('thumbnail').src = window.URL.createObjectURL(this.files[0])">
+</div>

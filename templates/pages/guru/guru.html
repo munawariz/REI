@@ -18,7 +18,7 @@
                                     <a href="mailto:{{guru.email}}"><i class="fa fa-envelope"></i></a>
                                 </div>
                                 <img alt="avatar_guru" class="img-circle m-b mw-mh-100" src="/media/avatar/guru/{% get_basename guru %}">
-                                <h3><a href="">{{guru.nama_gelar}}</a></h3>
+                                <h3><a href="{% url 'detail-guru' guru.nip %}">{{guru.nama_gelar}}</a></h3>
                                 {% if guru.is_superuser or guru.is_walikelas and guru.is_staftu %}
                                     <p class="all-pro-ad">Admin</p>
                                 {% elif guru.is_kepsek %}
@@ -32,7 +32,9 @@
                                 <p class="">
                                     {% get_gelar guru as gelar %}
                                     {% for gelar in gelar %}
-                                        {{gelar.verbose_tingkat}} {{gelar.verbose_jurusan}} Di {{gelar.universitas}}<br>
+                                        {{gelar.verbose_tingkat}} {{gelar.verbose_jurusan}} Di {{gelar.universitas}}.<br>
+                                    {% empty %}
+                                        Belum Memiliki Gelar Pendidikan Apapun :( ...
                                     {% endfor %}
                                 </p>
                             </div>
@@ -40,7 +42,12 @@
                     </tr>
                     <tr>
                         <td valign="bottom" class="p-15 pt-0">
-                            <a href="{% url 'profil-guru-lain' guru.nip %}" class="button-footer pull-right">Detail Guru</a>
+                            <button onclick="location.href='{% url 'detail-guru' guru.nip %}'" class="btn btn-success widget-btn-1 btn-md pull-right">Detail Guru</button>
+                            {% url 'hapus-guru' guru.nip as hapus_guru %}
+                            <button onclick="confirmationAlert('Yakin ingin menghapus {{guru.nama}}?', '{{hapus_guru}}')" class="btn btn-danger widget-btn-4 btn-md pull-right mg-r-1">
+                                <span class="fa fa-trash">
+                                </span>
+                            </button>
                         </td>
                     </tr>
                 </table>
