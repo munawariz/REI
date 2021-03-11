@@ -27,6 +27,7 @@ INSTALLED_APPS = [
 
     'widget_tweaks',
     'solo',
+    'django_select2',
 
     'django.contrib.admin',
     'django.contrib.auth',

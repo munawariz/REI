@@ -1,5 +1,10 @@
 from sekolah.models import Ekskul, KKM, TahunPelajaran
-from siswa.models import MataPelajaran, Nilai, NilaiEkskul
+from siswa.models import MataPelajaran, Nilai, NilaiEkskul, Siswa
+from . import active_tp
+
+def get_active_kelas(nis):
+    siswa = Siswa.objects.get(nis=nis)
+    return siswa.kelas.get(tahun_pelajaran=active_tp())
 
 def pengetahuan(matapelajaran, siswa, semester):
     nil = Nilai.objects.filter(matapelajaran=matapelajaran, siswa=siswa, semester=semester)
@@ -88,20 +93,21 @@ def has_mapel(kelas):
     else:
         return False
 
-def get_pengetahuan(siswa, semester):
-    matapelajaran = MataPelajaran.objects.filter(kelas=siswa.kelas).order_by('kelompok', 'nama')
+def get_pengetahuan(siswa, semester, kelas):
+    matapelajaran = MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama')
     return [pengetahuan(mapel, siswa, semester) for mapel in matapelajaran]
 
-def get_keterampilan(siswa, semester):
-    matapelajaran = MataPelajaran.objects.filter(kelas=siswa.kelas).order_by('kelompok', 'nama')
+def get_keterampilan(siswa, semester, kelas):
+    matapelajaran = MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama')
     return [keterampilan(mapel, siswa, semester) for mapel in matapelajaran]
 
 def list_siswa_status(list_siswa, semester):
     finished = []
     unfinished = []
     status = {}
+    kelas = get_active_kelas(list_siswa.values_list('nis', flat=True)[0])
     for siswa in list_siswa:
-        if 0 in get_pengetahuan(siswa, semester) or 0 in get_keterampilan(siswa, semester):
+        if 0 in get_pengetahuan(siswa, semester, kelas) or 0 in get_keterampilan(siswa, semester, kelas):
             unfinished.append(siswa.nis)
             status[siswa] = False
         else:

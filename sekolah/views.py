@@ -10,11 +10,11 @@ from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Rapor, Sekolah, Semester, TahunPelajaran
-from .forms import DisabledKelasForm, EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm
+from .forms import DisabledKelasForm, EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm, TambahAnggotaKelas, TambahMatapelajaranKelas
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required, validdirs_required, activesemester_required
-from helpers import active_semester, active_tp, generate_rapor_context, get_initial, form_value, get_sekolah, get_validkelas, get_validwalikelas, get_validsiswabaru, get_validpelajaran, semiactive_semester, walikelas_choice
+from helpers import active_semester, active_tp, generate_rapor_context, get_initial, form_value, get_sekolah, get_validkelas, get_validwalikelas, get_validsiswabaru, get_validpelajaran, semiactive_semester, tambahanggota_choice, tambahmapel_choice, walikelas_choice
 from helpers.nilai_helpers import list_siswa_status, zip_eksnilai, zip_pelkkm, zip_nilrapor
 from django.contrib import messages
 from REI import settings
@@ -126,13 +126,18 @@ class list_kelas(View):
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
             'list_kelas': list_kelas,
-            'kelas_form': KelasForm(tingkat_list=tingkat_choice(get_sekolah()), walikelas_list=walikelas_choice(get_validwalikelas())),
         }
         return render(request, 'pages/kelas/kelas.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class buat_kelas(View):
+    def get(self, request):
+        request.session['page'] = 'Buat Kelas'
+        context = {
+            'kelas_form': KelasForm(tingkat_list=tingkat_choice(get_sekolah()), walikelas_list=walikelas_choice(get_validwalikelas())),
+        }
+        return render(request, 'pages/kelas/buat-kelas.html', context)
     def post(self, request):
         kelas_form = KelasForm(tingkat_choice(get_sekolah()), walikelas_choice(get_validwalikelas()), request.POST)
         try:
@@ -166,142 +171,96 @@ class hapus_kelas(View):
 class detail_kelas(View):
     def get(self, request, kelas):
         request.session['page'] = f'Detail {kelas}'
+        tp = active_tp()
         try:
-            kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
+            kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=tp)
         except ObjectDoesNotExist:
             raise Http404
-
-        if kelas.walikelas == request.user or request.user.is_superuser: auth_walikelas = True
-        else: auth_walikelas = False
-
-        initial = get_initial(kelas)
-        if initial['walikelas']: initial['walikelas'] = Guru.objects.get(pk=initial['walikelas'])
-        list_siswa = Siswa.objects.filter(kelas=kelas).order_by('nama')
-        finished, unfinished, status = list_siswa_status(list_siswa=list_siswa, semester=active_semester())
-        list_mapel = MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama')
-
-        siswa_cols = ['Nama', 'Status Nilai']
-        siswa_data = zip([key for key, value in status.items()], [value for key, value in status.items()])
-
-        mapel_cols = ['Mata Pelajaran', 'Kelompok']
-        mapel_data = zip([mapel.nama for mapel in list_mapel], [mapel.kelompok for mapel in list_mapel])
-        context = {
-            'kelas': kelas,
-            'auth_walikelas': auth_walikelas,
-            'form_kelas': DisabledKelasForm(initial=initial),
-            'list_siswa': list_siswa,
-            'jumlah_siswa': list_siswa.count(),
-            'status_siswa': f'{len(finished)} Siswa tuntas / {len(unfinished)} Siswa belum tuntas',
-            'list_matapelajaran': list_mapel,
-            'table_cols': siswa_cols,
-            'table_data': siswa_data,
-            'link': 'anggota/',
-        }
-        if self.request.is_ajax():
-            if self.request.GET['type'] == 'siswa':
-                context['table_cols'] = siswa_cols
-                context['table_data'] = siswa_data
-                context['link'] = 'anggota/'
-            elif self.request.GET['type'] == 'mapel':
-                context['table_cols'] = mapel_cols
-                context['table_data'] = mapel_data
-                context['link'] = 'pelajaran/'
-            html = render_to_string(
-                template_name="pages/kelas/realtime-table.html", 
-                context = context
-            )
-            data_dict = {"html_from_view": html}
-            return JsonResponse(data=data_dict, safe=False)
-        else:    
-            return render(request, 'pages/kelas/detail-kelas.html', context)
-
-@method_decorator(staftu_required, name='dispatch')
-@method_decorator(activesemester_required, name='dispatch')
-class walikelas_kelas(View):
-    def get(self, request, kelas):
-        request.session['page'] = f'Walikelas {kelas}'
-        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
+        
         try:
             active_walikelas = Guru.objects.get(kelas=kelas)
         except ObjectDoesNotExist:
             active_walikelas = None
-        valid_walikelas = get_validwalikelas()
+        
+        if active_walikelas == request.user or request.user.is_superuser: auth_walikelas = True
+        else: auth_walikelas = False
+
+        initial = get_initial(kelas)
+        if initial['walikelas']: initial['walikelas'] = Guru.objects.get(pk=initial['walikelas'])
+        if initial['jurusan']: initial['jurusan'] = Jurusan.objects.get(id=initial['jurusan']).nama
+
+        list_siswa = Siswa.objects.filter(kelas=kelas).order_by('nama')
+        if list_siswa:
+            finished, unfinished, status = list_siswa_status(list_siswa=list_siswa, semester=active_semester())
+        else:
+            finished = []
+            unfinished = []
+        
+        list_mapel = MataPelajaran.objects.filter(kelas=kelas, kelas__tahun_pelajaran=tp).order_by('kelompok', 'nama')
+        if list_mapel: list_mapel = zip_pelkkm(list_mapel, tp)
         context = {
             'kelas': kelas,
+            'auth_walikelas': auth_walikelas,
+            'kelas_form': DisabledKelasForm(initial=initial),
+            'list_siswa': list_siswa,
+            'jumlah_siswa': list_siswa.count(),
+            'status_siswa': f'{len(finished)} Siswa tuntas / {len(unfinished)} Siswa belum tuntas',
+            'list_matapelajaran': list_mapel,
             'active_walikelas': active_walikelas,
-            'valid_walikelas': valid_walikelas,
+            'valid_walikelas': get_validwalikelas(),
+            'tambahmapel_form': TambahMatapelajaranKelas(mapel_list=tambahmapel_choice(get_validpelajaran(kelas.nama))),
+            'tambahanggota_form': TambahAnggotaKelas(anggota_list=tambahanggota_choice(get_validsiswabaru())),
         }
-        return render(request, 'pages/kelas/ubah-walikelas.html', context)
+        return render(request, 'pages/kelas/detail-kelas.html', context)
 
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class ganti_walikelas(View):
     def post(self, request, kelas):
-        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
+        kelas = Kelas.objects.get(id=kelas)
         if request.POST['new_walikelas']:
-            new_walikelas = Guru.objects.get(nip=request.POST['new_walikelas'])
-            kelas.walikelas = new_walikelas
+            if request.POST['new_walikelas'] == 'empty':
+                kelas.walikelas = None
+            else:
+                new_walikelas = Guru.objects.get(nip=request.POST['new_walikelas'])
+                kelas.walikelas = new_walikelas
             kelas.save()
             messages.success(request, f'Walikelas untuk {kelas.nama} berhasil diubah')
-        return redirect('walikelas-kelas', kelas=kelas.nama)
-
-@method_decorator(staftu_required, name='dispatch')
-@method_decorator(activesemester_required, name='dispatch')
-class anggota_kelas(View):
-    def get(self, request, kelas):
-        request.session['page'] = f'Anggota Kelas {kelas}'
-        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
-        context = {
-            'kelas': kelas,
-            'list_siswa': Siswa.objects.filter(kelas=kelas).order_by('nama'),
-            'siswa_baru': get_validsiswabaru()
-        }
-        return render(request, 'pages/kelas/anggota-kelas.html', context)
+        return redirect('detail-kelas', kelas=kelas.nama)
 
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class tambah_anggota(View):
-    def get(self, request, kelas, siswa):
-        siswa = Siswa.objects.get(nis=siswa)
-        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
-        siswa.kelas = kelas
-        siswa.save()
-        messages.success(request, f'{siswa.nama} berhasil menjadi anggota kelas {kelas.nama}')
-        return redirect('anggota-kelas', kelas=kelas.nama)
+    def post(self, request, kelas):
+        data = request.POST.getlist('siswa')
+        kelas = Kelas.objects.get(id=kelas)
+        for nis in data:
+            siswa = Siswa.objects.get(nis=nis)
+            siswa.kelas.add(kelas)
+        messages.success(request, f'Anggota kelas berhasil ditambahkan ke kelas {kelas.nama}')
+        return redirect('detail-kelas', kelas=kelas.nama)
 
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class hapus_anggota(View):
     def get(self, request, kelas, siswa):
         siswa = Siswa.objects.get(nis=siswa)
-        siswa.kelas = None
+        kelas = Kelas.objects.get(id=kelas)
+        siswa.kelas.remove(kelas)
         siswa.save()
-        messages.success(request, f'{siswa.nama} berhasil dihapus dari anggota kelas {kelas}')
-        return redirect('anggota-kelas', kelas=kelas)
-
-@method_decorator(staftu_required, name='dispatch')
-@method_decorator(activesemester_required, name='dispatch')
-class pelajaran_kelas(View):
-    def get(self, request, kelas):
-        request.session['page'] = f'Matapelajaran {kelas}'
-        tp = active_tp()
-        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=tp)
-        context = {
-            'kelas': kelas,
-            'list_matapelajaran': zip_pelkkm(MataPelajaran.objects.filter(kelas=kelas), tp),
-            'matapelajaran_baru': zip_pelkkm(get_validpelajaran(kelas.nama), tp),
-        }
-        return render(request, 'pages/kelas/pelajaran-kelas.html', context)
+        messages.success(request, f'{siswa.nama} berhasil dihapus dari anggota kelas {kelas.nama}')
+        return redirect('detail-kelas', kelas=kelas.nama)
 
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class tambah_pelajaran(View):
-    def get(self, request, kelas, pelajaran):
-        matapelajaran = MataPelajaran.objects.get(pk=pelajaran)
+    def post(self, request, kelas):
+        data = request.POST.getlist('matapelajaran')
         kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
-        kelas.matapelajaran.add(matapelajaran)
-        messages.success(request, f'{matapelajaran.nama} berhasil ditambahkan ke kelas {kelas.nama}')
-        return redirect('pelajaran-kelas', kelas=kelas.nama)
+        for _id in data:
+            kelas.matapelajaran.add(_id)
+        messages.success(request, f'Mata pelajaran berhasil ditambahkan ke kelas {kelas.nama}')
+        return redirect('detail-kelas', kelas=kelas.nama)
 
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
@@ -311,7 +270,7 @@ class hapus_pelajaran(View):
         kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
         kelas.matapelajaran.remove(matapelajaran)
         messages.success(request, f'{matapelajaran.nama} berhasil dihapus dari kelas {kelas.nama}')
-        return redirect('pelajaran-kelas', kelas=kelas.nama)
+        return redirect('detail-kelas', kelas=kelas.nama)
 
 @method_decorator(staftu_required, name='dispatch')
 class list_jurusan(View):

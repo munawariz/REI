@@ -162,8 +162,8 @@ class ubah_profil_guru(View):
                 subjek = Guru.objects.get(nip=guru)
                 try:
                     new_ava = request.FILES['avatar']
-                    ext = str(new_ava)[-3:]
-                    if '.' in str(new_ava)[-4:]: ext = str(new_ava)[-4:]
+                    if '.' in str(new_ava)[-4:]: ext = str(new_ava)[-3:]
+                    else: ext = str(new_ava)[-4:]
                     ava_dir = f'{MEDIA_ROOT}/avatar/guru/{subjek.nip}.{ext}'
                     with open(ava_dir, 'wb+') as destination:
                         for chunk in new_ava.chunks():
@@ -211,4 +211,5 @@ class hapus_gelar(View):
         except Gelar.DoesNotExist:
             raise Http404
         gelar.delete()
+        messages.success(request, 'Gelar berhasil dihapus')
         return redirect('detail-guru', guru=guru)

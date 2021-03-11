@@ -88,6 +88,20 @@ def walikelas_choice(validwalikelas):
 
     return [(nip, walikelas) for nip, walikelas in vw.items()]
 
+def tambahmapel_choice(list_mapel):
+    vw = {}
+    for mapel in list_mapel:
+        vw[mapel.id] = mapel.nama
+
+    return [(_id, nama) for _id, nama in vw.items()]
+
+def tambahanggota_choice(list_siswa):
+    vw = {}
+    for siswa in list_siswa:
+        vw[siswa.nis] = siswa.nama
+
+    return [(nis, nama) for nis, nama in vw.items()]
+
 def get_validsiswabaru():
     from siswa.models import Siswa
     from sekolah.models import Kelas

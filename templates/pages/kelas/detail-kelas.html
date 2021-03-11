@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+    {% include 'components/breadcrumb.html' %}
+    <div class="container-fluid mg-b-30">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="product-payment-inner-st">
+                    <ul id="myTabedu1" class="tab-review-design">
+                        <li class="active"><a href="#detail">Detail Kelas</a></li>
+                        <li><a href="#walikelas">Walikelas</a></li>
+                        <li><a href="#mapel">Mata Pelajaran</a></li>
+                        <li><a href="#list_siswa">Siswa</a></li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content custom-product-edit">
+                        <div class="product-tab-list tab-pane fade active in" id="detail">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mg-t-15">
+                                    {% include 'components/form-compact.html' with form=kelas_form label=True col='one' disabled=True %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="product-tab-list tab-pane fade" id="walikelas">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mg-t-15">
+                                     <form method="post" action="{% url 'ganti-walikelas' kelas.id %}" id="ganti-walikelas-form">
+                                        {% csrf_token %}
+                                        <ul class="one-columns ul-form">
+                                            <label class="login2">Walikelas Saat Ini</label>
+                                            <li>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder=" " value="{{kelas.walikelas.nama|default:'Belum Memiliki Walikelas'}}" disabled>
+                                                </div>
+                                            </li>
+                                            <label class="login2">Pilih Walikelas Baru</label>
+                                            <li>
+                                                <div class="form-group">
+                                                    <select name="new_walikelas" class="form-control" placeholder=" ">
+                                                        <option value="empty" selected>Kosongkan Walikelas Untuk Kelas Ini</option>
+                                                        {% for walikelas in valid_walikelas %}
+                                                            <option value="{{walikelas.nip}}">{{walikelas.nama}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <div class="row mg-t-15">
+                                            <div class="col-lg-12">
+                                                <div class="payment-adress">
+                                                    <button type="submit" class="btn btn-primary waves-effect waves-light">Ganti</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="product-tab-list tab-pane fade" id="list_siswa">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mg-t-15">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover bg-transparent">
+                                            {% if list_siswa %}
+                                            <thead class="text-secondary">
+                                                <tr class='column-name'>
+                                                    <td>NIS</td>
+                                                    <td>NISN</td>
+                                                    <td>Nama</td>
+                                                    <td>Email</td>
+                                                    <td>Tempat/Tanggal Lahir</td>
+                                                    <td>Jenis Kelamin</td>
+                                                    <td>Agama</td>
+                                                    <td>Hapus</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="text-primary">
+                                                {% for siswa in list_siswa %}
+                                                    <tr onclick="location.href={% url 'detail-siswa' siswa.nis %}" class="cursor-pointer">
+                                                        <td>{{siswa.nis}}</td>
+                                                        <td>{{siswa.nisn}}</td>
+                                                        <td>{{siswa.nama}}</td>
+                                                        <td>{{siswa.email}}</td>
+                                                        <td>{{siswa.tempat_lahir}}/{{siswa.tanggal_lahir|date:'d-m-Y'}}</td>
+                                                        {% if siswa.gender == 'P' %}
+                                                            <td>Pria</td>
+                                                        {% else %}
+                                                            <td>Wanita</td>
+                                                        {% endif %}                                            
+                                                        <td>{{siswa.agama}}</td>
+                                                        {% url 'hapus-anggota' kelas.id siswa.nis as hapus_siswa %}
+                                                        <td>
+                                                            <button onclick="confirmationAlert('Yakin ingin menghapus {{siswa.nama}} dari anggota kelas {{kelas.nama}}?', '{{hapus_siswa}}')" class="btn btn-danger widget-btn-4 btn-md">
+                                                                <span class="fa fa-trash"></span>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            {% else %}
+                                            <label class="login2">Kelas ini belum memiliki anggota, silahkan tambahkan melalui pilihan dibawah.</label>
+                                            {% endif %}                     
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mg-t-15">
+                                <form action="{% url 'tambah-anggota' kelas.id %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+                                        <label class="login2">Tambah Siswa</label>
+                                        <div class="chosen-select-single border-radius-none">
+                                            {% render_field tambahanggota_form.siswa|add_class:"form-control chosen-select" %}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                        <div class="payment-adress">
+                                            <button type="submit" class="btn btn-primary waves-effect waves-light mg-t-25">Tambah</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="product-tab-list tab-pane fade" id="mapel">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mg-t-15">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover bg-transparent">
+                                            {% if list_matapelajaran %}
+                                                <thead class="text-secondary">
+                                                    <tr class='column-name'>
+                                                        <td>Mata Pelajaran</td>
+                                                        <td>KKM Pengetahuan</td>
+                                                        <td>KKM Keterampilan</td>
+                                                        <td>Kelompok</td>
+                                                        <td>Hapus</td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="text-primary">
+                                                    {% for pelajaran, kkm in list_matapelajaran %}
+                                                        <tr class="cursor-pointer">
+                                                            <td>{{pelajaran.nama}}</td>
+                                                            <td>{{kkm.pengetahuan}}</td>
+                                                            <td>{{kkm.keterampilan}}</td>
+                                                            <td>{{pelajaran.kelompok}}</td>
+                                                            {% url 'hapus-pelajaran' kelas.id pelajaran.id as hapus_mapel %}
+                                                            <td>
+                                                                <button onclick="confirmationAlert('Yakin ingin menghapus {{pelajaran.nama}} dari daftar pelajaran untuk kelas {{kelas.nama}}?', '{{hapus_mapel}}')" class="btn btn-danger widget-btn-4 btn-md">
+                                                                    <span class="fa fa-trash"></span>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            {% else %}
+                                                <label class="login2">Kelas ini belum memiliki daftar pelajaran, silahkan tambahkan melalui pilihan dibawah.</label>
+                                            {% endif %}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mg-t-15">
+                                <form action="{% url 'tambah-pelajaran' kelas.id %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+                                        <label class="login2">Tambah Mata Pelajaran</label>
+                                        <div class="chosen-select-single border-radius-none">
+                                            {% render_field tambahmapel_form.matapelajaran|add_class:"form-control chosen-select" %}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                        <div class="payment-adress">
+                                            <button type="submit" class="btn btn-primary waves-effect waves-light mg-t-25">Tambah</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -6,6 +6,9 @@
     {% if disabled %}<fieldset disabled>{% endif %}
     <ul class="{{col|default:'two'}}-columns ul-form">
         {% for field in form %}
+            {% if label %}
+                <label class="login2">{{field.label}}</label>
+            {% endif %}
             {% if not field|is_checkbox %}
             <li>
                 {% if not field|is_file %}

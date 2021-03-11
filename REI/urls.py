@@ -72,13 +72,10 @@ urlpatterns = [
         path('', sekolah_view.list_kelas.as_view(), name='list-kelas'),
         path('buat/', sekolah_view.buat_kelas.as_view(), name='buat-kelas'),
         path('<kelas>/', sekolah_view.detail_kelas.as_view(), name='detail-kelas'),
-        path('<kelas>/walikelas/', sekolah_view.walikelas_kelas.as_view(), name='walikelas-kelas'),
         path('<kelas>/walikelas/ganti/', sekolah_view.ganti_walikelas.as_view(), name='ganti-walikelas'),
-        path('<kelas>/anggota/', sekolah_view.anggota_kelas.as_view(), name='anggota-kelas'),
-        path('<kelas>/anggota/tambah/<siswa>/', sekolah_view.tambah_anggota.as_view(), name='tambah-anggota'),
+        path('<kelas>/anggota/tambah/', sekolah_view.tambah_anggota.as_view(), name='tambah-anggota'),
         path('<kelas>/anggota/hapus/<siswa>/', sekolah_view.hapus_anggota.as_view(), name='hapus-anggota'),
-        path('<kelas>/pelajaran/', sekolah_view.pelajaran_kelas.as_view(), name='pelajaran-kelas'),
-        path('<kelas>/pelajaran/tambah/<pelajaran>/', sekolah_view.tambah_pelajaran.as_view(), name='tambah-pelajaran'),
+        path('<kelas>/pelajaran/tambah/', sekolah_view.tambah_pelajaran.as_view(), name='tambah-pelajaran'),
         path('<kelas>/pelajaran/hapus/<pelajaran>/', sekolah_view.hapus_pelajaran.as_view(), name='hapus-pelajaran'),
         path('<kelas>/hapus/', sekolah_view.hapus_kelas.as_view(), name='hapus-kelas'),
     ])),
@@ -87,6 +84,7 @@ urlpatterns = [
         path('<nis>/<action>/', sekolah_view.rapor_view.as_view(), name='rapor'),
     ])),
     path('debug/', include(debug_toolbar.urls)),
+    path('select2/', include('django_select2.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = 'REI.views.error_404'

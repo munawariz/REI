@@ -44,14 +44,18 @@
                                         </div>
                                         <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
                                             {% url 'hapus-gelar' guru.nip gelar.id as hapus_gelar %}
-                                            <button onclick="confirmationAlert('Yakin ingin menghapus {{gelar.verbose_tingkat}} {{gelar.verbose_jurusan}} untuk {{guru.nama}}?', '{{hapus_gelar}}')" class="btn btn-danger widget-btn-4 btn-md pull-right mg-r-1">
+                                            <button onclick="confirmationAlert('Yakin ingin menghapus {{gelar.verbose_tingkat}} {{gelar.verbose_jurusan}} untuk {{guru.nama}}?', '{{hapus_gelar}}')" class="btn btn-danger widget-btn-4 btn-md pull-right">
                                                 <span class="fa fa-trash">
                                                 </span>
                                             </button>
                                         </div>
                                     </div>
+                                    {% empty %}
+                                    <label class="login2 mg-t-30">{{guru.nama}} belum memiliki gelar pendidikan.</label>
                                     {% endfor %}
-                                    <button id='buatGelar' class='btn btn-primary waves-effect waves-light'>Tambah Gelar</button>
+                                    <div>
+                                    <button id='buatGelar' class='btn btn-primary waves-effect waves-light mg-t-30'>Tambah Gelar</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

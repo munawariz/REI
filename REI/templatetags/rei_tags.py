@@ -1,6 +1,7 @@
+from siswa.models import Siswa
 from django.forms.widgets import ClearableFileInput
 from guru.models import Gelar
-from sekolah.models import Semester
+from sekolah.models import MataPelajaran, Semester
 from helpers import active_semester, active_tp
 from django import template
 import os
@@ -61,3 +62,18 @@ def is_checkbox(field):
 @register.filter(takes_context=False, name='is_file')
 def is_file(field):
   return field.field.widget.__class__.__name__ == ClearableFileInput().__class__.__name__
+
+@register.simple_tag(takes_context=False)
+def count_member(kelas, gender=None):
+    if gender:
+        if gender == 'male':
+            siswa = Siswa.objects.filter(kelas=kelas, kelas__tahun_pelajaran=active_tp(), gender='P')
+        elif gender == 'female':
+            siswa = Siswa.objects.filter(kelas=kelas, kelas__tahun_pelajaran=active_tp(), gender='W')
+    else:
+        siswa = Siswa.objects.filter(kelas=kelas, kelas__tahun_pelajaran=active_tp())
+    return siswa.count()
+
+@register.simple_tag(takes_context=False)
+def count_mapel(kelas):
+    return MataPelajaran.objects.filter(kelas=kelas, kelas__tahun_pelajaran=active_tp()).count()

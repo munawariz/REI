@@ -34,7 +34,7 @@
                                     {% for gelar in gelar %}
                                         {{gelar.verbose_tingkat}} {{gelar.verbose_jurusan}} Di {{gelar.universitas}}.<br>
                                     {% empty %}
-                                        Belum Memiliki Gelar Pendidikan Apapun :( ...
+                                        {{guru.nama}} belum memiliki gelar pendidikan.
                                     {% endfor %}
                                 </p>
                             </div>

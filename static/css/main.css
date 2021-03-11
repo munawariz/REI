@@ -164,6 +164,15 @@ textarea {
     max-height: 100px;
 }
 
+.mg-t-20{
+    margin-top: 20px;
+}
+
+.mg-t-25{
+    margin-top: 25px;
+}
+
+
 .button-footer{
     padding: 10px 15px;
     color: white;
@@ -211,6 +220,11 @@ ul.one-columns{
 .ul-form li{
     margin-left: 0.5rem !important;
     margin-right: 0.5rem !important;
+}
+
+.chosen-container-multi .chosen-choices,
+.border-radius-none{
+    border-radius: 0 !important;
 }
 
 

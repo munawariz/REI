@@ -1,0 +1,13 @@
+<label class="login2">Spreadsheet Siswa</label>
+<div class="file-upload-inner ts-forms">
+    <div class="input prepend-big-btn">
+        <label class="icon-right" for="prepend-big-btn">
+            <i class="fa fa-upload"></i>
+        </label>
+        <div class="file-button">
+            Unggah
+            <input type="file" onchange="document.getElementById('prepend-big-btn').value = this.value.split('\\')[this.value.split('\\').length - 1];">
+        </div>
+        <input type="text" id="prepend-big-btn" placeholder="Belum ada berkas yang dipilih">
+    </div>
+</div>

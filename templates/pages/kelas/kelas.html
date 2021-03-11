@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load rei_tags %}
+
+{% block content %}
+    {% include 'components/breadcrumb.html' with searchbar=True %}
+    <div class="container-fluid mg-b-20">
+        <div class="container-fluid">
+            <div class="row">
+                {% for kelas in list_kelas %}
+                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 mg-b-30">
+                    <div class="courses-inner res-mg-b-30">
+                        <div class="courses-title">
+                            <h2>{{kelas.nama}}</h2>
+                        </div>
+                        <div class="courses-alaltic">
+                            <span class="cr-ic-r"><span class="course-icon"><i class="fa fa-male"></i></span> {% count_member kelas 'male' %}</span>
+                            <span class="cr-ic-r"><span class="course-icon"><i class="fa fa-female"></i></span> {% count_member kelas 'female' %}</span>
+                            <span class="cr-ic-r"><span class="course-icon"><i class="fa fa-book"></i></span> {% count_mapel kelas %}</span>
+                        </div>
+                        <div class="course-des">
+                            <p><span><i class="fa fa-clock"></i></span> <b>Walikelas:</b> {{kelas.walikelas.nama_gelar}}</p>
+                            <p><span><i class="fa fa-clock"></i></span> <b>Jumlah Siswa:</b> <ok class="counter">{% count_member kelas %}</ok></p>
+                        </div>
+                        <div class="product-buttons">
+                            <button onclick="location.href='{% url 'detail-kelas' kelas.nama %}'" type="button" class="btn btn-primary widget-btn-4 btn-md">Detail Kelas</button>
+                            {% url 'hapus-kelas' kelas.nama as hapus_kelas %}
+                            <button onclick="confirmationAlert('Yakin ingin menghapus {{kelas.nama}}?', '{{hapus_kelas}}')" class="btn btn-danger widget-btn-4 btn-md">
+                                <span class="fa fa-trash">
+                                </span>
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% include 'components/pagination.html' %}
+    </div>
+{% endblock content %}
