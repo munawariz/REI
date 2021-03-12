@@ -49,7 +49,7 @@
     {% url 'buat-jurusan' as buat_jurusan %}
     $('#buatJurusan').on('click', function () {
         formAlert(
-            'Buat Tahun Pelajaran',
+            'Buat Jurusan',
             `{% include "components/sweetalert-form.html" with form=jurusan_form action=buat_jurusan %}`);
         event.preventDefault();
     })

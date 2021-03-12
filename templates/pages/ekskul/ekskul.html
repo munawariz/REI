@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load rei_tags %}
+
+{% block content %}
+    {% include "components/breadcrumb.html" with searchbar=True %}
+    <div class="container-fluid">
+        <div class="row mg-b-30">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="product-status-wrap drp-lst">
+                    <h4>Daftar Ekskul</h4>
+                    <div class="add-product">
+                        <a id="buatEkskul" class="cursor-pointer">Buat Ekskul</a>
+                    </div>
+                    
+                    <div class="asset-inner table-condensed">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">Nama</th>
+                                    <th rowspan="2">Kelompok</th>
+                                    <th rowspan="2">Total Anggota</th>
+                                    <th rowspan="2">Hapus</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ekskul in list_ekskul %}
+                                    <tr>
+                                        <td>{{ekskul.nama}}</td>
+                                        <td>{{ekskul.jenis}}</td>
+                                        <td class="counter">{% get_total_siswa_ekskul ekskul %}</td>
+                                        <td>
+                                            <button onclick="confirmationAlert('Yakin ingin menghapus {{ekskul.nama}}', '{% url 'hapus-ekskul' ekskul.id %}')" title="Hapus" class="pd-setting-ed"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extrascript %}
+<script>
+    {% url 'buat-ekskul' as buat_ekskul %}
+    $('#buatEkskul').on('click', function () {
+        formAlert(
+            'Buat Ekskul',
+            `{% include "components/sweetalert-form.html" with form=ekskul_form action=buat_ekskul %}`);
+        event.preventDefault();
+    })
+</script>
+{% endblock extrascript %}
+
+

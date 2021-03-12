@@ -1,4 +1,4 @@
-from siswa.models import Siswa
+from siswa.models import NilaiEkskul, Siswa
 from django.forms.widgets import ClearableFileInput
 from guru.models import Gelar
 from sekolah.models import Kelas, MataPelajaran, Semester
@@ -101,4 +101,11 @@ def get_total_siswa_jurusan(jurusan):
             total += kelas.siswa.count()
         return total
     except:
+        return 0
+
+@register.simple_tag(takes_context=False)
+def get_total_siswa_ekskul(ekskul):
+    try:
+        return NilaiEkskul.objects.filter(ekskul=ekskul, semester=active_semester()).count()
+    except ObjectDoesNotExist:
         return 0
