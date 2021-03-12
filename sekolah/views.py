@@ -37,10 +37,14 @@ class detail_sekolah(View):
 
     def post(self, request):
         sekolah_form = SekolahForm(request.POST)
-        if sekolah_form.is_valid():
-            Sekolah.objects.update(**form_value(sekolah_form))
-            Sekolah.objects.get().save()
-            messages.success(request, 'Data Sekolah berhasil diubah')
+        try:
+            if sekolah_form.is_valid():
+                Sekolah.objects.update(**form_value(sekolah_form))
+                Sekolah.objects.get().save()
+                messages.success(request, 'Data Sekolah berhasil diubah')
+        except Exception as e:
+            messages.error(request, e)
+        finally:
             return redirect('detail-sekolah')
     
 @method_decorator(staftu_required, name='dispatch')

@@ -8,20 +8,20 @@ from guru.models import Guru
 import os
 
 class Sekolah(SingletonModel):    
-    nama = models.CharField(max_length=255)
-    tingkat = models.CharField(verbose_name='Tingkat Sekolah', max_length=3, choices=TINGKAT_SEKOLAH)
+    nama = models.CharField(max_length=255, null=True, blank=True)
+    tingkat = models.CharField(verbose_name='Tingkat Sekolah', max_length=3, choices=TINGKAT_SEKOLAH, null=True, blank=True)
     tingkat_verbose = models.CharField(max_length=255, null=True, blank=True, verbose_name='Tingkat Sekolah (Lengkap)')
-    npsn = models.CharField(max_length=8)
-    alamat = models.CharField(max_length=255)
-    kode_pos = models.CharField(max_length=5)
-    no_telepon = models.CharField(verbose_name='Nomor Telepon', max_length=20)
-    kelurahan = models.CharField(max_length=50)
-    kecamatan = models.CharField(max_length=50)
-    kota = models.CharField(verbose_name='Kota/Kabupaten', max_length=50)
-    provinsi = models.CharField(max_length=50)
-    website = models.CharField(max_length=50)
-    email = models.EmailField()
-    kepsek = models.OneToOneField(Guru, verbose_name='Kepala Sekolah', on_delete=models.SET_NULL, null=True, related_name='is_kepsek')
+    npsn = models.CharField(max_length=8, null=True, blank=True)
+    alamat = models.CharField(max_length=255, null=True, blank=True)
+    kode_pos = models.CharField(max_length=5, null=True, blank=True)
+    no_telepon = models.CharField(verbose_name='Nomor Telepon', max_length=20, null=True, blank=True)
+    kelurahan = models.CharField(max_length=50, null=True, blank=True)
+    kecamatan = models.CharField(max_length=50, null=True, blank=True)
+    kota = models.CharField(verbose_name='Kota/Kabupaten', max_length=50, null=True, blank=True)
+    provinsi = models.CharField(max_length=50, null=True, blank=True)
+    website = models.CharField(max_length=50, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    kepsek = models.ForeignKey(Guru, verbose_name='Kepala Sekolah', on_delete=models.SET_NULL, related_name='is_kepsek', null=True, blank=True)
 
     def __str__(self):
         return "Informasi Sekolah"
