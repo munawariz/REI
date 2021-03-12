@@ -256,7 +256,7 @@ class hapus_anggota(View):
 class tambah_pelajaran(View):
     def post(self, request, kelas):
         data = request.POST.getlist('matapelajaran')
-        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
+        kelas = Kelas.objects.get(id=kelas, tahun_pelajaran=active_tp())
         for _id in data:
             kelas.matapelajaran.add(_id)
         messages.success(request, f'Mata pelajaran berhasil ditambahkan ke kelas {kelas.nama}')
@@ -267,7 +267,7 @@ class tambah_pelajaran(View):
 class hapus_pelajaran(View):
     def get(self, request, kelas, pelajaran):
         matapelajaran = MataPelajaran.objects.get(pk=pelajaran)
-        kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
+        kelas = Kelas.objects.get(id=kelas, tahun_pelajaran=active_tp())
         kelas.matapelajaran.remove(matapelajaran)
         messages.success(request, f'{matapelajaran.nama} berhasil dihapus dari kelas {kelas.nama}')
         return redirect('detail-kelas', kelas=kelas.nama)

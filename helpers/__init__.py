@@ -135,18 +135,24 @@ def get_validpelajaran(kelas):
     return valid_pelajaran
 
 def get_validkelas(siswa):
-    from sekolah.models import Kelas
-    from siswa.models import Siswa
     try:
         if not siswa.kelas: raise ObjectDoesNotExist
-        kelas = Kelas.objects.get(nama=siswa.kelas.nama, tahun_pelajaran=active_tp())
-        anggota_kelas = [siswa for siswa in Siswa.objects.filter(kelas=kelas)]
-        if siswa in anggota_kelas:
-            return kelas
-        else:
-            raise ObjectDoesNotExist
+        kelas = siswa.kelas.get(tahun_pelajaran=active_tp())
+        return kelas
     except ObjectDoesNotExist:
         return None
+
+def get_validekskul(siswa):
+    from siswa.models import NilaiEkskul
+    from sekolah.models import Ekskul
+    list_ekskul = Ekskul.objects.all()
+    valid_ekskul = []
+    list_nilai = [ekskul.ekskul.id for ekskul in NilaiEkskul.objects.filter(siswa=siswa, semester=active_semester())]
+    for ekskul in list_ekskul:
+        if not ekskul.id in list_nilai:
+            valid_ekskul.append(ekskul)
+    return valid_ekskul
+
 
 def generate_rapor_context(sekolah, semester, siswa):
     from siswa.models import Absensi

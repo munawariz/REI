@@ -25,8 +25,9 @@ def keterampilan(matapelajaran, siswa, semester):
 def get_kkm(matapelajaran, tp):
     return KKM.objects.get_or_create(matapelajaran=matapelajaran, tahun_pelajaran=tp)[0]
 
-def zip_pelnilai(siswa, semester):        
-    matapelajaran = MataPelajaran.objects.filter(kelas=siswa.kelas).order_by('kelompok', 'nama')
+def zip_pelnilai(siswa, semester):
+    kelas = siswa.kelas.get(tahun_pelajaran=semester.tahun_pelajaran)
+    matapelajaran = MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama')
         
     list_id = [matapelajaran.pk for matapelajaran in matapelajaran]
     list_pelajaran = [matapelajaran.nama for matapelajaran in matapelajaran]
@@ -36,7 +37,8 @@ def zip_pelnilai(siswa, semester):
     return zip(list_id, list_pelajaran, list_pengetahuan, list_keterampilan)
 
 def zip_nilrapor(siswa, semester):
-    matapelajaran = MataPelajaran.objects.filter(kelas=siswa.kelas).order_by('kelompok', 'nama')
+    kelas = siswa.kelas.get(tahun_pelajaran=semester.tahun_pelajaran)
+    matapelajaran = MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama')
     tp = TahunPelajaran.objects.get(pk=semester.tahun_pelajaran.pk)
         
     list_id = [matapelajaran.pk for matapelajaran in matapelajaran]

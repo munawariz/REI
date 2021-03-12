@@ -62,7 +62,7 @@
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mg-t-15">
                                     <div class="table-responsive">
-                                        <table class="table table-hover bg-transparent">
+                                        <table class="table bg-transparent">
                                             {% if list_siswa %}
                                             <thead class="text-secondary">
                                                 <tr class='column-name'>
@@ -78,18 +78,14 @@
                                             </thead>
                                             <tbody class="text-primary">
                                                 {% for siswa in list_siswa %}
-                                                    <tr onclick="location.href={% url 'detail-siswa' siswa.nis %}" class="cursor-pointer">
-                                                        <td>{{siswa.nis}}</td>
-                                                        <td>{{siswa.nisn}}</td>
-                                                        <td>{{siswa.nama}}</td>
-                                                        <td>{{siswa.email}}</td>
-                                                        <td>{{siswa.tempat_lahir}}/{{siswa.tanggal_lahir|date:'d-m-Y'}}</td>
-                                                        {% if siswa.gender == 'P' %}
-                                                            <td>Pria</td>
-                                                        {% else %}
-                                                            <td>Wanita</td>
-                                                        {% endif %}                                            
-                                                        <td>{{siswa.agama}}</td>
+                                                    <tr>
+                                                        <td class="cursor-pointer" onclick="location.href=`{% url 'detail-siswa' siswa.nis %}`">{{siswa.nis}}</td>
+                                                        <td class="cursor-pointer" onclick="location.href=`{% url 'detail-siswa' siswa.nis %}`">{{siswa.nisn}}</td>
+                                                        <td class="text-black">{{siswa.nama}}</td>
+                                                        <td class="text-black">{{siswa.email}}</td>
+                                                        <td class="text-black">{{siswa.tempat_lahir}}/{{siswa.tanggal_lahir|date:'d-m-Y'}}</td>
+                                                        <td class="text-black">{{siswa.get_gender_display}}</td>                                        
+                                                        <td class="text-black">{{siswa.agama}}</td>
                                                         {% url 'hapus-anggota' kelas.id siswa.nis as hapus_siswa %}
                                                         <td>
                                                             <button onclick="confirmationAlert('Yakin ingin menghapus {{siswa.nama}} dari anggota kelas {{kelas.nama}}?', '{{hapus_siswa}}')" class="btn btn-danger widget-btn-4 btn-md">
@@ -128,7 +124,7 @@
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mg-t-15">
                                     <div class="table-responsive">
-                                        <table class="table table-hover bg-transparent">
+                                        <table class="table bg-transparent">
                                             {% if list_matapelajaran %}
                                                 <thead class="text-secondary">
                                                     <tr class='column-name'>
@@ -141,11 +137,11 @@
                                                 </thead>
                                                 <tbody class="text-primary">
                                                     {% for pelajaran, kkm in list_matapelajaran %}
-                                                        <tr class="cursor-pointer">
-                                                            <td>{{pelajaran.nama}}</td>
-                                                            <td>{{kkm.pengetahuan}}</td>
-                                                            <td>{{kkm.keterampilan}}</td>
-                                                            <td>{{pelajaran.kelompok}}</td>
+                                                        <tr>
+                                                            <td class="cursor-pointer" onclick="location.href=`{% url 'detail-matapelajaran' pelajaran.id %}`">{{pelajaran.nama}}</td>
+                                                            <td class="text-black">{{kkm.pengetahuan}}</td>
+                                                            <td class="text-black">{{kkm.keterampilan}}</td>
+                                                            <td class="text-black">{{pelajaran.kelompok}}</td>
                                                             {% url 'hapus-pelajaran' kelas.id pelajaran.id as hapus_mapel %}
                                                             <td>
                                                                 <button onclick="confirmationAlert('Yakin ingin menghapus {{pelajaran.nama}} dari daftar pelajaran untuk kelas {{kelas.nama}}?', '{{hapus_mapel}}')" class="btn btn-danger widget-btn-4 btn-md">

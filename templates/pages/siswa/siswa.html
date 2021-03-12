@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load rei_tags %}
+
+{% block content %}
+    {% include 'components/breadcrumb.html' with searchbar=True %}
+    <div class="container-fluid">
+        <div class="row mg-b-30">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="product-status-wrap drp-lst">
+                    <h4>Daftar Siswa</h4>
+                    <div class="add-product">
+                        <a href="{% url 'buat-siswa' %} " class="cursor-pointer">Buat Siswa</a>
+                    </div>
+                    
+                    <div class="asset-inner table-condensed">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="vert-center text-center p-10" rowspan="2">NIS</th>
+                                    <th class="vert-center text-center p-10" rowspan="2">NISN</th>
+                                    <th class="vert-center text-center p-10" rowspan="2">Nama</th>
+                                    <th class="vert-center text-center p-10" rowspan="2">Email</th>
+                                    <th class="vert-center text-center p-10" rowspan="2">Tempat/Tanggal Lahir</th>
+                                    <th class="vert-center text-center p-10" rowspan="2">Jenis Kelamin</th>
+                                    <th class="vert-center text-center p-10" rowspan="2">Agama</th>
+                                    <th class="vert-center text-center p-10" rowspan="2">Kelas</th>
+                                    <th class="vert-center text-center p-10" rowspan="2">Hapus</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for siswa in list_siswa %}
+                                    <tr>
+                                        <td onclick="location.href=`{% url 'detail-siswa' siswa.nis %}`" class="vert-center text-center text-primary cursor-pointer">{{siswa.nis}}</td>
+                                        <td onclick="location.href=`{% url 'detail-siswa' siswa.nis %}`" class="vert-center text-center text-primary cursor-pointer">{{siswa.nisn}}</td>
+                                        <td class="vert-center text-center">{{siswa.nama}}</td>
+                                        <td class="vert-center text-center">{{siswa.email}}</td>
+                                        <td class="vert-center text-center">{{siswa.tempat_lahir}}/{{siswa.tanggal_lahir|date:'d-m-Y'}}</td>
+                                        <td class="vert-center text-center">{{siswa.get_gender_display}}</td>
+                                        <td class="vert-center text-center">{{siswa.agama}}</td>
+                                        {% get_active_kelas siswa as active_kelas %}
+                                        {% if active_kelas %}
+                                        <td onclick="location.href=`{% url 'detail-kelas' active_kelas %}`" class="vert-center text-center text-primary cursor-pointer">{{active_kelas}}</td>
+                                        {% else %}
+                                        <td class="vert-center text-center">None</td>
+                                        {% endif %}
+                                        {% url 'hapus-siswa' siswa.nis as hapus_siswa %}
+                                        <td class="vert-center text-center" style="z-index: 99;">
+                                            <button onclick="confirmationAlert('Yakin ingin menghapus {{siswa.nama}} dari basis data?', '{{hapus_siswa}}')" class="btn btn-danger widget-btn-4 btn-md">
+                                                <span class="fa fa-trash"></span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% include 'components/pagination.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

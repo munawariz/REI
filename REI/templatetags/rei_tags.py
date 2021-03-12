@@ -77,3 +77,10 @@ def count_member(kelas, gender=None):
 @register.simple_tag(takes_context=False)
 def count_mapel(kelas):
     return MataPelajaran.objects.filter(kelas=kelas, kelas__tahun_pelajaran=active_tp()).count()
+
+@register.simple_tag(takes_context=False)
+def get_active_kelas(siswa):
+    try:
+        return siswa.kelas.get(tahun_pelajaran=active_tp()).nama
+    except ObjectDoesNotExist:
+        return None

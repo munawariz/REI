@@ -6,11 +6,14 @@
     {% if disabled %}<fieldset disabled>{% endif %}
     <ul class="{{col|default:'two'}}-columns ul-form">
         {% for field in form %}
-            {% if label %}
-                <label class="login2">{{field.label}}</label>
+            {% if field.errors %}
+                {{field.errors}}
             {% endif %}
             {% if not field|is_checkbox %}
             <li>
+                {% if label %}
+                    <label class="login2 mg-t-10">{{field.label}}</label>
+                {% endif %}
                 {% if not field|is_file %}
                     <div class="form-group">
                         {% render_field field|add_class:"form-control" placeholder=field.label%}
@@ -49,4 +52,6 @@
         </div>
     </div>
     {% endif %}
+
+    <small>{{form.non_field_errors.as_text}}</small><br>
 </form>

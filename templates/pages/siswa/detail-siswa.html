@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+    {% include 'components/breadcrumb.html' %}
+    <div class="container-fluid mg-b-30">
+        <div class="row mg-b-30">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="hpanel widget-int-shape responsive-mg-b-30">
+                            <div class="panel-body">
+                                <div class="text-center content-box">
+                                    <h2 class="m-b-xs">Absensi</h2>
+                                    <p class="font-bold text-success">Absensi {{siswa.nama}} untuk semester {{semester}}</p>
+                                    <div class="m icon-box">
+                                        <i class="educate-icon educate-event"></i>
+                                    </div>
+                                    <p class="small mg-t-box">
+                                        <table class="table">
+                                            <thead>
+                                                <tr><td>Izin</td><td>Sakit</td><td>Bolos</td></tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr><td class="counter">{{absensi.izin}}</td><td class="counter">{{absensi.sakit}}</td><td class="counter">{{absensi.bolos}}</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </p>
+                                    <button id="absenButton" class="btn btn-success widget-btn-1 btn-sm">Ubah Absensi</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="hpanel widget-int-shape responsive-mg-b-30 mg-t-20">
+                            <div class="panel-body">
+                                <div class="stats-title pull-left">
+                                    <h4>Kelas</h4>
+                                </div>
+                                <div class="stats-icon pull-right">
+                                    <i class="educate-icon educate-form"></i>
+                                </div>
+                                <div class="m-t-xl widget-cl-1">
+                                    <h1 class="text-success">{{kelas.nama|default:'Belum memiliki kelas'}}</h1>
+                                </div>
+                                <button onclick="location.href='{% url 'detail-kelas' kelas.nama %}'" class="btn btn-success widget-btn-1 btn-sm pull-right">Detail</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="hpanel widget-int-shape responsive-mg-b-30 mg-t-20">
+                            <div class="panel-body">
+                                <div class="stats-title pull-left">
+                                    <h4>Walikelas</h4>
+                                </div>
+                                <div class="stats-icon pull-right">
+                                    <i class="educate-icon educate-professor"></i>
+                                </div>
+                                <div class="m-t-xl widget-cl-1">
+                                    <h1 class="text-success">{{kelas.walikelas.nama_gelar|default:'Kelas ini belum memiliki walikelas'}}</h1>
+                                </div>
+                                <button onclick="location.href='{% url 'detail-guru' kelas.walikelas.nip %}'" class="btn btn-success widget-btn-1 btn-sm pull-right">Profil</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9 col-md-6 col-sm-6 col-xs-12">
+                <div class="product-payment-inner-st">
+                    <ul id="myTabedu1" class="tab-review-design">
+                        <li class="active"><a href="#profil">Profil</a></li>
+                        {% if request.user == kelas.walikelas or request.user.is_superuser %}
+                            {% if kelas %}
+                                <li><a href="#nilai">Nilai</a></li>
+                                <li><a href="#list_ekskul">Ekskul</a></li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                    <div id="myTabContent" class="tab-content custom-product-edit">
+                        <div class="product-tab-list tab-pane fade active in" id="profil">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mg-t-15">
+                                    {% include 'components/form-compact.html' with form=siswa_form label=True col='two' submit_text='Ubah' %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-tab-list tab-pane fade in" id="nilai">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mg-t-15">
+                                    <form method="post" action="{% url 'nilai-siswa' siswa.nis %}" class="mg-t-10">
+                                        {% csrf_token %}
+                                        {% for id, pelajaran, pengetahuan, keterampilan in nilai_form %}
+                                            <h5 class="login2">{{pelajaran}}</h5>
+                                            <ul class="two-columns ul-form">
+                                                <li>
+                                                    <div class="form-group">
+                                                        <h6 class="login2">Pengetahuan</h6>
+                                                        <input type="number" name="pengetahuan-{{id}}" id="pengetahuan-{{id}}" placeholder="Pengetahuan {{pelajaran}}" value="{{pengetahuan}}" class="form-control">
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="form-group">
+                                                        <h6 class="login2">Keterampilan</h6>
+                                                        <input type="number" name="keterampilan-{{id}}" id="keterampilan-{{id}}" placeholder=" " value="{{keterampilan}}" class="form-control">
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        {% endfor %}
+                                        <div class="payment-adress">
+                                            <button type="submit" class="btn btn-primary waves-effect waves-light">Ubah</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="product-tab-list tab-pane fade in" id="list_ekskul">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mg-t-15">
+                                    <form method="post" class="mt-4" action="{% url 'ekskul-siswa' siswa.nis %}">
+                                        {% csrf_token %}
+                                        <ul class="two-columns ul-form">
+                                            {% for id_eks, id_nil, ekskul, nilai, jenis in data_ekskul %}
+                                                <li>
+                                                    <div class="row">
+                                                        <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+                                                            <h5 class="login2">{{pelajaran}}</h5>
+                                                            <div class="form-group">
+                                                                <label class="login2">{{ekskul}}</label>
+                                                                <select name="nilai-{{id_eks}}" id="nilai-{{id_eks}}" class="form-control">
+                                                                    <option value="A" {% if nilai == 'A' %}selected{% endif %}>A</option>
+                                                                    <option value="B" {% if nilai == 'B' %}selected{% endif %}>B</option>
+                                                                    <option value="C" {% if nilai == 'C' %}selected{% endif %}>C</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                                            {% url 'hapus-ekskul-siswa' siswa.nis ekskul.pk as hapus_ekskul %}
+                                                            <button type="button" onclick="confirmationAlert('Yakin ingin menghapus {{ekskul.nama}} dari {{siswa.nama}}?', '{{hapus_ekskul}}')" class="btn btn-danger widget-btn-4 btn-md mg-t-37 mg-l-n26">
+                                                                <span class="fa fa-trash">
+                                                                </span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% if forloop.last %}
+                                            </ul>
+                                                <button type="submit" class="btn btn-primary waves-effect waves-light mg-l-1 mg-b-20">Ubah Nilai</button>
+                                            {% endif %}
+                                            {% empty %}
+                                            <label class="login2">{{siswa.nama}} belum memiliki ekskul di semester ini.</label>
+                                            {% endfor %}
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row mg-t-15">
+                                <form action="{% url 'tambah-ekskul' siswa.nis %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+                                        <label class="login2">Tambah Ekskul</label>
+                                        <div class="chosen-select-single border-radius-none">
+                                            {% render_field ekskul_form.ekskul|add_class:"form-control chosen-select" %}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                                        <div class="payment-adress">
+                                            <button type="submit" class="btn btn-primary waves-effect waves-light mg-t-25 mg-l-n20">Tambah</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extrascript %}
+    <script>
+        $('#absenButton').on('click', function () {
+            {% url 'absen-siswa' siswa.nis as absen_siswa %}
+            formAlert(
+                'Ubah absensi pada {{semester}} untuk {{siswa.nama}}',
+                `{% include "components/sweetalert-form.html" with form=absen_form action=absen_siswa %}`);
+            event.preventDefault();
+        });
+        
+    </script>
+{% endblock extrascript %}

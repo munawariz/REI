@@ -1,5 +1,7 @@
 from django.db import models
 from django.db.models import signals
+from django.db.models.query_utils import Q
+from django.db.utils import IntegrityError
 from sekolah.models import Kelas, MataPelajaran, Sekolah, Semester
 from helpers.choice import GENDER_CHOICE, NILAI_EKSKUL, TINGKAT_KELAS_CHOICE
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -8,8 +10,8 @@ from sekolah.models import Ekskul
 
 class Siswa(models.Model):
     nama = models.CharField(max_length=255, verbose_name='Nama Siswa')
-    nisn = models.CharField(max_length=10, unique=True)
-    nis = models.CharField(max_length=9, unique=True)
+    nisn = models.CharField(max_length=10)
+    nis = models.CharField(max_length=9)
     email = models.EmailField()
     tempat_lahir = models.CharField(max_length=255)
     tanggal_lahir = models.DateField()
@@ -26,6 +28,15 @@ class Siswa(models.Model):
     def __str__(self):
         return f'{self.nisn}/{self.nis}-{self.nama}'
 
+@receiver(models.signals.pre_save, sender=Siswa)
+def siswa_pre_save(sender, instance, **kwargs):
+    try:
+        siswa = Siswa.objects.filter(Q(nis=instance.nis) | Q(nisn=instance.nisn))
+        if siswa and instance not in siswa:
+            raise IntegrityError('NIS or NISN must be unique.')
+    except ObjectDoesNotExist:
+        pass
+    
 class Nilai(models.Model):
     siswa = models.ForeignKey(Siswa, on_delete=models.CASCADE, related_name='nilai')
     matapelajaran = models.ForeignKey(MataPelajaran, on_delete=models.CASCADE, related_name='nilai')
@@ -52,12 +63,6 @@ def unique_together_tp_mapel(sender, instance, **kwargs):
             raise ValidationError('Nilai for that Siswa with that Mata Pelajaran in that Semester already exists')
     except ObjectDoesNotExist:
         pass
-
-@receiver(models.signals.post_save, sender=Nilai)
-def nilai_post_save(sender, instance, created, **kwargs):
-    if created:
-        instance.semester = Semester.objects.get(tahun_pelajaran=instance.siswa.kelas.tahun_pelajaran, is_active=True)
-        instance.save()
 
 
 class Absensi(models.Model):

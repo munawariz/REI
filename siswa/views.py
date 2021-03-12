@@ -10,18 +10,18 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.utils import Error, IntegrityError
 from django.db.models.query_utils import Q
 from django.shortcuts import redirect, render
-from django.urls import reverse
-from django.views.generic import View, UpdateView
+from django.views.generic import View
 from .models import Absensi, NilaiEkskul, Siswa, Nilai
-from .forms import SiswaForm, AbsenForm, NilaiEkskulForm, UploadExcelForm
+from .forms import SiswaForm, AbsenForm, TambahEkskulSiswaForm, UploadExcelForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from helpers.nilai_helpers import has_ekskul, has_mapel, zip_eksnilai, zip_pelnilai
-from helpers import active_tp, calculate_age, active_semester, get_initial, form_value, get_validkelas
+from helpers import active_tp, calculate_age, active_semester, get_initial, form_value, get_validekskul, get_validkelas, tambahmapel_choice
 from helpers.excel_handlers import append_df_to_excel, extract_and_clean_siswa
 from django.contrib import messages
 from django.template.loader import render_to_string
+from django.utils.datastructures import MultiValueDictKeyError
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
@@ -46,8 +46,7 @@ class list_siswa(View):
             'list_siswa': page_obj,
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
-            'siswa_form': SiswaForm(),
-            'excel_form': UploadExcelForm(),
+            
             'tp_aktif': active_tp(),
         }
         return render(request,  'pages/siswa/siswa.html', context)
@@ -55,16 +54,28 @@ class list_siswa(View):
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class buat_siswa(View):
+    def get(self, request):
+        request.session['page'] = 'Buat Siswa'
+        context = {
+            'siswa_form': SiswaForm(),
+            'excel_form': UploadExcelForm(),
+        }
+        return render(request, 'pages/siswa/buat-siswa.html', context)
+
     def post(self, request):
         siswa_form = SiswaForm(request.POST)
         try:
             if siswa_form.is_valid():
-                Siswa.objects.create(**form_value(siswa_form))
+                data = form_value(siswa_form)
+                kelas = data['kelas']
+                del data['kelas']
+                siswa = Siswa.objects.create(**data)
+                siswa.kelas.add(kelas)
                 messages.success(request, 'Data siswa berhasil dicatat kedalam database')
             else:
-                messages.error(request, 'Data gagal dibuat, periksa apakah NIS atau NISN sudah tersedia didata sebelumnya')    
+                messages.error(request, 'Data gagal dibuat, periksa apakah NIS atau NISN sudah tersedia di basis data')    
         except IntegrityError:
-            messages.error(request, 'Data gagal dibuat, periksa apakah NIS atau NISN sudah tersedia didata sebelumnya')
+            messages.error(request, 'Data gagal dibuat, periksa apakah NIS atau NISN sudah tersedia di basis data')
         finally:
             return redirect('list-siswa')
 
@@ -72,187 +83,135 @@ class buat_siswa(View):
 @method_decorator(activesemester_required, name='dispatch')
 class detail_siswa(View):
     def get(self, request, nis):
-        try:
-            siswa = Siswa.objects.select_related('kelas').get(nis=nis)
-        except ObjectDoesNotExist:
-            raise Http404
-        request.session['page'] = f'Detail {siswa.nama}'
         semester = active_semester()
-        if siswa.kelas:
-            nama_kelas = f'{siswa.kelas.tingkat} {siswa.kelas.jurusan} {siswa.kelas.kelas}'.replace('None', '')
-        else:
-            nama_kelas = ''
-            messages.error(request, f'{siswa.nama} belum memiliki kelas di semester ini')
+        try:
+            siswa = Siswa.objects.prefetch_related('kelas').get(nis=nis)
+            kelas_aktif = siswa.kelas.get(tahun_pelajaran=semester.tahun_pelajaran)
+        except Siswa.DoesNotExist: raise Http404
+        except Kelas.DoesNotExist: kelas_aktif = None
 
-        if siswa.kelas and has_mapel(siswa.kelas):
-            data_mapel = zip_pelnilai(siswa, semester)
-            _idMapel, mapel, peng, ket = zip(*data_mapel)
-            data_mapel = zip(mapel, peng, ket)
-        else:
-            data_mapel = None
-        cols_mapel = ['Mata Pelajaran', 'Nilai Pengetahuan', 'Nilai Keterampilan']
+        initial = get_initial(siswa)
+        initial['kelas'] = kelas_aktif
+        request.session['page'] = f'Detail {siswa.nama}'
         
-        if has_ekskul(siswa, semester):
-            data_ekskul = zip_eksnilai(siswa, semester)
-            _idEkskul, _idNilai, ekskul, nilai, jenis = zip(*data_ekskul)
-            data_ekskul = zip(ekskul, jenis, nilai)
-        else:
-            data_ekskul = None
-        cols_ekskul = ['Ekskul', 'Jenis Ekskul', 'Nilai']
+        if not kelas_aktif: messages.info(request, f'{siswa.nama} belum memiliki kelas di semester ini')
 
-        data_absen, created = Absensi.objects.get_or_create(siswa=siswa, semester=semester)
-        data_absen = zip(str(data_absen.sakit), str(data_absen.izin), str(data_absen.bolos))
-        cols_absen = ['Sakit', 'Izin', 'Tanpa Keterangan']
+        absen, created = Absensi.objects.get_or_create(
+            siswa=siswa, semester=semester,
+            defaults={'izin': 0, 'sakit': 0, 'bolos': 0})
+
         context = {
             'siswa': siswa,
-            'nama_kelas': nama_kelas,
+            'kelas': kelas_aktif,
+            'absensi': absen,
             'semester': semester,
+            'siswa_form': SiswaForm(initial=initial),
+            'absen_form': AbsenForm(initial=get_initial(absen)),
+            'nilai_form': zip_pelnilai(siswa, semester),
+            'data_ekskul': zip_eksnilai(siswa, semester),
+            'ekskul_form': TambahEkskulSiswaForm(ekskul_list=tambahmapel_choice(get_validekskul(siswa))),
             'usia': calculate_age(siswa.tanggal_lahir),
-            'table_data': data_mapel,
-            'table_cols': cols_mapel,
-            'link': 'nilai/',
         }
+        return render(request, 'pages/siswa/detail-siswa.html', context)
+        
+    def post(self, request, nis):
+        siswa_form = SiswaForm(request.POST)
+        siswa = Siswa.objects.get(nis=nis)
+        try: old_kelas = siswa.kelas.get(tahun_pelajaran=active_tp())
+        except ObjectDoesNotExist: old_kelas = None
 
-        if self.request.is_ajax():
-            if self.request.GET['type'] == 'mapel':
-                context['table_data'] = data_mapel
-                context['table_cols'] = cols_mapel
-                context['link'] = 'nilai/'
-            elif self.request.GET['type'] == 'ekskul':
-                context['table_data'] = data_ekskul
-                context['table_cols'] = cols_ekskul
-                context['link'] = 'ekskul/'
-            elif self.request.GET['type'] == 'absen':
-                context['table_data'] = data_absen
-                context['table_cols'] = cols_absen
-                context['link'] = 'absen/'
+        if siswa_form.is_valid():
+            data = form_value(siswa_form)
+            kelas = data['kelas']
+            del data['kelas']
 
-            html = render_to_string(
-                template_name="pages/siswa/realtime-table.html", 
-                context = context
-            )
-            data_dict = {"html_from_view": html}
-            return JsonResponse(data=data_dict, safe=False)
+            if old_kelas:
+                siswa.kelas.remove(old_kelas)
+            if kelas:
+                siswa.kelas.add(kelas)
+            siswa.save()
+            Siswa.objects.filter(nis=nis).update(**data)
+            messages.success(request, f'Profil {siswa.nama} berhasil diubah')
+            return redirect('detail-siswa', nis=nis)
         else:
+            context = {
+                'siswa_form': siswa_form,
+            }
             return render(request, 'pages/siswa/detail-siswa.html', context)
-
-@method_decorator(staftu_required, name='dispatch')
-@method_decorator(activesemester_required, name='dispatch')
-class profil_siswa(UpdateView):
-    model = Siswa
-    template_name = 'pages/siswa/profil-siswa.html'
-    form_class = SiswaForm
-    slug_field = 'nis'
-    slug_url_kwarg = 'nis'    
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        self.request.session['page'] = 'Profil Siswa'
-        context['usia'] = calculate_age(context['object'].tanggal_lahir)
-        return context
-
-    def get_success_url(self, **kwargs):
-        siswa = Siswa.objects.get(nis=self.kwargs['nis'])
-        messages.success(self.request, f'Update profil {siswa.nama} berhasil')
-        return reverse('detail-siswa', kwargs={'nis':siswa.nis})
 
 @method_decorator(walikelas_required, name='dispatch')
 @method_decorator(validkelas_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class nilai_siswa(View):
-    def get(self, request, nis):
-        request.session['page'] = 'Nilai Siswa'
-        active_siswa = Siswa.objects.get(nis=nis)
-        context = {
-            'siswa': active_siswa,
-            'usia': calculate_age(active_siswa.tanggal_lahir),
-            'data': zip_pelnilai(active_siswa, active_semester()),
-        }
-        return render(request, 'pages/siswa/nilai-siswa.html', context)
-
-    def post(self, request, nis):
+     def post(self, request, nis):
         try:                
             active_siswa = Siswa.objects.get(nis=nis)
-            data = zip_pelnilai(active_siswa, active_semester())
+            semester = active_semester()
+            data = zip_pelnilai(active_siswa, semester)
             for id_, matapelajaran, pengetahuan, keterampilan in data:
                 matapelajaran = MataPelajaran.objects.get(id=id_)
                 nilai_pengetahuan = int(request.POST[f'pengetahuan-{id_}'])
                 nilai_keterampilan = int(request.POST[f'keterampilan-{id_}'])
                 Nilai.objects.update_or_create(
-                    siswa=active_siswa, matapelajaran=matapelajaran, semester=active_semester(),
+                    siswa=active_siswa, matapelajaran=matapelajaran, semester=semester,
                     defaults={'pengetahuan': nilai_pengetahuan, 'keterampilan': nilai_keterampilan}
                 )
             messages.success(request, f'Update nilai {active_siswa.nama} berhasil')
-            return redirect('nilai-siswa', nis=nis)
-        except Siswa.DoesNotExist: 
+            return redirect('detail-siswa', nis=nis)
+        except Siswa.DoesNotExist:
             raise Http404
 
 @method_decorator(walikelas_required, name='dispatch')
 @method_decorator(validkelas_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class absen_siswa(View):
-    def get(self, request, nis):
-        request.session['page'] = 'Absensi Siswa'
-        active_siswa = Siswa.objects.get(nis=nis)
-        absen, created = Absensi.objects.get_or_create(
-            siswa=active_siswa, semester=active_semester(),
-            defaults={'izin': 0, 'sakit': 0, 'bolos': 0})
-        absen_form = AbsenForm(initial=get_initial(absen))
-        context = {
-            'siswa': active_siswa,
-            'absen_form': absen_form,
-            'usia': calculate_age(active_siswa.tanggal_lahir),
-        }
-        return render(request, 'pages/siswa/absen-siswa.html', context)
-
     def post(self, request, nis):
         active_siswa = Siswa.objects.get(nis=nis)
         absen_form = AbsenForm(request.POST)
         if absen_form.is_valid():
             Absensi.objects.filter(siswa=active_siswa, semester=active_semester()).update(**form_value(absen_form))
             messages.success(request, f'Update absensi {active_siswa.nama} berhasil')
-            return redirect('absen-siswa', nis=nis)
+            return redirect('detail-siswa', nis=nis)
 
 @method_decorator(walikelas_required, name='dispatch')
 @method_decorator(validkelas_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class ekskul_siswa(View):
-    def get(self, request, nis):
-        request.session['page'] = 'Ekskul Siswa'
-        active_siswa = Siswa.objects.get(nis=nis)
-        context = {
-            'siswa': active_siswa,
-            'data': zip_eksnilai(active_siswa, active_semester()),
-            'tambah_absen_form': NilaiEkskulForm()
-        }
-        return render(request, 'pages/siswa/ekskul-siswa.html', context)
-
     def post(self, request, nis):
         active_siswa = Siswa.objects.get(nis=nis)
-        data = zip_eksnilai(active_siswa, active_semester())
-        for id_nil, id_eks, ekskul, nilai, jenis in data:
-            nilai_form = request.POST[f'nilai-{id_eks}']
-            if nilai != nilai_form:
-                ekskul = Ekskul.objects.get(pk=id_eks)
-                NilaiEkskul.objects.filter(siswa=active_siswa, ekskul=ekskul, semester=active_semester()).update(nilai=nilai_form)
-                messages.success(request, f'Nilai {active_siswa.nama} untuk ekskul {ekskul.nama} berhasil diubah')
-        return redirect('ekskul-siswa', nis=nis)
+        semester = active_semester()
+        data = zip_eksnilai(active_siswa, semester)
+        try:
+            for id_eks, id_nil, ekskul, nilai, jenis in data:
+                nilai_form = request.POST[f'nilai-{id_eks}']
+                
+                if nilai_form and nilai != nilai_form:
+                    ekskul = Ekskul.objects.get(pk=id_eks)
+                    NilaiEkskul.objects.filter(siswa=active_siswa, ekskul=ekskul, semester=semester).update(nilai=nilai_form)
+                    messages.success(request, f'Nilai {active_siswa.nama} untuk ekskul {ekskul.nama} berhasil diubah')
+        except Exception as e:
+            messages.error(request, e)
+        return redirect('detail-siswa', nis=nis)
 
 @method_decorator(walikelas_required, name='dispatch')
 @method_decorator(validkelas_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
 class tambah_ekskul(View):
     def post(self, request, nis):
-        absen_form = NilaiEkskulForm(request.POST)
-        active_siswa = Siswa.objects.get(nis=nis)
+        ekskul_form = TambahEkskulSiswaForm(request.POST)
+        siswa = Siswa.objects.get(nis=nis)
+        ekskul = request.POST.getlist('ekskul')
+        semester = active_semester()
         try:
-            if absen_form.is_valid():
-                NilaiEkskul.objects.create(**form_value(absen_form), siswa=active_siswa, semester=active_semester())
-                messages.success(request, f'Ekskul {absen_form.cleaned_data["ekskul"]} berhasil ditambahkan untuk {active_siswa.nama}')
+            for ekskul in ekskul:
+                NilaiEkskul.objects.create(ekskul=Ekskul.objects.get(id=ekskul), siswa=siswa, semester=semester)
+            messages.success(request, f'Ekskul {ekskul_form.cleaned_data["ekskul"]} berhasil ditambahkan untuk {siswa.nama}')
         except ValidationError:
-            messages.error(request, f'{active_siswa.nama} sudah memiliki ekskul {absen_form.cleaned_data["ekskul"]}')
+            messages.error(request, f'{siswa.nama} sudah memiliki ekskul {ekskul_form.cleaned_data["ekskul"]}')
+        except Exception as e:
+            request.error(request, e)
         finally:
-            return redirect('ekskul-siswa', nis=nis)
+            return redirect('detail-siswa', nis=nis)
     
 @method_decorator(walikelas_required, name='dispatch')
 @method_decorator(validkelas_required, name='dispatch')
@@ -263,7 +222,7 @@ class hapus_ekskul_siswa(View):
         ekskul = Ekskul.objects.get(pk=ekskul)
         NilaiEkskul.objects.get(ekskul=ekskul, siswa=active_siswa, semester=active_semester()).delete()
         messages.success(request, f'Ekskul {ekskul.nama} sudah dihapus dari data {active_siswa.nama}')
-        return redirect('ekskul-siswa', nis=nis)
+        return redirect('detail-siswa', nis=nis)
 
 @method_decorator(staftu_required, name='dispatch')
 @method_decorator(activesemester_required, name='dispatch')
