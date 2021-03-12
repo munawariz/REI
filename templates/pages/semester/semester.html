@@ -108,10 +108,11 @@
 
 {% block extrascript %}
 <script>
+    {% url 'buat-semester' as buat_semester %}
     $('#buatTP').on('click', function () {
         formAlert(
             'Buat Tahun Pelajaran',
-            `{% include "components/sweetalert-form.html" with form=tp_form action="/semester/buat/" %}`);
+            `{% include "components/sweetalert-form.html" with form=tp_form action=buat_semester %}`);
         event.preventDefault();
     })
 </script>

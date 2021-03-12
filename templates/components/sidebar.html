@@ -15,7 +15,7 @@
                         </a>
                     </li>
                     <li>
-                        <a title="Dashboard" href="{% url 'list-semester' %}" aria-expanded="false">
+                        <a title="Tahun Pelajaran" href="{% url 'list-semester' %}" aria-expanded="false">
                             <span class="educate-icon educate-event icon-wrap" aria-hidden=true></span>
                             <span class="mini-click-non">Tahun Pelajaran</span>
                         </a>
@@ -36,11 +36,10 @@
                     </li>
                     {% if sekolah.tingkat.upper == 'SMK' %}
                     <li>
-                        <a class="has-arrow" href="{% url 'list-jurusan' %}" aria-expanded="false"><span class="educate-icon educate-department icon-wrap"></span> <span class="mini-click-non">Jurusan</span></a>
-                        <ul class="submenu-angle" aria-expanded="false">
-                            <li><a title="Daftar Jurusan" href="{% url 'list-jurusan' %}"><span class="mini-sub-pro">Daftar Jurusan</span></a></li>
-                            <li><a title="Buat Jurusan" href="{% url 'buat-jurusan' %}"><span class="mini-sub-pro">Buat Jurusan</span></a></li>
-                        </ul>
+                        <a title="Jurusan" href="{% url 'list-jurusan' %}" aria-expanded="false">
+                            <span class="educate-icon educate-department icon-wrap"></span>
+                            <span class="mini-click-non">Jurusan</span>
+                        </a>
                     </li>
                     {% endif %}
                     <li>

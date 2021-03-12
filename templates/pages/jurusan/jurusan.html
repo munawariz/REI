@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load rei_tags %}
+
+{% block content %}
+    {% include 'components/breadcrumb.html' %}
+    <div class="container-fluid">
+        <div class="row mg-b-30">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="product-status-wrap drp-lst">
+                    <h4>Daftar Jurusan</h4>
+                    <div class="add-product">
+                        <a id="buatJurusan" class="cursor-pointer">Buat Jurusan</a>
+                    </div>
+                    
+                    <div class="asset-inner table-condensed">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">Nama</th>
+                                    <th rowspan="2">Singkatan</th>
+                                    <th rowspan="2">Total Kelas</th>
+                                    <th rowspan="2">Total Siswa</th>
+                                    <th rowspan="2">Hapus</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for jurusan in list_jurusan %}
+                                    <tr>
+                                        <td>{{jurusan.nama}}</td>
+                                        <td>{{jurusan.singkat|default:"-"}}</td>
+                                        <td class="counter">{% get_total_kelas jurusan %}</td>
+                                        <td class="counter">{% get_total_siswa_jurusan jurusan %}</td>
+                                        <td>
+                                            <button onclick="confirmationAlert('Yakin ingin menghapus {{jurusan.nama}}', '{% url 'hapus-jurusan' jurusan.id %}')" title="Hapus" class="pd-setting-ed"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extrascript %}
+<script>
+    {% url 'buat-jurusan' as buat_jurusan %}
+    $('#buatJurusan').on('click', function () {
+        formAlert(
+            'Buat Tahun Pelajaran',
+            `{% include "components/sweetalert-form.html" with form=jurusan_form action=buat_jurusan %}`);
+        event.preventDefault();
+    })
+</script>
+{% endblock extrascript %}

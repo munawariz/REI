@@ -1,7 +1,7 @@
 from siswa.models import Siswa
 from django.forms.widgets import ClearableFileInput
 from guru.models import Gelar
-from sekolah.models import MataPelajaran, Semester
+from sekolah.models import Kelas, MataPelajaran, Semester
 from helpers import active_semester, active_tp
 from django import template
 import os
@@ -84,3 +84,21 @@ def get_active_kelas(siswa):
         return siswa.kelas.get(tahun_pelajaran=active_tp()).nama
     except ObjectDoesNotExist:
         return None
+
+@register.simple_tag(takes_context=False)
+def get_total_kelas(jurusan):
+    try:
+        return Kelas.objects.filter(jurusan=jurusan, tahun_pelajaran=active_tp()).count()
+    except ObjectDoesNotExist:
+        return 0
+
+@register.simple_tag(takes_context=False)
+def get_total_siswa_jurusan(jurusan):
+    try:
+        total = 0
+        kelas = Kelas.objects.filter(jurusan=jurusan, tahun_pelajaran=active_tp())
+        for kelas in kelas:
+            total += kelas.siswa.count()
+        return total
+    except:
+        return 0
