@@ -10,7 +10,7 @@ from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Rapor, Sekolah, Semester, TahunPelajaran
-from .forms import DisabledKelasForm, EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm, TambahAnggotaKelas, TambahMatapelajaranKelas
+from .forms import DisabledKelasForm, EditMatapelajaranForm, EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm, TambahAnggotaKelas, TambahMatapelajaranKelas
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
 from REI.decorators import staftu_required, validdirs_required, activesemester_required
@@ -58,7 +58,7 @@ class list_semester(View):
             ).order_by('-mulai', '-akhir')
         else:
             list_tp = TahunPelajaran.objects.all().order_by('-mulai', '-akhir')
-        
+        tp = active_tp()
         paginator = Paginator(list_tp, 5)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -68,7 +68,8 @@ class list_semester(View):
             'page_obj': page_obj,
             'tp_form': SemesterForm(),
             'number_of_pages': number_of_pages,
-            'jumlah_kelas': Kelas.objects.filter(tahun_pelajaran=active_tp()).count()
+            'jumlah_kelas': Kelas.objects.filter(tahun_pelajaran=active_tp()).count(),
+            'jumlah_siswa': Siswa.objects.exclude(kelas=None).filter(kelas__tahun_pelajaran=tp).count(),
         }
         return render(request, 'pages/semester/semester.html', context)
 
@@ -359,8 +360,7 @@ class list_matapelajaran(View):
         request.session['page'] = 'Daftar Matapelajaran'
         list_matapelajaran = MataPelajaran.objects.all().order_by('kelompok')
         context = {
-            'data': zip_pelkkm(list_matapelajaran, active_tp()),
-            'list_matapelajaran': list_matapelajaran,
+            'list_matapelajaran': zip_pelkkm(list_matapelajaran, active_tp()),
             'matapelajaran_form': MatapelajaranForm(),
         }
         return render(request, 'pages/matapelajaran/matapelajaran.html', context)
@@ -387,47 +387,38 @@ class detail_matapelajaran(View):
             matapelajaran = MataPelajaran.objects.get(pk=matapelajaran)
         except ObjectDoesNotExist:
             raise Http404
+        tp = active_tp()
         request.session['page'] = f'Detail {matapelajaran.nama}'
-        kkm, created = KKM.objects.get_or_create(matapelajaran=matapelajaran, tahun_pelajaran=active_tp())
+        initial = get_initial(matapelajaran)
+        kkm, created = KKM.objects.get_or_create(matapelajaran=matapelajaran, tahun_pelajaran=tp)
+        initial['pengetahuan'] = kkm.pengetahuan
+        initial['keterampilan'] = kkm.keterampilan
         context = {
             'matapelajaran': matapelajaran,
             'kkm': kkm,
-            'matapelajaran_form': MatapelajaranForm(initial=get_initial(matapelajaran)),
-            'kkm_form': KKMForm(initial=get_initial(kkm)),
+            'mapelkkm_form': EditMatapelajaranForm(initial=initial),
+            'list_kelas': matapelajaran.kelas.filter(tahun_pelajaran=tp),
         }
         return render(request, 'pages/matapelajaran/detail-matapelajaran.html', context)
-
-@method_decorator(staftu_required, name='dispatch')
-@method_decorator(activesemester_required, name='dispatch')
-class ubah_matapelajaran(View):
+    
     def post(self, request, matapelajaran):
-        matapelajaran_form = MatapelajaranForm(request.POST)
+        matapelajaran_form = EditMatapelajaranForm(request.POST)
         try:
             if matapelajaran_form.is_valid():
-                MataPelajaran.objects.filter(pk=matapelajaran).update(**form_value(matapelajaran_form))
-                mapel = MataPelajaran.objects.get(pk=matapelajaran)
-                messages.success(request, f'Data Matapelajaran {mapel.nama} berhasil diubah')
-        except Exception as e:
-            messages.error(request, f'Terjadi kesalahan saat mencoba mengubah data Matapelajaran')
-        finally:
-            return redirect('detail-matapelajaran', matapelajaran=matapelajaran)
-
-@method_decorator(staftu_required, name='dispatch')
-@method_decorator(activesemester_required, name='dispatch')
-class ubah_kkm(View):
-    def post(self, request, matapelajaran):
-        kkm_form = KKMForm(request.POST)
-        mapel = MataPelajaran.objects.get(pk=matapelajaran)
-        try:
-            if kkm_form.is_valid():
-                kkm = KKM.objects.get(matapelajaran=mapel, tahun_pelajaran=active_tp())
-                kkm.__dict__.update(**form_value(kkm_form))
+                data = form_value(matapelajaran_form)
+                pengetahuan = data['pengetahuan']
+                keterampilan = data['keterampilan']
+                del data['pengetahuan']
+                del data['keterampilan']
+                MataPelajaran.objects.filter(pk=matapelajaran).update(**data)
+                kkm = KKM.objects.get(matapelajaran__pk=matapelajaran, tahun_pelajaran=active_tp())
+                kkm.pengetahuan = pengetahuan
+                kkm.keterampilan = keterampilan
                 kkm.save()
-                messages.success(request, f'Data KKM untuk Matapelajaran {mapel.nama} berhasil diubah')
-        except IntegrityError:
-            messages.error(request, f'Nilai yang di-input tidak diantara 0-100. Aplikasi otomatis menyimpan 0 ke dalam database')
+                
+                messages.success(request, f'Data Matapelajaran {kkm.matapelajaran.nama} berhasil diubah')
         except Exception as e:
-            messages.error(request, f'Terjadi kesalahan saat mencoba mengubah data KKM untuk Matapelajaran {mapel.nama}')
+            messages.error(request, e)
         finally:
             return redirect('detail-matapelajaran', matapelajaran=matapelajaran)
 

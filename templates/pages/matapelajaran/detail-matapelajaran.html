@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% include 'components/breadcrumb.html' %}
+    <div class="container-fluid mg-b-30">
+        <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="hpanel widget-int-shape responsive-mg-b-30">
+                            <div class="panel-body">
+                                <div class="text-center content-box">
+                                    <h2 class="m-b-xs">Kelas</h2>
+                                    <p class="font-bold text-success">Daftar Kelas Yang Memiliki {{matapelajaran.nama}}</p>
+                                    <div class="m icon-box">
+                                        <i class="educate-icon educate-form"></i>
+                                    </div>
+                                    <p class="small mg-t-box">
+                                        <table class="table">
+                                            <thead>
+                                                <tr><td>Tingkat</td>{% if sekolah.tingkat == 'SMK' %}<td>Jurusan</td>{% endif %}<td>Kelas</td></tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for kelas in list_kelas %}
+                                                <tr><td>{{kelas.tingkat}}</td>{% if sekolah.tingkat == 'SMK' %}<td>{{kelas.jurusan}}</td>{% endif %}<td>{{kelas.kelas}}</td></tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
+                <div class="product-payment-inner-st">
+                    <ul id="myTabedu1" class="tab-review-design">
+                        <li class="active"><a>Ubah {{matapelajaran.nama}}</a></li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content custom-product-edit">
+                        <div class="product-tab-list tab-pane fade active in">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="review-content-section">
+                                        <div id="dropzone1" class="pro-ad">
+                                            {% url 'detail-matapelajaran' mapel.id as ubah_matapelajaran %}
+                                            {% include 'components/form-compact.html' with form=mapelkkm_form action=ubah_matapelajaran submit_text='Ubah' label=True col='two' %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -86,6 +86,13 @@ class MatapelajaranForm(forms.ModelForm):
         model = MataPelajaran
         fields = '__all__'
 
+class EditMatapelajaranForm(forms.ModelForm):
+    pengetahuan = forms.IntegerField()
+    keterampilan = forms.IntegerField()
+    class Meta:
+        model = MataPelajaran
+        fields = '__all__'
+
 class KKMForm(forms.ModelForm):
     class Meta:
         model = KKM

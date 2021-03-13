@@ -1,7 +1,7 @@
 from siswa.models import NilaiEkskul, Siswa
 from django.forms.widgets import ClearableFileInput
 from guru.models import Gelar
-from sekolah.models import Kelas, MataPelajaran, Semester
+from sekolah.models import KKM, Kelas, MataPelajaran, Semester
 from helpers import active_semester, active_tp
 from django import template
 import os

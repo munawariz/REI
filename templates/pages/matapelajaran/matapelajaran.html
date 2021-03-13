@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load rei_tags %}
+
+{% block content %}
+    {% include 'components/breadcrumb.html' %}
+    <div class="container-fluid">
+        <div class="row mg-b-30">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="product-status-wrap drp-lst">
+                    <h4>Daftar Mata Pelajaran</h4>
+                    <div class="add-product">
+                        <a id="buatMapel" class="cursor-pointer">Buat Mata Pelajaran</a>
+                    </div>
+                    
+                    <div class="asset-inner table-condensed">
+                        <table>
+                            <thead>
+                                 <tr>
+                                    <th class="vert-center text-center p-10" rowspan="2">Nama</th>
+                                    <th class="vert-center text-center p-10" rowspan="2">Kelompok</th>
+                                    <th class="border-bot-none text-center p-10" colspan="2">KKM</th>
+                                    <th class="vert-center text-center p-10" rowspan="2">Hapus / Edit</th>
+                                </tr>
+                                <tr>
+                                    <th class="vert-center text-center p-10">Pengetahuan</th>
+                                    <th class="vert-center text-center p-10">Keterampilan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for mapel, kkm in list_matapelajaran %}
+                                    <tr>
+                                        <td class="vert-center text-center">{{mapel.nama}}</td>
+                                        <td class="vert-center text-center">{{mapel.kelompok}}</td>
+                                        <td class="vert-center text-center">{{kkm.pengetahuan}}</td>
+                                        <td class="vert-center text-center">{{kkm.keterampilan}}</td>
+                                        <td class="vert-center text-center">
+                                            <button onclick="confirmationAlert('Yakin ingin menghapus {{mapel.nama}}', '{% url 'hapus-matapelajaran' mapel.id %}')" title="Hapus" class="btn btn-danger btn-sm"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                            <button onclick="location.href='{% url 'detail-matapelajaran' mapel.id %}'" title="Edit" class="btn btn-primary btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extrascript %}
+<script>
+    $('#buatMapel').on('click', function() {
+        {% url 'buat-matapelajaran' as buat_matapelajaran %}
+        formAlert(
+            'Buat Mata Pelajaran Baru',
+            `{% include 'components/sweetalert-form.html' with form=matapelajaran_form action=buat_matapelajaran %}`
+        )
+    });
+</script>
+{% endblock extrascript %}

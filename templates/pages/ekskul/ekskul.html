@@ -29,7 +29,7 @@
                                         <td>{{ekskul.jenis}}</td>
                                         <td class="counter">{% get_total_siswa_ekskul ekskul %}</td>
                                         <td>
-                                            <button onclick="confirmationAlert('Yakin ingin menghapus {{ekskul.nama}}', '{% url 'hapus-ekskul' ekskul.id %}')" title="Hapus" class="pd-setting-ed"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                            <button onclick="confirmationAlert('Yakin ingin menghapus {{ekskul.nama}}', '{% url 'hapus-ekskul' ekskul.id %}')" title="Hapus" class="btn btn-danger btn-sm"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                                         </td>
                                     </tr>
                                 {% endfor %}

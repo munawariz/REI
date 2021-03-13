@@ -1,0 +1,106 @@
+html{
+    font-family: 'Times New Roman', Times, serif !important;
+}
+
+.title{
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.text-center{
+    text-align: center;
+}
+
+.flex-center{
+    display: flex;
+    justify-content: center;
+}
+
+.info-sekolah tr th{
+    width: 200px;
+}
+
+.info-siswa{
+    width: 100%;
+}
+
+.info-siswa tr td:first-child{
+    width: 20px;
+}
+
+.info-siswa tr td:nth-child(2){
+    width: 300px;
+}
+
+.info-siswa tr td:nth-child(3){
+    border-bottom: 1px dotted black;
+}
+
+.header-info tr th{
+    width: 100px;
+}
+
+.header-info tr td{
+    width: 250px;
+}
+
+.table{
+    text-align: left;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.table-border, .table-border th, .table-border td{
+    border: 1px solid black;
+    padding: 1.5px;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+.mt-1{
+    margin-top: 1rem;
+}
+.mt-5{
+    margin-top: 5rem;
+}
+
+.right{
+    float: right;
+    text-align: right;
+}
+
+.left{
+    float: left;
+    text-align: left;
+}
+
+.text-small{
+    font-size: 0.75rem;
+}
+
+.text-red{
+    color: red;
+}
+
+.w-100{
+    width: 100%;
+}
+
+.w-5{
+    width: 5%;
+}
+
+footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+footer::before{
+    content: '';
+    position: relative;
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: black;
+}

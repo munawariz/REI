@@ -79,8 +79,8 @@
                                             <tbody class="text-primary">
                                                 {% for siswa in list_siswa %}
                                                     <tr>
-                                                        <td class="cursor-pointer" onclick="location.href=`{% url 'detail-siswa' siswa.nis %}`">{{siswa.nis}}</td>
-                                                        <td class="cursor-pointer" onclick="location.href=`{% url 'detail-siswa' siswa.nis %}`">{{siswa.nisn}}</td>
+                                                        <td class="cursor-pointer" onclick="location.href='{% url 'detail-siswa' siswa.nis %}'">{{siswa.nis}}</td>
+                                                        <td class="cursor-pointer" onclick="location.href='{% url 'detail-siswa' siswa.nis %}'">{{siswa.nisn}}</td>
                                                         <td class="text-black">{{siswa.nama}}</td>
                                                         <td class="text-black">{{siswa.email}}</td>
                                                         <td class="text-black">{{siswa.tempat_lahir}}/{{siswa.tanggal_lahir|date:'d-m-Y'}}</td>

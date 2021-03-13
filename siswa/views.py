@@ -37,7 +37,7 @@ class list_siswa(View):
                 ).order_by('nis')
         else:
             list_siswa = Siswa.objects.all().order_by('nis')
-
+        tp = active_tp()
         paginator = Paginator(list_siswa, 10)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -46,8 +46,8 @@ class list_siswa(View):
             'list_siswa': page_obj,
             'page_obj': page_obj,
             'number_of_pages': number_of_pages,
-            
-            'tp_aktif': active_tp(),
+            'excel_form': UploadExcelForm(),
+            'tp_aktif': tp,
         }
         return render(request,  'pages/siswa/siswa.html', context)
 
@@ -57,8 +57,7 @@ class buat_siswa(View):
     def get(self, request):
         request.session['page'] = 'Buat Siswa'
         context = {
-            'siswa_form': SiswaForm(),
-            'excel_form': UploadExcelForm(),
+            'siswa_form': SiswaForm(),   
         }
         return render(request, 'pages/siswa/buat-siswa.html', context)
 
@@ -240,15 +239,26 @@ class import_excel_siswa(View):
         created_count = 0
         exists_count = 0
         error_count = 0
+        tp = active_tp()
         if excel_form.is_valid():
             try:
                 cleaned_json = extract_and_clean_siswa(request.FILES['file'])
+                
                 for siswa in cleaned_json:
+                    kelas = siswa['kelas']
+                    del siswa['kelas']
                     try:
                         for key, value in siswa.items():
                             if key not in ['nama_wali', 'kelas']:
                                 if not value: raise Error
-                        obj, created = Siswa.objects.get_or_create(**siswa)
+                        siswa, created = Siswa.objects.get_or_create(**siswa)
+                        if kelas:
+                            old_kelas = siswa.kelas.get(tahun_pelajaran=tp)
+                            if old_kelas:
+                                siswa.remove(old_kelas)
+                            kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
+                            siswa.kelas.add(kelas)
+                            siswa.save()
                         if created: created_count += 1
                     except IntegrityError:
                         exists_count += 1
@@ -259,7 +269,7 @@ class import_excel_siswa(View):
             except ValueError:
                 messages.error(request, 'File yang diunggah tidak didukung atau bukan sebuah file spreadsheet')
             except Exception as e:
-                print(e)
+                messages.error(request, e)
             finally:
                 return redirect('list-siswa')
 
@@ -290,17 +300,18 @@ class export_excel_siswa(View):
                 col = col.title()
             col = col.replace('_', ' ')
             cols.append(col)
-
+        cols.append('Kelas')
+        
         for siswa in qs:
             try:
-                siswa['kelas_id'] = Kelas.objects.get(pk=siswa['kelas_id'], tahun_pelajaran=semester.tahun_pelajaran).nama.replace('-', ' ')
+                siswa['kelas_id'] = Siswa.objects.get(nis=siswa['nis']).kelas.get(tahun_pelajaran=semester.tahun_pelajaran).nama.replace('-', ' ')
             except Kelas.DoesNotExist:
                 siswa['kelas_id'] = None
             siswa['tanggal_lahir'] = siswa['tanggal_lahir'].strftime('%Y-%m-%d')
             if siswa['gender'] == 'P': siswa['gender'] = 'Pria'
             else: siswa['gender'] = 'Wanita'
 
-        file = settings.MEDIA_ROOT/'excel/Export Siswa.xlsx'
+        file = f'{settings.MEDIA_ROOT}/excel/Export Siswa.xlsx'
         json_string = json.dumps(qs)
         df = pandas.read_json(json_string, dtype={'nis':str, 'nisn':str})
         df = df.drop(columns='id')

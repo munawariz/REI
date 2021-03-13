@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load widget_tweaks %}
+{% load static %}
 
 {% block content %}
     {% include 'components/breadcrumb.html' %}
@@ -32,6 +33,36 @@
                         </div>
                     </div>
                 </div>
+                {% if kelas %}
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="hpanel widget-int-shape responsive-mg-b-30 mg-t-20">
+                            <div class="panel-body">
+                                <div class="stats-title pull-left mg-t-10">
+                                    <h4>Pratinjau Rapor</h4>
+                                </div>
+                                <a target='_blank' href="{% url 'rapor' siswa.nis 'pratinjau' %}" class="btn btn-success widget-btn-1 btn-sm pull-right" style="margin-top:5px;color:white !important;">
+                                    <span class="fa fa-eye"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="hpanel widget-int-shape responsive-mg-b-30 mg-t-20">
+                            <div class="panel-body">
+                                <div class="stats-title pull-left mg-t-10">
+                                    <h4>Unduh Rapor</h4>
+                                </div>
+                                <a target='_blank' href="{% url 'rapor' siswa.nis 'unduh' %}" class="btn btn-success widget-btn-1 btn-sm pull-right" style="margin-top:5px;color:white !important;">
+                                    <span class="fa fa-download"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="hpanel widget-int-shape responsive-mg-b-30 mg-t-20">
@@ -63,7 +94,9 @@
                                 <div class="m-t-xl widget-cl-1">
                                     <h1 class="text-success">{{kelas.walikelas.nama_gelar|default:'Kelas ini belum memiliki walikelas'}}</h1>
                                 </div>
+                                {% if kelas.walikelas %}
                                 <button onclick="location.href='{% url 'detail-guru' kelas.walikelas.nip %}'" class="btn btn-success widget-btn-1 btn-sm pull-right">Profil</button>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -89,6 +122,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="product-tab-list tab-pane fade in" id="nilai">
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mg-t-15">
@@ -110,10 +144,15 @@
                                                     </div>
                                                 </li>
                                             </ul>
+                                            {% if forloop.last %}
+                                                <div class="payment-adress">
+                                                    <button type="submit" class="btn btn-primary waves-effect waves-light">Ubah</button>
+                                                </div>
+                                            {% endif %}
+                                        {% empty %}
+                                            <label class="login2">{{kelas.nama}} belum memiliki matapelajaran.</label>
                                         {% endfor %}
-                                        <div class="payment-adress">
-                                            <button type="submit" class="btn btn-primary waves-effect waves-light">Ubah</button>
-                                        </div>
+                                        
                                     </form>
                                 </div>
                             </div>
@@ -153,7 +192,7 @@
                                                 <button type="submit" class="btn btn-primary waves-effect waves-light mg-l-1 mg-b-20">Ubah Nilai</button>
                                             {% endif %}
                                             {% empty %}
-                                            <label class="login2">{{siswa.nama}} belum memiliki ekskul di semester ini.</label>
+                                                <label class="login2">{{siswa.nama}} belum memiliki ekskul di semester ini.</label>
                                             {% endfor %}
                                     </form>
                                 </div>
@@ -178,7 +217,6 @@
                     </div>
                 </div>
             </div>
-        
         </div>
     </div>
 {% endblock content %}
@@ -192,6 +230,5 @@
                 `{% include "components/sweetalert-form.html" with form=absen_form action=absen_siswa %}`);
             event.preventDefault();
         });
-        
     </script>
 {% endblock extrascript %}

@@ -1,9 +1,58 @@
 {% extends 'base.html' %}
 {% load rei_tags %}
+{% load widget_tweaks %}
 
 {% block content %}
     {% include 'components/breadcrumb.html' with searchbar=True %}
     <div class="container-fluid">
+        <div class="row mg-b-30">
+            <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+                <div class="hpanel widget-int-shape responsive-mg-b-30">
+                    <div class="panel-body">
+                        <div class="stats-title pull-left">
+                            <h4>Unduh Spreadsheet</h4>
+                        </div>
+                        <div class="stats-icon pull-right">
+                            <i class="fa fa-download"></i>
+                        </div>
+                        <div class="m-t-xl widget-cl-1">
+                            <button onclick="location.href='{% url 'download-template-siswa' %}'" class="btn btn-success widget-btn-1 btn-md">Template</button>
+                            <button onclick="location.href='{% url 'export-excel-siswa' %}'" class="btn btn-success widget-btn-1 btn-md">Ekspor Data Siswa</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                <div class="hpanel widget-int-shape responsive-mg-b-30">
+                    <div class="panel-body">
+                        <div class="stats-title pull-left">
+                            <h4>Jumlah Kelas</h4>
+                        </div>
+                        <div class="stats-icon pull-right">
+                            <i class="educate-icon educate-form"></i>
+                        </div>
+                        <div class="m-t-xl widget-cl-1">
+                            <h1 class="text-success counter">{{jumlah_kelas}}</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+                <div class="hpanel widget-int-shape responsive-mg-b-30">
+                    <div class="panel-body">
+                        <div class="stats-title pull-left">
+                            <h4>Jumlah Siswa</h4>
+                        </div>
+                        <div class="stats-icon pull-right">
+                            <i class="educate-icon educate-student"></i>
+                        </div>
+                        <div class="m-t-xl widget-cl-1">
+                            <h1 class="text-success">{{active_semester}}</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row mg-b-30">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="product-status-wrap drp-lst">
@@ -11,7 +60,21 @@
                     <div class="add-product">
                         <a href="{% url 'buat-siswa' %} " class="cursor-pointer">Buat Siswa</a>
                     </div>
-                    
+                    <form action="{% url 'import-excel-siswa' %}" method="POST" enctype="multipart/form-data" name="excelForm">
+                        {% csrf_token %}
+                        <div class="file-upload-inner ts-forms mg-b-20">
+                            <div class="input prepend-big-btn">
+                                <label class="icon-right" for="prepend-big-btn">
+                                    <i class="fa fa-upload"></i>
+                                </label>
+                                <div class="file-button cursor-pointer" onclick="getFile()">Unggah</div>
+                                <input disabled type="text" id="prepend-big-btn" placeholder="Belum ada berkas yang dipilih">
+                                <div style='height: 0px;width: 0px; overflow:hidden;'>
+                                    {% render_field excel_form.file|add_class:"input" onchange="sub(this)" id="upfile" value="upload" accept=".xlsx, .xls, .ods" %}
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                     <div class="asset-inner table-condensed">
                         <table>
                             <thead>
@@ -60,3 +123,19 @@
         </div>
     </div>
 {% endblock content %}
+
+{% block extrascript %}
+<script>
+    function getFile() {
+        document.getElementById("upfile").click();
+    }
+
+    function sub(obj) {
+        var file = obj.value;
+        var fileName = file.split("\\");
+        document.getElementById("prepend-big-btn").placeholder = fileName[fileName.length - 1];
+        document.excelForm.submit();
+        event.preventDefault();
+    }
+</script>
+{% endblock extrascript %}
