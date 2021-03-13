@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="error-pagewrap">
+		<div class="error-page-int">
+			<div class="content-error">
+				<h1>Server Error <span class="counter"> 500</span></h1>
+				<p>Maaf, server mengalami gangguan tidak terduga.</p>
+				<a href="{% url 'dashboard' %}">Dashboard</a>
+				<a href="mailto:munawarhariz@gmail.com">Laporkan Masalah</a>
+			</div>
+		</div>   
+    </div>
+{% endblock content %}

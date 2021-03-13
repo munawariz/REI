@@ -18,7 +18,7 @@
                                     </li>
                                     <li class="nav-item"><a href="{% url 'detail-sekolah' %}" class="nav-link">Info Sekolah</a>
                                     </li>
-                                    <li class="nav-item"><a href="#" class="nav-link">About Dev</a>
+                                    <li class="nav-item"><a href="{% url 'about-dev' %}" class="nav-link">About Dev</a>
                                     </li>
                                 </ul>
                             </div>
@@ -34,7 +34,7 @@
                                         <ul role="menu" class="dropdown-header-top author-log dropdown-menu animated zoomIn">
                                             <li><a href="{% url 'detail-guru' request.user.nip %}"><span class="edu-icon edu-home-admin author-log-ic"></span>Profil Anda</a></li>
                                             <li><a href="{% url 'detail-sekolah'%}"><span class="edu-icon edu-home-admin author-log-ic"></span>Informasi Sekolah</a></li>
-                                            <li><a href="#"><span class="edu-icon edu-home-admin author-log-ic"></span>About Dev</a></li>
+                                            <li><a href="{% url 'about-dev' %}"><span class="edu-icon edu-home-admin author-log-ic"></span>About Dev</a></li>
                                             <li><a href="{% url 'logout' %}"><span class="edu-icon edu-locked author-log-ic"></span>Log Out</a></li>
                                         </ul>
                                     </li>

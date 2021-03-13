@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="error-pagewrap">
+		<div class="error-page-int">
+			<div class="content-error">
+				<h1>ERROR <span class="counter"> 404</span></h1>
+				<p>Maaf, halaman yang anda cari tidak ditemukan. Periksa apakah URL halaman sudah tepat. Jika anda yakin ini merupakan sebuah <u>bug</u> mohon laporkan kepada developer.</p>
+				<a href="{% url 'dashboard' %}">Dashboard</a>
+				<a href="mailto:munawarhariz@gmail.com">Laporkan Masalah</a>
+			</div>
+		</div>   
+    </div>
+{% endblock content %}

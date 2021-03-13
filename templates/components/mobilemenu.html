@@ -20,12 +20,7 @@
                                 </ul>
                             </li>
                             {% if sekolah.tingkat.upper == 'SMK' %}
-                            <li><a data-toggle="collapse" data-target="#jurusan" href="#">Jurusan <span class="admin-project-icon edu-icon edu-down-arrow"></span></a>
-                                <ul id="jurusan" class="collapse dropdown-header-top">
-                                    <li><a href="{% url 'list-jurusan' %}">Daftar Jurusan</a></li>
-                                    <li><a href="{% url 'buat-jurusan' %}">Buat Jurusan</a></li>
-                                </ul>
-                            </li>
+                            <li><a href="{% url 'list-jurusan' %}">Jurusan</a></li>
                             {% endif %}
                             <li><a data-toggle="collapse" data-target="#kelas" href="#">Kelas<span class="admin-project-icon edu-icon edu-down-arrow"></span></a>
                                 <ul id="kelas" class="collapse dropdown-header-top">
@@ -33,18 +28,8 @@
                                     <li><a href="{% url 'buat-kelas' %}">Buat Kelas</a></li>
                                 </ul>
                             </li>
-                            <li><a data-toggle="collapse" data-target="#matapelajaran" href="#">Mata Pelajaran<span class="admin-project-icon edu-icon edu-down-arrow"></span></a>
-                                <ul id="matapelajaran" class="collapse dropdown-header-top">
-                                    <li><a href="{% url 'list-matapelajaran' %}">Daftar Mata Pelajaran</a></li>
-                                    <li><a href="{% url 'buat-matapelajaran' %}">Buat Mata Pelajaran</a></li>
-                                </ul>
-                            </li>
-                            <li><a data-toggle="collapse" data-target="#ekskul" href="#">Ekskul<span class="admin-project-icon edu-icon edu-down-arrow"></span></a>
-                                <ul id="ekskul" class="collapse dropdown-header-top">
-                                    <li><a href="{% url 'list-ekskul' %}">Daftar Ekskul</a></li>
-                                    <li><a href="{% url 'buat-ekskul' %}">Buat Ekskul</a></li>
-                                </ul>
-                            </li>
+                            <li><a href="{% url 'list-matapelajaran' %}">Mata Pelajaran</a></li>
+                            <li><a href="{% url 'list-ekskul' %}">Ekskul</a></li>
                         </ul>
                     </nav>
                 </div>
