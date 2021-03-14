@@ -76,7 +76,9 @@
                                 <div class="m-t-xl widget-cl-1">
                                     <h1 class="text-success">{{kelas.nama|default:'Belum memiliki kelas'}}</h1>
                                 </div>
+                                {% if kelas %}
                                 <button onclick="location.href='{% url 'detail-kelas' kelas.nama %}'" class="btn btn-success widget-btn-1 btn-sm pull-right">Detail</button>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

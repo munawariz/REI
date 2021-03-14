@@ -25,6 +25,9 @@ class GuruCreateForm(forms.ModelForm):
     class Meta:
         model = Guru
         fields = ('nip', 'password', 'nama', 'email', 'gender', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat', 'is_walikelas', 'is_staftu')
+        widgets = {
+            'tanggal_lahir': forms.DateInput(attrs={'type': 'date'})
+        }
 
     def clean(self):
         if 'nip' in self.cleaned_data:
@@ -32,9 +35,14 @@ class GuruCreateForm(forms.ModelForm):
                 raise forms.ValidationError('Guru dengan NIP itu sudah terdaftar')
 
 class GuruEditForm(forms.ModelForm):
+    tanggal_lahir = forms.DateField()
     class Meta:
         model = Guru
         fields = ('avatar', 'nama', 'email', 'gender', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat')
+        widgets = {
+            'tanggal_lahir': forms.DateInput(attrs={'type': 'date'})
+        }
+
 
 class PasswordChangeForm(forms.Form):
     old_password = forms.CharField(label='Password Lama Anda', max_length = 20, widget=forms.TextInput(attrs={'type':'password'}))

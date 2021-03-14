@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from sekolah.models import Ekskul, KKM, TahunPelajaran
 from siswa.models import MataPelajaran, Nilai, NilaiEkskul, Siswa
 from . import active_tp
@@ -26,7 +27,10 @@ def get_kkm(matapelajaran, tp):
     return KKM.objects.get_or_create(matapelajaran=matapelajaran, tahun_pelajaran=tp)[0]
 
 def zip_pelnilai(siswa, semester):
-    kelas = siswa.kelas.get(tahun_pelajaran=semester.tahun_pelajaran)
+    try:
+        kelas = siswa.kelas.get(tahun_pelajaran=semester.tahun_pelajaran)
+    except ObjectDoesNotExist:
+        return None
     matapelajaran = MataPelajaran.objects.filter(kelas=kelas).order_by('kelompok', 'nama')
         
     list_id = [matapelajaran.pk for matapelajaran in matapelajaran]
