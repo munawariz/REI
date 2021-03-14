@@ -24,31 +24,6 @@ from helpers.externalAPI import avatarAPI
 class CustomLoginView(LoginView):
     authentication_form = LoginForm
 
-def index(request):
-    return redirect('dashboard')
-
-@method_decorator(login_required, name='dispatch')
-class dashboard(View):
-    def get(self, request):
-        request.session['page'] = 'Dashboard'
-        semester = active_semester()
-        tp = active_tp()
-        context = {
-            'sekolah': get_sekolah(),
-            'semester': semester,
-            'siswa_berkelas': Siswa.objects.exclude(kelas=None).filter(kelas__tahun_pelajaran=tp).count(),
-            'siswa_nokelas': Siswa.objects.exclude(kelas__tahun_pelajaran=tp).filter(kelas=None).count(),
-            'jumlah_kelas': Kelas.objects.filter(tahun_pelajaran=tp).count(),
-            'jumlah_jurusan': Jurusan.objects.count(),
-            'jumlah_guru': Guru.objects.count(),
-            'jumlah_walikelas': Guru.objects.filter(is_walikelas=True, is_staftu=False).count(),
-            'jumlah_tu': Guru.objects.filter(is_staftu=True, is_walikelas=False).count(),
-            'jumlah_admin': Guru.objects.filter( Q( Q(is_walikelas=True)&Q(is_staftu=True) | Q(is_superuser=True) ) ).count(),
-            'jumlah_mapel': MataPelajaran.objects.count(),
-            'jumlah_ekskul': Ekskul.objects.count(),
-        }
-        return render(request, 'pages/dashboard.html', context)
-
 @method_decorator(login_required, name='dispatch')
 class ganti_password(View):
     def post(self, request):

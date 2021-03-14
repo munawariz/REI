@@ -243,7 +243,6 @@ class import_excel_siswa(View):
         if excel_form.is_valid():
             try:
                 cleaned_json = extract_and_clean_siswa(request.FILES['file'])
-                
                 for siswa in cleaned_json:
                     kelas = siswa['kelas']
                     del siswa['kelas']
@@ -253,12 +252,14 @@ class import_excel_siswa(View):
                                 if not value: raise Error
                         siswa, created = Siswa.objects.get_or_create(**siswa)
                         if kelas:
-                            old_kelas = siswa.kelas.get(tahun_pelajaran=tp)
-                            if old_kelas:
-                                siswa.remove(old_kelas)
-                            kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
-                            siswa.kelas.add(kelas)
-                            siswa.save()
+                            try:
+                                old_kelas = siswa.kelas.get(tahun_pelajaran=tp)
+                                siswa.kelas.remove(old_kelas)
+                                kelas = Kelas.objects.get(nama=kelas, tahun_pelajaran=active_tp())
+                                siswa.kelas.add(kelas)
+                                siswa.save()
+                            except Kelas.DoesNotExist:
+                                pass
                         if created: created_count += 1
                     except IntegrityError:
                         exists_count += 1

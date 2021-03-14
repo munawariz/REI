@@ -16,8 +16,8 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='pages/auth/login.html'), name='logout'),
     path('admin/', admin.site.urls),
     path('about-dev/', rei_views.about_dev, name='about-dev'),
-    path('', guru_view.index),
-    path('dashboard/', guru_view.dashboard.as_view(), name='dashboard'),
+    path('', sekolah_view.index),
+    path('dashboard/', sekolah_view.dashboard.as_view(), name='dashboard'),
     path('guru/', include([
         path('', guru_view.list_guru.as_view(), name='list-guru'),
         path('buat/', guru_view.buat_guru.as_view(), name='buat-guru'),
