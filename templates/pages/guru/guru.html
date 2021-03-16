@@ -17,7 +17,7 @@
                                     <a href="#"><i class="fa fa-twitter"></i></a>
                                     <a href="mailto:{{guru.email}}"><i class="fa fa-envelope"></i></a>
                                 </div>
-                                <img alt="avatar_guru" class="img-circle m-b mw-mh-100" src="/media/avatar/guru/{% get_basename guru %}">
+                                <img alt="avatar_guru" class="img-circle m-b mw-mh-100" src="{{guru.avatar}}">
                                 <h3><a href="{% url 'detail-guru' guru.nip %}">{{guru.nama_gelar}}</a></h3>
                                 {% if guru.is_superuser or guru.is_walikelas and guru.is_staftu %}
                                     <p class="all-pro-ad">Admin</p>

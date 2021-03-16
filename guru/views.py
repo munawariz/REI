@@ -105,7 +105,6 @@ class buat_guru(View):
             return redirect('list-guru')
 
 @method_decorator(login_required, name='dispatch')
-@method_decorator(activesemester_required, name='dispatch')
 class profil_lain(View):
     def get(self, request, guru):
         try:
