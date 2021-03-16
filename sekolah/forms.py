@@ -9,6 +9,8 @@ class SekolahForm(forms.ModelForm):
         exclude = ('tingkat_verbose',)
 
 class SemesterForm(forms.ModelForm):
+    mulai = forms.IntegerField(label='Tahun Mulai')
+    akhir = forms.IntegerField(label='Tahun Akhir')
     class Meta:
         model = TahunPelajaran
         fields = ('mulai', 'akhir')
