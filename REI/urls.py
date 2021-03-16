@@ -17,6 +17,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('about-dev/', rei_views.about_dev, name='about-dev'),
     path('', sekolah_view.index),
+    path('first-login/', guru_view.first_login.as_view(), name='first-login'),
     path('dashboard/', sekolah_view.dashboard.as_view(), name='dashboard'),
     path('guru/', include([
         path('', guru_view.list_guru.as_view(), name='list-guru'),

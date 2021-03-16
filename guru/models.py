@@ -43,8 +43,9 @@ class Guru(AbstractBaseUser):
     agama = models.CharField(max_length=255, null=True)
     alamat = models.CharField(max_length=255, null=True)
     date_joined = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
+    first_login = models.BooleanField(default=True)
     last_login = models.DateTimeField(verbose_name='last login', auto_now=True)
-    is_admin = models.BooleanField(default=False)    
+    is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_walikelas = models.BooleanField(default=True, verbose_name='Walikelas')
@@ -81,8 +82,6 @@ def guru_pre_save(sender, instance, **kwargs):
         if (old_file and not new_file) or (old_file and new_file and not old_file == new_file):
             if os.path.isfile(old_file):
                 os.remove(old_file)
-        # if old_file and not os.path.isfile(old_file):
-        #     instance.avatar = avatarAPI(instance)
             
     except sender.DoesNotExist:
         return False

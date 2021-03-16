@@ -3,7 +3,7 @@ import json
 import pandas
 from REI import settings
 from django.views.generic.edit import CreateView
-from REI.decorators import staftu_required, walikelas_required, validkelas_required, activesemester_required
+from REI.decorators import staftu_required, walikelas_required, validkelas_required, activesemester_required, login_required
 from django.http.response import FileResponse, Http404, JsonResponse
 from sekolah.models import Ekskul, Kelas, MataPelajaran
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -14,7 +14,6 @@ from django.views.generic import View
 from .models import Absensi, NilaiEkskul, Siswa, Nilai
 from .forms import SiswaForm, AbsenForm, TambahEkskulSiswaForm, UploadExcelForm
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from helpers.nilai_helpers import has_ekskul, has_mapel, zip_eksnilai, zip_pelnilai
 from helpers import active_tp, calculate_age, active_semester, get_initial, form_value, get_validekskul, get_validkelas, tambahmapel_choice

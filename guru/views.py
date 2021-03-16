@@ -1,5 +1,5 @@
 from django.db.utils import IntegrityError
-from REI.decorators import staforself_required, staftu_required, activesemester_required
+from REI.decorators import staforself_required, staftu_required, activesemester_required, login_required
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models.query_utils import Q
 from django.http.response import Http404
@@ -12,7 +12,6 @@ from sekolah.models import Ekskul, Jurusan, Kelas, MataPelajaran, Sekolah
 from .forms import GelarForm, GuruEditForm, PasswordChangeForm, GuruCreateForm, LoginForm
 from django.contrib.auth import authenticate
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
@@ -23,6 +22,18 @@ from helpers.externalAPI import avatarAPI
 
 class CustomLoginView(LoginView):
     authentication_form = LoginForm
+
+class first_login(View):
+    def get(self, request):
+        return render(request, 'pages/auth/first_login.html')
+
+    def post(self, request):
+        new_password = request.POST['new-password']
+        request.user.set_password(new_password)
+        request.user.first_login = False
+        request.user.save()
+        messages.success(request, 'Password baru anda sudah tercatat')
+        return redirect('login')
 
 @method_decorator(login_required, name='dispatch')
 class ganti_password(View):
@@ -94,7 +105,6 @@ class buat_guru(View):
             return redirect('list-guru')
 
 @method_decorator(login_required, name='dispatch')
-@method_decorator(activesemester_required, name='dispatch')
 class profil_lain(View):
     def get(self, request, guru):
         try:

@@ -1,0 +1,73 @@
+{% load widget_tweaks %}
+{% load rei_tags %}
+{% load static %}
+{% semester_is_active as active_semester %}
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="description" content="">
+        {% include 'include/fonts.html' %}
+        {% include 'include/css.html' %}
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+        <title>REI - Rapor Elektronik</title>
+    </head>
+    <body>
+        <div class="error-pagewrap">
+            <div class="error-page-int">
+                <div class="hpanel">
+                    <div class="panel-body text-center lock-inner">
+                        <i class="fa fa-lock" aria-hidden="true"></i>
+                        <br/>
+                        <p>Ini pertama kali anda login, kemungkinan besar password anda adalah password yang dibuatkan oleh Admin atau Staf TU.
+                        <b>Segera ganti password anda.</b></p>
+                        <form action="{% url 'first-login' %}" method="POST" class="m-t" id="sweetalertForm" name="sweetalertForm">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input type="password" name="new-password" required placeholder="******" class="form-control">
+                            </div>
+                            <button class="btn btn-primary block full-width" name="btn-submit" id="btn-submit" type="button">Ganti</button>
+                        </form>
+                    </div>
+                </div>
+            </div>   
+        </div>
+		{% include 'include/js.html' %}
+		{% include 'components/notification.html' %}
+        <script>
+            $('#btn-submit').on('click',function(e){
+                e.preventDefault();
+                var form = $(this).parents('form');
+                Swal.fire({
+                    title: "Anda Yakin?",
+                    text: "Anda akan diarahkan ke halaman login dan harus melakukan login ulang dengan password baru ini.",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Ya, saya yakin.",
+                    preConfirm: () => {
+                        try{
+                            $('#sweetalertForm input, #sweetalertForm select').each(
+                                function(index){  
+                                    var input = $(this);
+                                    if (!input.val() && input.attr('required')){
+                                        throw new Error("Silahkan Lengkapi Form Terlebih Dahulu")
+                                    }
+                                }
+                            );
+                        }catch (error){
+                            Swal.showValidationMessage(
+                                `${error}`
+                            )
+                        }
+                    },
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

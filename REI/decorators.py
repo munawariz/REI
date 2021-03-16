@@ -19,17 +19,30 @@ def login_redirect(request):
     resolved_login_url = resolve_url(settings.LOGIN_URL)
     login_scheme, login_netloc = urlparse(resolved_login_url)[:2]
     current_scheme, current_netloc = urlparse(path)[:2]
-    if ((not login_scheme or login_scheme == current_scheme) and
-            (not login_netloc or login_netloc == current_netloc)):
+    if ((not login_scheme or login_scheme == current_scheme) and (not login_netloc or login_netloc == current_netloc)):
         path = request.get_full_path()
 
     messages.error(request, 'Silahkan login terlebih dahulu')
     return redirect_to_login(path, resolved_login_url, REDIRECT_FIELD_NAME)
 
+def login_required(function=None):
+    @wraps(function)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.is_active:
+            return login_redirect(request)
+        if request.user.first_login: return redirect('first-login')
+
+        return function(request, *args, **kwargs)
+
+    return wrapper
+
 def staftu_required(function=None):
     @wraps(function)
     def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated: return login_redirect(request)
+        if not request.user.is_authenticated or not request.user.is_active:
+            return login_redirect(request)
+        
+        if request.user.first_login: return redirect('first-login')
         user = Guru.objects.filter(Q(pk=request.user.pk) & (Q(is_staftu=True) | Q(is_superuser=True)))
         if user:
             return function(request, *args, **kwargs)
@@ -45,7 +58,9 @@ def staftu_required(function=None):
 def walikelas_required(function=None):
     @wraps(function)
     def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated: return login_redirect(request)
+        if not request.user.is_authenticated or not request.user.is_active:
+            return login_redirect(request)
+        if request.user.first_login: return redirect('first-login')
         user = Guru.objects.filter(Q(pk=request.user.pk) & (Q(is_walikelas=True) | Q(is_superuser=True)))
         if user:
             return function(request, *args, **kwargs)
