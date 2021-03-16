@@ -144,5 +144,33 @@
         </div>
     </div>
 {% endblock content %}
-{% block extrascript %}<script src="{% static 'js/morrisjs/jumlah-siswa.js' %}"></script>{% endblock extrascript %}
+{% block extrascript %}
+<script>
+    Morris.Area({
+        element: 'siswa-chart',
+        data: [
+        {% for tp, pria, wanita in chart_data %}
+        {
+            period: '{{tp.mulai|escapejs}}',
+            Pria: {{pria}},
+            Wanita: {{wanita}},
+        },
+        {% endfor %}
+        ],
+        xkey: 'period',
+        ykeys: ['Pria', 'Wanita'],
+        labels: ['Pria', 'Wanita'],
+        pointSize: 3,
+        fillOpacity: 0,
+        pointStrokeColors:['#006DF0', '#933EC5'],
+        behaveLikeLine: true,
+        gridLineColor: '#e0e0e0',
+        lineWidth: 1,
+        hideHover: 'auto',
+        lineColors: ['#006DF0', '#933EC5'],
+        resize: true
+        
+    });
+</script>
+{% endblock extrascript %}
 

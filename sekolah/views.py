@@ -7,20 +7,17 @@ from django.db.models.query_utils import Q
 from django.http.response import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.generic import View
-from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .models import Ekskul, Jurusan, KKM, Kelas, MataPelajaran, Rapor, Sekolah, Semester, TahunPelajaran
 from .forms import DisabledKelasForm, EditMatapelajaranForm, EkskulForm, JurusanForm, KKMForm, KelasForm, MatapelajaranForm, SekolahForm, SemesterForm, TambahAnggotaKelas, TambahMatapelajaranKelas
 from django.db.models.deletion import ProtectedError
 from django.core.paginator import Paginator
-from REI.decorators import staftu_required, validdirs_required, activesemester_required
+from REI.decorators import staftu_required, validdirs_required, activesemester_required, login_required
 from helpers import active_semester, active_tp, generate_rapor_context, get_initial, form_value, get_sekolah, get_validkelas, get_validwalikelas, get_validsiswabaru, get_validpelajaran, semiactive_semester, tambahanggota_choice, tambahmapel_choice, walikelas_choice
 from helpers.nilai_helpers import list_siswa_status, zip_eksnilai, zip_pelkkm, zip_nilrapor
 from django.contrib import messages
 from REI import settings
 import os, shutil
-from django.template.loader import render_to_string
-
 from helpers import generate_pdf
 from django.http import HttpResponse, FileResponse
 
@@ -32,6 +29,10 @@ class dashboard(View):
     def get(self, request):
         request.session['page'] = 'Dashboard'
         semester = active_semester()
+        list_tp = TahunPelajaran.objects.all()
+        list_tp = [tp for tp in list_tp]
+        siswa_pria = [Siswa.objects.exclude(kelas=None).filter(kelas__tahun_pelajaran=tp, gender='P').count() for tp in list_tp]
+        siswa_wanita = [Siswa.objects.exclude(kelas=None).filter(kelas__tahun_pelajaran=tp, gender='W').count() for tp in list_tp]
         tp = active_tp()
         context = {
             'sekolah': get_sekolah(),
@@ -46,6 +47,7 @@ class dashboard(View):
             'jumlah_admin': Guru.objects.filter( Q( Q(is_walikelas=True)&Q(is_staftu=True) | Q(is_superuser=True) ) ).count(),
             'jumlah_mapel': MataPelajaran.objects.count(),
             'jumlah_ekskul': Ekskul.objects.count(),
+            'chart_data': zip(list_tp, siswa_pria, siswa_wanita),
         }
         return render(request, 'pages/dashboard.html', context)
 
@@ -516,3 +518,4 @@ class bundle_rapor_view(View):
         response['Content-Disposition'] = f'attachment; filename=Rapor-{kelas.nama}.zip'
 
         return response
+        
